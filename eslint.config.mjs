@@ -18,6 +18,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "node_modules/**",
     ".git/**",
+    "types/generated/**",
   ]),
 
   // JavaScript rules

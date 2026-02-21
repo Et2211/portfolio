@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { fetchCMS } from "@/lib/strapi";
-import { Page as StrapiPage } from "@/types/strapi";
+import { type Page as StrapiPage, fetchCMS } from "@/lib/strapi";
 
 interface PageProps {
   params: Promise<{
@@ -9,8 +8,12 @@ interface PageProps {
   }>;
 }
 
+interface PageResponse {
+  data: StrapiPage[];
+}
+
 async function getPageByUrl(url: string) {
-  const data = await fetchCMS<{ data: StrapiPage[] }>({
+  const data = await fetchCMS<PageResponse>({
     endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate=*`,
     revalidate: 3600, // Cache for 1 hour
   });
@@ -52,7 +55,7 @@ export default async function Page({ params }: PageProps) {
 // Generate static params for all pages by calling Strapi directly
 export async function generateStaticParams() {
   try {
-    const data = await fetchCMS<{ data: StrapiPage[] }>({
+    const data = await fetchCMS<PageResponse>({
       endpoint: "/api/pages?populate=*",
     });
 
