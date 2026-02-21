@@ -1,5 +1,5 @@
 import { Page as StrapiPage } from "@/types/strapi";
-import { fetchStrapi } from "@/lib/strapi";
+import { fetchCMS } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -9,17 +9,12 @@ interface PageProps {
 }
 
 async function getPageByUrl(url: string) {
-  const response = await fetch(`/api/pages?url=${encodeURIComponent(url)}`, {
-    next: { revalidate: 3600 }, // Cache for 1 hour
+  const data = await fetchCMS({
+    endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate=*`,
+    revalidate: 3600, // Cache for 1 hour
   });
 
-  if (!response.ok) {
-    console.error("Failed to fetch page from API");
-    return null;
-  }
-
-  const data = await response.json();
-  return data.page;
+  return data.data && data.data.length > 0 ? data.data[0] : null;
 }
 
 export default async function Page({ params }: PageProps) {
@@ -56,7 +51,7 @@ export default async function Page({ params }: PageProps) {
 // Generate static params for all pages by calling Strapi directly
 export async function generateStaticParams() {
   try {
-    const data = await fetchStrapi({
+    const data = await fetchCMS({
       endpoint: "/api/pages?populate=*",
     });
 

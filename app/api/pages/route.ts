@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchStrapi } from "@/lib/strapi";
+import { fetchCMS } from "@/lib/strapi";
 
 /**
  * GET /api/pages?url=/path
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const data = await fetchStrapi({
+    const data = await fetchCMS({
       endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(pageUrl)}&populate=*`,
       revalidate: 3600, // Cache for 1 hour
     });
