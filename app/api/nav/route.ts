@@ -5,13 +5,13 @@ import { fetchCMS } from "@/lib/strapi";
 /**
  * GET /api/nav
  * Fetches navigation groups from Strapi CMS
- * Cached for 24 hours since nav changes rarely
+ * Cached for 1 minute since nav changes rarely
  */
 export async function GET() {
   try {
     const data = await fetchCMS({
       endpoint: "/api/nav-groups?populate=*",
-      revalidate: 86400, // Cache for 24 hours
+      revalidate: 60, // Cache for 1 minute
     });
 
     return NextResponse.json({
