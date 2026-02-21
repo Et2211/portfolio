@@ -1,4 +1,4 @@
-const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
 interface FetchOptions {
@@ -13,7 +13,7 @@ interface FetchOptions {
  * @param revalidate - Optional revalidation time in seconds for Next.js caching
  * @returns The JSON response data
  */
-export async function fetchCMS<T = any>({
+export async function fetchCMS<T = { data: unknown[] }>({
   endpoint,
   revalidate,
 }: FetchOptions): Promise<T> {

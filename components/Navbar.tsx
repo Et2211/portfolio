@@ -1,6 +1,5 @@
-import { NavGroup } from "@/types/strapi";
-import { fetchCMS } from "@/lib/strapi";
 import Link from "next/link";
+
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,22 +8,25 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { fetchCMS } from "@/lib/strapi";
+import { NavGroup } from "@/types/strapi";
 
 async function getNavGroups() {
   try {
-    const data = await fetchCMS({
+    const data = await fetchCMS<{ data: NavGroup[] }>({
       endpoint: "/api/nav-groups?populate=*",
       revalidate: 86400, // Cache for 24 hours
     });
 
     return data.data || [];
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error fetching nav groups:", error);
     return [];
   }
 }
 
-export default async function Navbar() {
+const Navbar = async function (): Promise<React.ReactElement> {
   const navGroups: NavGroup[] = await getNavGroups();
 
   return (
@@ -77,4 +79,5 @@ export default async function Navbar() {
       </div>
     </nav>
   );
-}
+};
+export default Navbar;
