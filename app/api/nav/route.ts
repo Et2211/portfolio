@@ -15,7 +15,13 @@ export async function GET() {
       endpoint: "/api/navigation?populate=Nav_groups.Nav_list.*",
       revalidate: 60, // Cache for 1 minute
     });
-
+    // eslint-disable-next-line no-console
+    console.log(
+      "📊 Navigation data received:",
+      JSON.stringify(data.data, null, 2),
+    );
+    // eslint-disable-next-line no-console
+    console.log("📦 Nav groups count:", data.data?.Nav_groups?.length);
     return NextResponse.json({
       navigation: data.data || {},
     });
