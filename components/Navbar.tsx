@@ -35,7 +35,23 @@ async function getNavigation() {
 const Navbar = async function (): Promise<React.ReactElement> {
   const navGroups: NavGroup[] = await getNavigation();
   // eslint-disable-next-line no-console
-  console.log("Fetched navigation groups:", navGroups);
+  console.log(
+    "Navbar: Fetched navigation groups:",
+    JSON.stringify(navGroups, null, 2),
+  );
+
+  navGroups.forEach((group, groupIdx) => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `Navbar: Group ${groupIdx} (${group.Nav_header}) has ${group.Nav_list?.length} items:`,
+    );
+    group.Nav_list?.forEach((item: NavItem, itemIdx: number) => {
+      // eslint-disable-next-line no-console
+      console.log(
+        `  Item ${itemIdx}: title="${item.Nav_title}", url="${item.URL}"`,
+      );
+    });
+  });
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
       <div className="container mx-auto px-4">

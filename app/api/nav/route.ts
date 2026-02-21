@@ -16,6 +16,21 @@ export async function GET() {
       revalidate: 60, // Cache for 1 minute
     });
 
+    if (data.data?.Nav_groups) {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      data.data.Nav_groups.forEach((group: any, groupIdx: number) => {
+        // eslint-disable-next-line no-console
+        console.log(`\n📍 Group ${groupIdx}: ${group.Nav_header}`);
+        // eslint-disable-next-line no-console
+        console.log(`   Total items: ${group.Nav_list?.length}`);
+        group.Nav_list?.forEach((item: any, itemIdx: number) => {
+          // eslint-disable-next-line no-console
+          console.log(`   Item ${itemIdx}:`, JSON.stringify(item, null, 2));
+        });
+      });
+      /* eslint-enable @typescript-eslint/no-explicit-any */
+    }
+
     return NextResponse.json({
       navigation: data.data || {},
     });
