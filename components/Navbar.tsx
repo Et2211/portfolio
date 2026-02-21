@@ -74,39 +74,52 @@ const Navbar = async function (): Promise<React.ReactElement> {
                   <NavigationMenuContent>
                     <ul className="grid w-[200px] gap-1 p-2">
                       {group.Nav_list && group.Nav_list.length > 0 ? (
-                        group.Nav_list.map((item: NavItem, itemIdx: number) => {
-                          // eslint-disable-next-line no-console
-                          console.log(
-                            `🔵 [Navbar] Rendering item ${itemIdx}:`,
-                            {
-                              title: item.Nav_title,
-                              url: item.URL,
-                              keys: Object.keys(item),
+                        (() => {
+                          const items = group.Nav_list.map(
+                            (item: NavItem, itemIdx: number) => {
+                              // eslint-disable-next-line no-console
+                              console.log(
+                                `🔵 [Navbar] Rendering item ${itemIdx}:`,
+                                {
+                                  title: item.Nav_title,
+                                  url: item.URL,
+                                  keys: Object.keys(item),
+                                },
+                              );
+                              if (!item.URL || !item.Nav_title) {
+                                // eslint-disable-next-line no-console
+                                console.warn(
+                                  `🔴 [Navbar] Skipping item ${itemIdx} in ${group.Nav_header}: missing URL or Nav_title`,
+                                  item,
+                                );
+                                return null;
+                              }
+                              const element = (
+                                <li
+                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                  key={`${groupIdx}-${itemIdx}-${(item as any).id}`}
+                                >
+                                  <NavigationMenuLink asChild>
+                                    <Link
+                                      href={item.URL}
+                                      className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    >
+                                      <div className="text-sm font-medium">
+                                        {item.Nav_title}
+                                      </div>
+                                    </Link>
+                                  </NavigationMenuLink>
+                                </li>
+                              );
+                              return element;
                             },
                           );
-                          if (!item.URL || !item.Nav_title) {
-                            // eslint-disable-next-line no-console
-                            console.warn(
-                              `🔴 [Navbar] Skipping item ${itemIdx} in ${group.Nav_header}: missing URL or Nav_title`,
-                              item,
-                            );
-                            return null;
-                          }
-                          return (
-                            <li key={itemIdx}>
-                              <NavigationMenuLink asChild>
-                                <Link
-                                  href={item.URL}
-                                  className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                >
-                                  <div className="text-sm font-medium">
-                                    {item.Nav_title}
-                                  </div>
-                                </Link>
-                              </NavigationMenuLink>
-                            </li>
+                          // eslint-disable-next-line no-console
+                          console.log(
+                            `🔵 [Navbar] Group "${group.Nav_header}" returning ${items.filter(Boolean).length} items (${items.length} total with nulls)`,
                           );
-                        })
+                          return items;
+                        })()
                       ) : (
                         <li className="text-sm text-zinc-500 p-2">No items</li>
                       )}
