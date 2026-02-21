@@ -65,8 +65,13 @@ export async function generateStaticParams() {
       return { slug };
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
-    console.error("Error generating static params:", error);
+    console.error("Error generating static params:", message);
+    // eslint-disable-next-line no-console
+    console.error(
+      "Make sure STRAPI_URL and STRAPI_API_TOKEN are set in your environment variables.",
+    );
     return [];
   }
 }

@@ -1,5 +1,25 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Setup
+
+This project requires a Strapi CMS instance. Before running the development server, set up your environment variables:
+
+1. Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Update `.env.local` with your Strapi CMS settings:
+   ```
+   STRAPI_URL=http://localhost:1337
+   STRAPI_API_TOKEN=your_api_token_here
+   ```
+
+3. For **Vercel deployment**, add these environment variables in your Vercel project settings:
+   - Go to your Vercel project → Settings → Environment Variables
+   - Add `STRAPI_URL` (e.g., `https://your-strapi-domain.com`)
+   - Add `STRAPI_API_TOKEN` (generate in Strapi admin panel under Settings > API Tokens)
+
 ## Getting Started
 
 First, run the development server:

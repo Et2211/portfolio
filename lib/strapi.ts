@@ -17,6 +17,13 @@ export async function fetchCMS<T = { data: unknown[] }>({
   endpoint,
   revalidate,
 }: FetchOptions): Promise<T> {
+  // Validate that STRAPI_URL is set
+  if (!STRAPI_URL) {
+    throw new Error(
+      "STRAPI_URL environment variable is not set. Please add it to your .env.local or Vercel environment variables.",
+    );
+  }
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -35,8 +42,24 @@ export async function fetchCMS<T = { data: unknown[] }>({
   const response = await fetch(url, fetchOptions);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch: ${endpoint}`);
+    const contentType = response.headers.get("content-type");
+    let errorDetail = `HTTP ${response.status}`;
+
+    // If response is HTML (error page), mention it in the error
+    if (contentType?.includes("text/html")) {
+      errorDetail +=
+        " - received HTML instead of JSON (possible CORS error or wrong URL)";
+    }
+
+    throw new Error(`Failed to fetch ${endpoint} from ${url}: ${errorDetail}`);
   }
 
-  return response.json();
+  try {
+    return response.json();
+  } catch (parseError) {
+    const contentType = response.headers.get("content-type");
+    throw new Error(
+      `Failed to parse JSON from ${endpoint}. Content-Type: ${contentType}. Error: ${parseError instanceof Error ? parseError.message : String(parseError)}`,
+    );
+  }
 }

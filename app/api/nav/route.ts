@@ -18,10 +18,14 @@ export async function GET() {
       navGroups: data.data || [],
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
-    console.error("Error fetching nav groups:", error);
+    console.error("Error fetching nav groups:", message);
     return NextResponse.json(
-      { error: "Failed to fetch navigation" },
+      {
+        error: "Failed to fetch navigation",
+        ...(process.env.NODE_ENV === "development" && { details: message }),
+      },
       { status: 500 },
     );
   }
