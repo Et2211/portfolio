@@ -9,12 +9,9 @@ interface PageProps {
 }
 
 async function getPageByUrl(url: string) {
-  const response = await fetch(
-    `http://localhost:3000/api/pages?url=${encodeURIComponent(url)}`,
-    {
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    },
-  );
+  const response = await fetch(`/api/pages?url=${encodeURIComponent(url)}`, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
 
   if (!response.ok) {
     console.error("Failed to fetch page from API");

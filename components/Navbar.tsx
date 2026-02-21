@@ -11,7 +11,7 @@ import {
 
 async function getNavGroups() {
   try {
-    const response = await fetch("http://localhost:3000/api/nav", {
+    const response = await fetch("/api/nav", {
       next: { revalidate: 86400 }, // Cache for 24 hours
     });
 
