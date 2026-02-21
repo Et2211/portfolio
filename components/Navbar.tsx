@@ -9,23 +9,10 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-const STRAPI_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
-const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
-
 async function getNavGroups() {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (STRAPI_API_TOKEN) {
-    headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
-  }
-
   try {
-    const response = await fetch(`${STRAPI_URL}/api/nav-groups?populate=*`, {
-      headers,
-      next: { revalidate: 3600 },
+    const response = await fetch("http://localhost:3000/api/nav", {
+      next: { revalidate: 86400 }, // Cache for 24 hours
     });
 
     if (!response.ok) {
@@ -34,7 +21,7 @@ async function getNavGroups() {
     }
 
     const data = await response.json();
-    return data.data || [];
+    return data.navGroups || [];
   } catch (error) {
     console.error("Error fetching nav groups:", error);
     return [];

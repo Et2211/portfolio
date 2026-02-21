@@ -1,10 +1,6 @@
 import { Page as StrapiPage } from "@/types/strapi";
 import { notFound } from "next/navigation";
 
-const STRAPI_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
-const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
-
 interface PageProps {
   params: Promise<{
     slug?: string[];
@@ -12,29 +8,20 @@ interface PageProps {
 }
 
 async function getPageByUrl(url: string) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (STRAPI_API_TOKEN) {
-    headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
-  }
-
   const response = await fetch(
-    `${STRAPI_URL}/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate=*`,
+    `http://localhost:3000/api/pages?url=${encodeURIComponent(url)}`,
     {
-      headers,
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600 }, // Cache for 1 hour
     },
   );
 
   if (!response.ok) {
-    console.error("Failed to fetch page from Strapi");
+    console.error("Failed to fetch page from API");
     return null;
   }
 
   const data = await response.json();
-  return data.data && data.data.length > 0 ? data.data[0] : null;
+  return data.page;
 }
 
 export default async function Page({ params }: PageProps) {
@@ -70,25 +57,15 @@ export default async function Page({ params }: PageProps) {
 
 // Generate static params for all pages
 export async function generateStaticParams() {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (STRAPI_API_TOKEN) {
-    headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
-  }
-
   try {
-    const response = await fetch(`${STRAPI_URL}/api/pages?populate=*`, {
-      headers,
-    });
+    const response = await fetch("http://localhost:3000/api/pages");
 
     if (!response.ok) {
       return [];
     }
 
     const data = await response.json();
-    const pages: StrapiPage[] = data.data || [];
+    const pages: StrapiPage[] = data.pages || [];
 
     return pages.map((page) => {
       const url = page.Url || "/";
