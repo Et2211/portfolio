@@ -29,10 +29,17 @@ export async function GET(request: Request) {
       page: data.data && data.data.length > 0 ? data.data[0] : null,
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
-    console.error("Error fetching pages:", error);
+    console.error("\n❌ Failed to fetch pages:\n", message, "\n");
+
+    const isDev = process.env.NODE_ENV === "development";
+
     return NextResponse.json(
-      { error: "Failed to fetch pages" },
+      {
+        error: "Failed to fetch pages",
+        ...(isDev && { details: message }),
+      },
       { status: 500 },
     );
   }

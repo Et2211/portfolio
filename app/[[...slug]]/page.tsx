@@ -65,8 +65,14 @@ export async function generateStaticParams() {
       return { slug };
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
-    console.error("Error generating static params:", error);
+    console.error(
+      "\n❌ Failed to generate static params for pages:\n",
+      message,
+      "\n",
+    );
+    // Return empty array to allow build to continue
     return [];
   }
 }
