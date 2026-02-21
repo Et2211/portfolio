@@ -1,9 +1,6 @@
 import { Page as StrapiPage } from "@/types/strapi";
+import { fetchStrapi } from "@/lib/strapi";
 import { notFound } from "next/navigation";
-
-const STRAPI_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
-const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
 interface PageProps {
   params: Promise<{
@@ -12,29 +9,17 @@ interface PageProps {
 }
 
 async function getPageByUrl(url: string) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (STRAPI_API_TOKEN) {
-    headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
-  }
-
-  const response = await fetch(
-    `${STRAPI_URL}/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate=*`,
-    {
-      headers,
-      next: { revalidate: 3600 },
-    },
-  );
+  const response = await fetch(`/api/pages?url=${encodeURIComponent(url)}`, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
 
   if (!response.ok) {
-    console.error("Failed to fetch page from Strapi");
+    console.error("Failed to fetch page from API");
     return null;
   }
 
   const data = await response.json();
-  return data.data && data.data.length > 0 ? data.data[0] : null;
+  return data.page;
 }
 
 export default async function Page({ params }: PageProps) {
@@ -68,26 +53,13 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
-// Generate static params for all pages
+// Generate static params for all pages by calling Strapi directly
 export async function generateStaticParams() {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (STRAPI_API_TOKEN) {
-    headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
-  }
-
   try {
-    const response = await fetch(`${STRAPI_URL}/api/pages?populate=*`, {
-      headers,
+    const data = await fetchStrapi({
+      endpoint: "/api/pages?populate=*",
     });
 
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
     const pages: StrapiPage[] = data.data || [];
 
     return pages.map((page) => {

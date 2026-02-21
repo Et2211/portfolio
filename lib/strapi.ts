@@ -1,85 +1,41 @@
-/**
- * Strapi API client utility
- */
-
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
-interface StrapiResponse<T> {
-  data: T;
-  meta?: {
-    pagination?: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+interface FetchStrapiOptions {
+  endpoint: string;
+  revalidate?: number;
 }
 
 /**
- * Fetch data from Strapi API
+ * Fetch data from Strapi CMS with authentication
+ * @param endpoint - The Strapi API endpoint (e.g., "/api/pages?populate=*")
+ * @param revalidate - Optional revalidation time in seconds for Next.js caching
+ * @returns The JSON response data
  */
-export async function fetchStrapi<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<StrapiResponse<T>> {
+export async function fetchStrapi<T = any>({
+  endpoint,
+  revalidate,
+}: FetchStrapiOptions): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  // Add API token if available
   if (STRAPI_API_TOKEN) {
     headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
   }
 
-  const url = `${STRAPI_URL}/api${path}`;
+  const url = `${STRAPI_URL}${endpoint}`;
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      // Enable caching for production, revalidate every hour
-      next: { revalidate: 3600 },
-    });
+  const fetchOptions: RequestInit = {
+    headers,
+    ...(revalidate !== undefined && { next: { revalidate } }),
+  };
 
-    if (!response.ok) {
-      throw new Error(
-        `Strapi API error: ${response.status} ${response.statusText}`,
-      );
-    }
+  const response = await fetch(url, fetchOptions);
 
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching from Strapi:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch from Strapi: ${endpoint}`);
   }
-}
 
-/**
- * Fetch all pages from Strapi
- */
-export async function getPages() {
-  return fetchStrapi("/pages?populate=*");
-}
-
-/**
- * Fetch a single page by ID
- */
-export async function getPage(id: string | number) {
-  return fetchStrapi(`/pages/${id}?populate=*`);
-}
-
-/**
- * Fetch all navigation groups from Strapi
- */
-export async function getNavGroups() {
-  return fetchStrapi("/nav-groups?populate=deep");
-}
-
-/**
- * Fetch a single navigation group by ID
- */
-export async function getNavGroup(id: string | number) {
-  return fetchStrapi(`/nav-groups/${id}?populate=deep`);
+  return response.json();
 }
