@@ -34,7 +34,8 @@ async function getNavigation() {
 
 const Navbar = async function (): Promise<React.ReactElement> {
   const navGroups: NavGroup[] = await getNavigation();
-
+  // eslint-disable-next-line no-console
+  console.log("Fetched navigation groups:", navGroups);
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
       <div className="container mx-auto px-4">
