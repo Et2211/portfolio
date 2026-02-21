@@ -15,7 +15,7 @@ async function getNavGroups() {
   try {
     const data = await fetchCMS<{ data: NavGroup[] }>({
       endpoint: "/api/nav-groups?populate=*",
-      revalidate: 86400, // Cache for 24 hours
+      revalidate: 60, // Cache for 1 minute
     });
 
     return data.data || [];
