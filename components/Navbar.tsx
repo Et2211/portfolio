@@ -34,24 +34,6 @@ async function getNavigation() {
 
 const Navbar = async function (): Promise<React.ReactElement> {
   const navGroups: NavGroup[] = await getNavigation();
-  // eslint-disable-next-line no-console
-  console.log(
-    "Navbar: Fetched navigation groups:",
-    JSON.stringify(navGroups, null, 2),
-  );
-
-  navGroups.forEach((group, groupIdx) => {
-    // eslint-disable-next-line no-console
-    console.log(
-      `Navbar: Group ${groupIdx} (${group.Nav_header}) has ${group.Nav_list?.length} items:`,
-    );
-    group.Nav_list?.forEach((item: NavItem, itemIdx: number) => {
-      // eslint-disable-next-line no-console
-      console.log(
-        `  Item ${itemIdx}: title="${item.Nav_title}", url="${item.URL}"`,
-      );
-    });
-  });
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
       <div className="container mx-auto px-4">
@@ -74,25 +56,33 @@ const Navbar = async function (): Promise<React.ReactElement> {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[200px] gap-1 p-2">
-                      {group.Nav_list && group.Nav_list.length > 0 && (
-                        <>
-                          {group.Nav_list.map(
-                            (item: NavItem, itemIdx: number) => (
-                              <li key={itemIdx}>
-                                <NavigationMenuLink asChild>
-                                  <Link
-                                    href={item.URL}
-                                    className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                  >
-                                    <div className="text-sm font-medium">
-                                      {item.Nav_title}
-                                    </div>
-                                  </Link>
-                                </NavigationMenuLink>
-                              </li>
-                            ),
-                          )}
-                        </>
+                      {group.Nav_list && group.Nav_list.length > 0 ? (
+                        group.Nav_list.map((item: NavItem, itemIdx: number) => {
+                          if (!item.URL || !item.Nav_title) {
+                            // eslint-disable-next-line no-console
+                            console.warn(
+                              `Skipping item ${itemIdx} in ${group.Nav_header}: missing URL or Nav_title`,
+                              item,
+                            );
+                            return null;
+                          }
+                          return (
+                            <li key={itemIdx}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  href={item.URL}
+                                  className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                >
+                                  <div className="text-sm font-medium">
+                                    {item.Nav_title}
+                                  </div>
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          );
+                        })
+                      ) : (
+                        <li className="text-sm text-zinc-500 p-2">No items</li>
                       )}
                     </ul>
                   </NavigationMenuContent>
