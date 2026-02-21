@@ -1,4 +1,5 @@
 import { NavGroup } from "@/types/strapi";
+import { fetchCMS } from "@/lib/strapi";
 import Link from "next/link";
 import {
   NavigationMenu,
@@ -11,17 +12,12 @@ import {
 
 async function getNavGroups() {
   try {
-    const response = await fetch("/api/nav", {
-      next: { revalidate: 86400 }, // Cache for 24 hours
+    const data = await fetchCMS({
+      endpoint: "/api/nav-groups?populate=*",
+      revalidate: 86400, // Cache for 24 hours
     });
 
-    if (!response.ok) {
-      console.error("Failed to fetch nav groups");
-      return [];
-    }
-
-    const data = await response.json();
-    return data.navGroups || [];
+    return data.data || [];
   } catch (error) {
     console.error("Error fetching nav groups:", error);
     return [];
