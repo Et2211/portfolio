@@ -24,7 +24,16 @@ async function getNavigation() {
       revalidate: 60, // Cache for 1 minute
     });
 
-    return (data.data?.Nav_groups as NavGroup[] | undefined) || [];
+    // eslint-disable-next-line no-console
+    console.log(
+      "🔵 [getNavigation] Raw response:",
+      JSON.stringify(data, null, 2),
+    );
+
+    const groups = (data.data?.Nav_groups as NavGroup[] | undefined) || [];
+    // eslint-disable-next-line no-console
+    console.log("🔵 [getNavigation] Returning groups:", groups.length);
+    return groups;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching navigation:", error);
@@ -34,6 +43,14 @@ async function getNavigation() {
 
 const Navbar = async function (): Promise<React.ReactElement> {
   const navGroups: NavGroup[] = await getNavigation();
+  // eslint-disable-next-line no-console
+  console.log("🔵 [Navbar] Groups received:", navGroups.length);
+  navGroups.forEach((group, gIdx) => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `🔵 [Navbar] Group ${gIdx} "${group.Nav_header}": ${group.Nav_list?.length} items`,
+    );
+  });
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
       <div className="container mx-auto px-4">
@@ -58,10 +75,19 @@ const Navbar = async function (): Promise<React.ReactElement> {
                     <ul className="grid w-[200px] gap-1 p-2">
                       {group.Nav_list && group.Nav_list.length > 0 ? (
                         group.Nav_list.map((item: NavItem, itemIdx: number) => {
+                          // eslint-disable-next-line no-console
+                          console.log(
+                            `🔵 [Navbar] Rendering item ${itemIdx}:`,
+                            {
+                              title: item.Nav_title,
+                              url: item.URL,
+                              keys: Object.keys(item),
+                            },
+                          );
                           if (!item.URL || !item.Nav_title) {
                             // eslint-disable-next-line no-console
                             console.warn(
-                              `Skipping item ${itemIdx} in ${group.Nav_header}: missing URL or Nav_title`,
+                              `🔴 [Navbar] Skipping item ${itemIdx} in ${group.Nav_header}: missing URL or Nav_title`,
                               item,
                             );
                             return null;
