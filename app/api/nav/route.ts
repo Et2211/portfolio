@@ -1,21 +1,23 @@
 import { NextResponse } from "next/server";
 
-import { fetchCMS } from "@/lib/strapi";
+import { type NavigationResponse, fetchCMS } from "@/lib/strapi";
 
 /**
  * GET /api/nav
- * Fetches navigation groups from Strapi CMS
+ * Fetches navigation from Strapi CMS (single type with nested nav groups)
  * Cached for 1 minute since nav changes rarely
  */
 export async function GET() {
   try {
-    const data = await fetchCMS({
-      endpoint: "/api/nav-groups?populate=*",
+    // Fetch the single Navigation record with all nested nav groups and items
+    // Use dot notation to populate nested dynamizone fields
+    const data = await fetchCMS<NavigationResponse>({
+      endpoint: "/api/navigation?populate=Nav_groups.Nav_list.*",
       revalidate: 60, // Cache for 1 minute
     });
 
     return NextResponse.json({
-      navGroups: data.data || [],
+      navigation: data.data || {},
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

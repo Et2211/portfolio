@@ -1,4 +1,5 @@
 import Link from "next/link";
+import React from "react";
 
 import {
   NavigationMenu,
@@ -8,26 +9,31 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { fetchCMS } from "@/lib/strapi";
-import { NavGroup } from "@/types/strapi";
+import {
+  type NavGroup,
+  type NavItem,
+  type NavigationResponse,
+  fetchCMS,
+} from "@/lib/strapi";
 
-async function getNavGroups() {
+async function getNavigation() {
   try {
-    const data = await fetchCMS<{ data: NavGroup[] }>({
-      endpoint: "/api/nav-groups?populate=*",
+    const data = await fetchCMS<NavigationResponse>({
+      endpoint:
+        "/api/navigation?populate=Nav_groups.Nav_list.*&publicationState=preview",
       revalidate: 60, // Cache for 1 minute
     });
 
-    return data.data || [];
+    return (data.data?.Nav_groups as NavGroup[] | undefined) || [];
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error("Error fetching nav groups:", error);
+    console.error("Error fetching navigation:", error);
     return [];
   }
 }
 
 const Navbar = async function (): Promise<React.ReactElement> {
-  const navGroups: NavGroup[] = await getNavGroups();
+  const navGroups: NavGroup[] = await getNavigation();
 
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
@@ -44,8 +50,8 @@ const Navbar = async function (): Promise<React.ReactElement> {
           {/* Navigation Menu */}
           <NavigationMenu>
             <NavigationMenuList>
-              {navGroups.map((group) => (
-                <NavigationMenuItem key={group.id}>
+              {navGroups.map((group, groupIdx) => (
+                <NavigationMenuItem key={groupIdx}>
                   <NavigationMenuTrigger>
                     {group.Nav_header}
                   </NavigationMenuTrigger>
@@ -53,20 +59,22 @@ const Navbar = async function (): Promise<React.ReactElement> {
                     <ul className="grid w-[200px] gap-1 p-2">
                       {group.Nav_list && group.Nav_list.length > 0 && (
                         <>
-                          {group.Nav_list.map((item) => (
-                            <li key={item.id}>
-                              <NavigationMenuLink asChild>
-                                <Link
-                                  href={item.URL}
-                                  className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                >
-                                  <div className="text-sm font-medium">
-                                    {item.Nav_title}
-                                  </div>
-                                </Link>
-                              </NavigationMenuLink>
-                            </li>
-                          ))}
+                          {group.Nav_list.map(
+                            (item: NavItem, itemIdx: number) => (
+                              <li key={itemIdx}>
+                                <NavigationMenuLink asChild>
+                                  <Link
+                                    href={item.URL}
+                                    className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                  >
+                                    <div className="text-sm font-medium">
+                                      {item.Nav_title}
+                                    </div>
+                                  </Link>
+                                </NavigationMenuLink>
+                              </li>
+                            ),
+                          )}
                         </>
                       )}
                     </ul>

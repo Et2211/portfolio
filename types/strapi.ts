@@ -1,6 +1,16 @@
 /**
  * TypeScript types for Strapi CMS content
+ * Auto-generated types are in types/generated/
  */
+
+import type {
+  NavGroupsNavGroup,
+  NavItemsNavItem,
+} from "@/types/generated/components";
+import type {
+  ApiNavigationNavigation,
+  ApiPagePage,
+} from "@/types/generated/contentTypes";
 
 export interface StrapiResponse<T> {
   data: T;
@@ -14,31 +24,12 @@ export interface StrapiResponse<T> {
   };
 }
 
-export interface StrapiEntity {
-  id: number;
-  documentId: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-}
+// Extract attributes from Strapi schema types
+export type Navigation = ApiNavigationNavigation["attributes"];
+export type Page = ApiPagePage["attributes"];
+export type NavGroup = NavGroupsNavGroup["attributes"];
+export type NavItem = NavItemsNavItem["attributes"] & { __component?: string };
 
-export interface Page extends StrapiEntity {
-  Heading: string;
-  Url: string;
-}
-
-export interface NavItem {
-  id: number;
-  __component: "nav-items.nav-item";
-  Nav_title: string;
-  URL: string;
-}
-
-export interface NavGroup extends StrapiEntity {
-  Nav_header: string;
-  Nav_list: NavItem[];
-}
-
-export type PageResponse = StrapiResponse<StrapiEntity & Page[]>;
-export type SinglePageResponse = StrapiResponse<StrapiEntity & Page>;
-export type NavGroupResponse = StrapiResponse<(StrapiEntity & NavGroup)[]>;
+export type NavigationResponse = StrapiResponse<Navigation>;
+export type PageResponse = StrapiResponse<Page>;
+export type SinglePageResponse = StrapiResponse<Page>;

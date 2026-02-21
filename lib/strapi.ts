@@ -1,6 +1,16 @@
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
+// Re-export types for convenience
+export type {
+  Navigation,
+  NavigationResponse,
+  NavItem,
+  NavGroup,
+  Page,
+  PageResponse,
+} from "@/types/strapi";
+
 interface FetchOptions {
   endpoint: string;
   revalidate?: number;
@@ -19,6 +29,8 @@ interface FetchOptions {
 function getStrapiErrorHint(
   status: number,
   endpoint: string,
+  // url is used in error messages
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   url: string,
 ): string {
   switch (status) {
