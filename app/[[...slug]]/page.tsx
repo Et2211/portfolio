@@ -1,6 +1,7 @@
-import { Page as StrapiPage } from "@/types/strapi";
-import { fetchCMS } from "@/lib/strapi";
 import { notFound } from "next/navigation";
+
+import { fetchCMS } from "@/lib/strapi";
+import { Page as StrapiPage } from "@/types/strapi";
 
 interface PageProps {
   params: Promise<{
@@ -9,7 +10,7 @@ interface PageProps {
 }
 
 async function getPageByUrl(url: string) {
-  const data = await fetchCMS({
+  const data = await fetchCMS<{ data: StrapiPage[] }>({
     endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate=*`,
     revalidate: 3600, // Cache for 1 hour
   });
@@ -51,7 +52,7 @@ export default async function Page({ params }: PageProps) {
 // Generate static params for all pages by calling Strapi directly
 export async function generateStaticParams() {
   try {
-    const data = await fetchCMS({
+    const data = await fetchCMS<{ data: StrapiPage[] }>({
       endpoint: "/api/pages?populate=*",
     });
 
@@ -64,6 +65,7 @@ export async function generateStaticParams() {
       return { slug };
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error generating static params:", error);
     return [];
   }

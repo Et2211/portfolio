@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { fetchCMS } from "@/lib/strapi";
 
 /**
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
       page: data.data && data.data.length > 0 ? data.data[0] : null,
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error fetching pages:", error);
     return NextResponse.json(
       { error: "Failed to fetch pages" },

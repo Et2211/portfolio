@@ -14,7 +14,7 @@ export interface StrapiResponse<T> {
   };
 }
 
-export interface StrapiEntity<T> {
+export interface StrapiEntity {
   id: number;
   documentId: string;
   createdAt: string;
@@ -22,7 +22,7 @@ export interface StrapiEntity<T> {
   publishedAt: string;
 }
 
-export interface Page extends StrapiEntity<any> {
+export interface Page extends StrapiEntity {
   Heading: string;
   Url: string;
 }
@@ -34,11 +34,11 @@ export interface NavItem {
   URL: string;
 }
 
-export interface NavGroup extends StrapiEntity<any> {
+export interface NavGroup extends StrapiEntity {
   Nav_header: string;
   Nav_list: NavItem[];
 }
 
-export type PageResponse = StrapiResponse<StrapiEntity<Page>[]>;
-export type SinglePageResponse = StrapiResponse<StrapiEntity<Page>>;
-export type NavGroupResponse = StrapiResponse<StrapiEntity<NavGroup>[]>;
+export type PageResponse = StrapiResponse<StrapiEntity & Page[]>;
+export type SinglePageResponse = StrapiResponse<StrapiEntity & Page>;
+export type NavGroupResponse = StrapiResponse<(StrapiEntity & NavGroup)[]>;

@@ -13,7 +13,7 @@ interface FetchOptions {
  * @param revalidate - Optional revalidation time in seconds for Next.js caching
  * @returns The JSON response data
  */
-export async function fetchCMS<T = any>({
+export async function fetchCMS<T = { data: unknown[] }>({
   endpoint,
   revalidate,
 }: FetchOptions): Promise<T> {
