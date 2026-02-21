@@ -1,4 +1,5 @@
 import { Page as StrapiPage } from "@/types/strapi";
+import { fetchStrapi } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -55,17 +56,14 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
-// Generate static params for all pages
+// Generate static params for all pages by calling Strapi directly
 export async function generateStaticParams() {
   try {
-    const response = await fetch("http://localhost:3000/api/pages");
+    const data = await fetchStrapi({
+      endpoint: "/api/pages?populate=*",
+    });
 
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    const pages: StrapiPage[] = data.pages || [];
+    const pages: StrapiPage[] = data.data || [];
 
     return pages.map((page) => {
       const url = page.Url || "/";
