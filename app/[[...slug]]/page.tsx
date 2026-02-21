@@ -67,11 +67,12 @@ export async function generateStaticParams() {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
-    console.error("Error generating static params:", message);
-    // eslint-disable-next-line no-console
     console.error(
-      "Make sure STRAPI_URL and STRAPI_API_TOKEN are set in your environment variables.",
+      "\n❌ Failed to generate static params for pages:\n",
+      message,
+      "\n",
     );
+    // Return empty array to allow build to continue
     return [];
   }
 }
