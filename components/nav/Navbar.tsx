@@ -1,13 +1,14 @@
 import Link from "next/link";
 import React from "react";
 
-import { DropdownMenu } from "@/components/DropdownMenu";
 import {
   type NavGroup,
   type NavItem,
   type NavigationResponse,
   fetchCMS,
 } from "@/lib/strapi";
+
+import { DropdownMenu } from "./DropdownMenu";
 
 async function getNavigation() {
   try {
@@ -25,7 +26,7 @@ async function getNavigation() {
   }
 }
 
-const Navbar = async function (): Promise<React.ReactElement> {
+const Navbar = async (): Promise<React.ReactElement> => {
   const navGroups: NavGroup[] = await getNavigation();
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
