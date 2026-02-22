@@ -62,20 +62,26 @@ export const TimelineItem = ({ item }: TimelineItemProps) => {
           {dateRange}
         </p>
       )}
-      {item.description && item.description.length > 0 && (
-        <div className="prose dark:prose-invert text-zinc-600 dark:text-zinc-400">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <BlocksRenderer content={item.description as any} />
+      {(item.Image || (item.description && item.description.length > 0)) && (
+        <div className="mt-4 flex flex-col md:flex-row md:gap-6">
+          {item.Image && (
+            <div className="flex-shrink-0">
+              <Image
+                src={getImageUrl(item.Image.url)}
+                alt={item.Image.alternativeText || item.Title}
+                width={item.Image.width}
+                height={item.Image.height}
+                className="rounded-lg max-w-md w-full md:w-auto"
+              />
+            </div>
+          )}
+          {item.description && item.description.length > 0 && (
+            <div className="prose dark:prose-invert text-zinc-600 dark:text-zinc-400 mt-4 md:mt-0">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <BlocksRenderer content={item.description as any} />
+            </div>
+          )}
         </div>
-      )}
-      {item.Image && (
-        <Image
-          src={getImageUrl(item.Image.url)}
-          alt={item.Image.alternativeText || item.Title}
-          width={item.Image.width}
-          height={item.Image.height}
-          className="mt-4 rounded-lg max-w-md"
-        />
       )}
     </div>
   );
