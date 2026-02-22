@@ -14,7 +14,7 @@ async function getNavigation() {
   try {
     // Note: Strapi has limitations populating relations within dynamic zones
     // For now, we use the manual URL field. The getNavItemUrl helper will
-    // automatically use page.Url when Strapi supports it or if populated differently
+    // automatically use page.URL when Strapi supports it or if populated differently
     const data = await fetchCMS<NavigationResponse>({
       endpoint:
         "/api/navigation?populate=Nav_groups.Nav_list.*&publicationState=preview",
@@ -33,8 +33,8 @@ async function getNavigation() {
 function getNavItemUrl(item: NavItem): string {
   let url: string | null | undefined;
   // Prefer page relation URL over manual URL
-  if (item.page?.data?.Url) {
-    url = item.page.data.Url;
+  if (item.page?.data?.URL) {
+    url = item.page.data.URL;
   } else {
     // Fallback to manual URL
     url = item.URL;

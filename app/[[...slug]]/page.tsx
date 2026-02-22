@@ -16,7 +16,7 @@ interface PageResponse {
 async function getPageByUrl(url: string) {
   const data = await fetchCMS<PageResponse>({
     // Explicitly populate nested timeline items within dynamic zone components
-    endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate[Page_components][on][timeline.timeline][populate][items][populate]=*`,
+    endpoint: `/api/pages?filters[URL][$eq]=${encodeURIComponent(url)}&populate[Page_components][on][timeline.timeline][populate][items][populate]=*`,
     revalidate: 3600, // Cache for 1 hour
   });
 
@@ -62,13 +62,13 @@ export default async function Page({ params }: PageProps) {
 export async function generateStaticParams() {
   try {
     const data = await fetchCMS<PageResponse>({
-      endpoint: "/api/pages?fields[0]=Url",
+      endpoint: "/api/pages?fields[0]=URL",
     });
 
     const pages: StrapiPage[] = data.data || [];
 
     return pages.map((page) => {
-      const url = page.Url || "/";
+      const url = page.URL || "/";
       // Remove leading slash and split into segments
       const slug = url === "/" ? undefined : url.replace(/^\//, "").split("/");
       return { slug };
