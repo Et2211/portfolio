@@ -1,14 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { DropdownMenu } from "@/components/DropdownMenu";
 import {
   type NavGroup,
   type NavItem,
@@ -21,7 +14,7 @@ async function getNavigation() {
     const data = await fetchCMS<NavigationResponse>({
       endpoint:
         "/api/navigation?populate=Nav_groups.Nav_list.*&publicationState=preview",
-      revalidate: 60, // Cache for 1 minute
+      revalidate: 60,
     });
 
     return (data.data?.Nav_groups as NavGroup[] | undefined) || [];
@@ -34,7 +27,6 @@ async function getNavigation() {
 
 const Navbar = async function (): Promise<React.ReactElement> {
   const navGroups: NavGroup[] = await getNavigation();
-
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
       <div className="container mx-auto px-4">
@@ -48,41 +40,20 @@ const Navbar = async function (): Promise<React.ReactElement> {
           </Link>
 
           {/* Navigation Menu */}
-          <NavigationMenu>
-            <NavigationMenuList>
-              {navGroups.map((group, groupIdx) => (
-                <NavigationMenuItem key={groupIdx}>
-                  <NavigationMenuTrigger>
-                    {group.Nav_header}
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[200px] gap-1 p-2">
-                      {group.Nav_list && group.Nav_list.length > 0 && (
-                        <>
-                          {group.Nav_list.map(
-                            (item: NavItem, itemIdx: number) => (
-                              <li key={itemIdx}>
-                                <NavigationMenuLink asChild>
-                                  <Link
-                                    href={item.URL}
-                                    className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                  >
-                                    <div className="text-sm font-medium">
-                                      {item.Nav_title}
-                                    </div>
-                                  </Link>
-                                </NavigationMenuLink>
-                              </li>
-                            ),
-                          )}
-                        </>
-                      )}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
+          <div className="flex items-center gap-2">
+            {navGroups.map((group, groupIdx) => (
+              <DropdownMenu
+                key={groupIdx}
+                trigger={group.Nav_header}
+                items={
+                  group.Nav_list?.map((item: NavItem) => ({
+                    label: item.Nav_title,
+                    href: item.URL,
+                  })) || []
+                }
+              />
+            ))}
+          </div>
         </div>
       </div>
     </nav>
