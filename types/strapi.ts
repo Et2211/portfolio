@@ -1,20 +1,7 @@
-/**
- * TypeScript types for Strapi CMS content
- * Auto-generated types are in types/generated/
- */
-
-import type {
-  NavGroupsNavGroup,
-  NavItemsNavItem,
-} from "@/types/generated/components";
-import type {
-  ApiNavigationNavigation,
-  ApiPagePage,
-} from "@/types/generated/contentTypes";
-
+// Strapi Response Types
 export interface StrapiResponse<T> {
   data: T;
-  meta?: {
+  meta: {
     pagination?: {
       page: number;
       pageSize: number;
@@ -24,12 +11,94 @@ export interface StrapiResponse<T> {
   };
 }
 
-// Extract attributes from Strapi schema types
-export type Navigation = ApiNavigationNavigation["attributes"];
-export type Page = ApiPagePage["attributes"];
-export type NavGroup = NavGroupsNavGroup["attributes"];
-export type NavItem = NavItemsNavItem["attributes"] & { __component?: string };
+// Base Strapi entity with common fields
+export interface StrapiEntity {
+  id: number;
+  documentId: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+}
 
-export type NavigationResponse = StrapiResponse<Navigation>;
-export type PageResponse = StrapiResponse<Page>;
-export type SinglePageResponse = StrapiResponse<Page>;
+// Page entity
+export interface Page extends StrapiEntity {
+  Heading: string;
+  Url: string;
+  Page_components?: DynamicComponent[];
+}
+
+// Union type for all dynamic zone components
+export type DynamicComponent = TimelineComponent;
+
+export interface PageResponse {
+  data: Page[];
+}
+
+// Navigation Item with page relation
+export interface NavItem {
+  __component: "nav-items.nav-item";
+  id: number;
+  Nav_title: string;
+  URL: string | null;
+  page?: {
+    data: Page | null;
+  };
+}
+
+// Navigation Group
+export interface NavGroup {
+  __component: "nav-groups.nav-group";
+  id: number;
+  Nav_header: string;
+  Nav_list: NavItem[];
+}
+
+// Navigation (single type)
+export interface Navigation {
+  id: number;
+  documentId: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  Nav_groups: NavGroup[];
+}
+
+export interface NavigationResponse {
+  data: Navigation;
+}
+
+// Strapi Blocks content type
+export type BlocksContent = Array<{
+  type: string;
+  children?: Array<{
+    type: string;
+    text: string;
+  }>;
+  [key: string]: unknown;
+}>;
+
+// Timeline Item (nested component, not a dynamic zone component)
+export interface TimelineItem {
+  id: number;
+  Title: string;
+  startDate?: string; // ISO date string
+  finishDate?: string | null; // ISO date string or null if still current
+  description?: BlocksContent;
+  Image?: {
+    id: number;
+    documentId: string;
+    url: string;
+    alternativeText?: string;
+    caption?: string;
+    width: number;
+    height: number;
+    [key: string]: unknown;
+  };
+}
+
+// Timeline Component (goes in dynamic zone)
+export interface TimelineComponent {
+  __component: "timeline.timeline";
+  id: number;
+  items: TimelineItem[];
+}

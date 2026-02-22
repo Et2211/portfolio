@@ -9,6 +9,10 @@ export type {
   NavGroup,
   Page,
   PageResponse,
+  TimelineItem,
+  TimelineComponent,
+  DynamicComponent,
+  BlocksContent,
 } from "@/types/strapi";
 
 interface FetchOptions {

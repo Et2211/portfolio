@@ -12,6 +12,9 @@ import { DropdownMenu } from "./DropdownMenu";
 
 async function getNavigation() {
   try {
+    // Note: Strapi has limitations populating relations within dynamic zones
+    // For now, we use the manual URL field. The getNavItemUrl helper will
+    // automatically use page.Url when Strapi supports it or if populated differently
     const data = await fetchCMS<NavigationResponse>({
       endpoint:
         "/api/navigation?populate=Nav_groups.Nav_list.*&publicationState=preview",
@@ -24,6 +27,25 @@ async function getNavigation() {
     console.error("Error fetching navigation:", error);
     return [];
   }
+}
+
+// Helper to get URL from either page relation or manual URL field
+function getNavItemUrl(item: NavItem): string {
+  let url: string | null | undefined;
+  // Prefer page relation URL over manual URL
+  if (item.page?.data?.Url) {
+    url = item.page.data.Url;
+  } else {
+    // Fallback to manual URL
+    url = item.URL;
+  }
+
+  if (!url || url === "#") {
+    return "#";
+  }
+
+  // Ensure URL is absolute (starts with /)
+  return url.startsWith("/") ? url : `/${url}`;
 }
 
 const Navbar = async (): Promise<React.ReactElement> => {
@@ -49,7 +71,7 @@ const Navbar = async (): Promise<React.ReactElement> => {
                 items={
                   group.Nav_list?.map((item: NavItem) => ({
                     label: item.Nav_title,
-                    href: item.URL,
+                    href: getNavItemUrl(item),
                   })) || []
                 }
               />

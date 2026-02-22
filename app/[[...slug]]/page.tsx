@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
 import { type Page as StrapiPage, fetchCMS } from "@/lib/strapi";
 
 interface PageProps {
@@ -14,7 +15,8 @@ interface PageResponse {
 
 async function getPageByUrl(url: string) {
   const data = await fetchCMS<PageResponse>({
-    endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate=*`,
+    // Explicitly populate nested timeline items within dynamic zone components
+    endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate[Page_components][on][timeline.timeline][populate][items][populate]=*`,
     revalidate: 3600, // Cache for 1 hour
   });
 
@@ -41,12 +43,16 @@ export default async function Page({ params }: PageProps) {
           {page.Heading}
         </h1>
 
-        <div className="prose dark:prose-invert max-w-none">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Current path: {url}
-          </p>
-          {/* Add more page content here as you expand your Strapi schema */}
-        </div>
+        {/* Render dynamic components from Strapi */}
+        {page.Page_components && page.Page_components.length > 0 ? (
+          <DynamicComponentRenderer components={page.Page_components} />
+        ) : (
+          <div className="prose dark:prose-invert max-w-none">
+            <p className="text-zinc-600 dark:text-zinc-400">
+              No content available for this page.
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );
@@ -56,7 +62,7 @@ export default async function Page({ params }: PageProps) {
 export async function generateStaticParams() {
   try {
     const data = await fetchCMS<PageResponse>({
-      endpoint: "/api/pages?populate=*",
+      endpoint: "/api/pages?fields[0]=Url",
     });
 
     const pages: StrapiPage[] = data.data || [];
