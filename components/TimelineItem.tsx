@@ -18,6 +18,32 @@ const formatDate = (dateString: string): string => {
   });
 };
 
+// Helper to construct proper image URL for Strapi (handles media subdomain in production)
+const getImageUrl = (imageUrl: string): string => {
+  if (!imageUrl) return "";
+
+  // If URL is already absolute, check if it needs domain replacement
+  if (imageUrl.startsWith("http")) {
+    // Replace incorrect domain with media subdomain if needed
+    if (imageUrl.includes("strapiapp.com") && !imageUrl.includes("media")) {
+      return imageUrl.replace("strapiapp.com", "media.strapiapp.com");
+    }
+    return imageUrl;
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "";
+  if (!baseUrl) return imageUrl;
+
+  // For Strapi Cloud with media subdomain, replace domain with media subdomain
+  if (baseUrl.includes("strapiapp.com") && !baseUrl.includes("media")) {
+    const mediaUrl = baseUrl.replace("strapiapp.com", "media.strapiapp.com");
+    return `${mediaUrl}${imageUrl}`;
+  }
+
+  // For local or other setups, use base URL directly
+  return `${baseUrl}${imageUrl}`;
+};
+
 export const TimelineItem = ({ item }: TimelineItemProps) => {
   const startDate = item.startDate ? formatDate(item.startDate) : "";
   const endDate = item.finishDate ? formatDate(item.finishDate) : "Current";
@@ -44,7 +70,7 @@ export const TimelineItem = ({ item }: TimelineItemProps) => {
       )}
       {item.Image && (
         <Image
-          src={`${process.env.NEXT_PUBLIC_STRAPI_URL || ""}${item.Image.url}`}
+          src={getImageUrl(item.Image.url)}
           alt={item.Image.alternativeText || item.Title}
           width={item.Image.width}
           height={item.Image.height}
