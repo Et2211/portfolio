@@ -24,8 +24,11 @@ export interface StrapiEntity {
 export interface Page extends StrapiEntity {
   Heading: string;
   Url: string;
-  Page_components?: Array<TimelineItem>;
+  Page_components?: DynamicComponent[];
 }
+
+// Union type for all dynamic zone components
+export type DynamicComponent = TimelineComponent;
 
 export interface PageResponse {
   data: Page[];
@@ -64,22 +67,36 @@ export interface NavigationResponse {
   data: Navigation;
 }
 
-// Timeline component
+// Strapi Blocks content type
+export type BlocksContent = Array<{
+  type: string;
+  children?: Array<{
+    type: string;
+    text: string;
+  }>;
+  [key: string]: unknown;
+}>;
+
+// Timeline Item (nested component, not a dynamic zone component)
 export interface TimelineItem {
-  __component: "timeline.timeline-item";
   id: number;
   Title: string;
-  description: unknown; // Strapi Blocks content
+  description?: BlocksContent;
   Image?: {
-    data: {
-      id: number;
-      attributes: {
-        url: string;
-        alternativeText?: string;
-        caption?: string;
-        width: number;
-        height: number;
-      };
-    };
+    id: number;
+    documentId: string;
+    url: string;
+    alternativeText?: string;
+    caption?: string;
+    width: number;
+    height: number;
+    [key: string]: unknown;
   };
+}
+
+// Timeline Component (goes in dynamic zone)
+export interface TimelineComponent {
+  __component: "timeline.timeline";
+  id: number;
+  items: TimelineItem[];
 }
