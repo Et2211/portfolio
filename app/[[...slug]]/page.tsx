@@ -16,7 +16,7 @@ interface PageResponse {
 async function getPageByUrl(url: string) {
   const data = await fetchCMS<PageResponse>({
     // Explicitly populate nested timeline items within dynamic zone components
-    endpoint: `/api/pages?filters[URL][$eq]=${encodeURIComponent(url)}&populate[Page_components][on][timeline.timeline][populate][items][populate]=*`,
+    endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(url)}&populate[Page_components][on][timeline.timeline][populate][items][populate]=*`,
     revalidate: 3600, // Cache for 1 hour
   });
 
