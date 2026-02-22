@@ -81,6 +81,8 @@ export type BlocksContent = Array<{
 export interface TimelineItem {
   id: number;
   Title: string;
+  startDate?: string; // ISO date string
+  finishDate?: string | null; // ISO date string or null if still current
   description?: BlocksContent;
   Image?: {
     id: number;

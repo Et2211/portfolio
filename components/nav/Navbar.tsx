@@ -31,12 +31,21 @@ async function getNavigation() {
 
 // Helper to get URL from either page relation or manual URL field
 function getNavItemUrl(item: NavItem): string {
+  let url: string | null | undefined;
   // Prefer page relation URL over manual URL
   if (item.page?.data?.Url) {
-    return item.page.data.Url;
+    url = item.page.data.Url;
+  } else {
+    // Fallback to manual URL
+    url = item.URL;
   }
-  // Fallback to manual URL
-  return item.URL || "#";
+
+  if (!url || url === "#") {
+    return "#";
+  }
+
+  // Ensure URL is absolute (starts with /)
+  return url.startsWith("/") ? url : `/${url}`;
 }
 
 const Navbar = async (): Promise<React.ReactElement> => {
