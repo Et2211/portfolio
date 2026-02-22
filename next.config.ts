@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Disable image optimization in development to avoid URL parameter issues
-    unoptimized: process.env.NODE_ENV === "development",
+    // Disable image optimization to avoid issues with Strapi Cloud media subdomain
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
