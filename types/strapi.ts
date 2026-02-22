@@ -23,7 +23,7 @@ export interface StrapiEntity {
 // Page entity
 export interface Page extends StrapiEntity {
   Heading: string;
-  Url: string;
+  URL: string;
   Page_components?: DynamicComponent[];
 }
 
