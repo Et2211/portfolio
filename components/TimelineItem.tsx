@@ -1,12 +1,17 @@
 "use client";
 
-// import { BlocksRenderer } from "@strapi/blocks-react-renderer";
+import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
-import type { TimelineItem as TimelineItemType } from "@/types/generated/sanity";
+import type { SanityBlock, TimelineItem as TimelineItemType } from "@/types/generated/sanity";
+
+// TimelineItem with pre-built image URL (string) instead of SanityImage object
+type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
+  image?: string | null;
+};
 
 interface TimelineItemProps {
-  item: TimelineItemType;
+  item: TimelineItemWithBuiltUrl;
 }
 
 const formatDate = (dateString: string): string => {
@@ -43,7 +48,7 @@ export const TimelineItem = ({ item }: TimelineItemProps) => {
           {item.image && (
             <div className="flex-shrink-0">
               <Image
-                src={typeof item.image === 'string' ? item.image : item.image.asset?._ref || ''}
+                src={item.image as string}
                 alt={item.title ?? ""}
                 width={400}
                 height={300}
@@ -53,9 +58,7 @@ export const TimelineItem = ({ item }: TimelineItemProps) => {
           )}
           {item.description && item.description.length > 0 && (
             <div className="prose dark:prose-invert text-zinc-600 dark:text-zinc-400 mt-4 md:mt-0">
-              {/* TODO: Replace with Portable Text renderer for Sanity */}
-              {/* <BlocksRenderer content={item.description as any} /> */}
-              <pre>{JSON.stringify(item.description, null, 2)}</pre>
+              <PortableText value={item.description as SanityBlock[]} />
             </div>
           )}
         </div>

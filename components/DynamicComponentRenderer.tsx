@@ -3,8 +3,14 @@ import type { TimelineItem } from "@/types/generated/sanity";
 
 import { Timeline } from "./Timeline";
 
+// TimelineItem with pre-built image URL (string) instead of SanityImage object
+type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & { image?: string | null };
 
-type SupportedComponent = { _type: "timeline"; _key?: string; items: TimelineItem[] };
+type SupportedComponent = {
+  _type: "timeline";
+  _key?: string;
+  items: TimelineItemWithBuiltUrl[];
+};
 
 interface DynamicComponentRendererProps {
   components: SupportedComponent[];

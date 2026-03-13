@@ -2,8 +2,13 @@ import type { TimelineItem as TimelineItemType } from "@/types/generated/sanity"
 
 import { TimelineItem } from "./TimelineItem";
 
+// TimelineItem with pre-built image URL (string) instead of SanityImage object
+type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
+  image?: string | null;
+};
+
 interface TimelineProps {
-  items: TimelineItemType[];
+  items: TimelineItemWithBuiltUrl[];
 }
 
 export const Timeline = ({ items }: TimelineProps) => {
