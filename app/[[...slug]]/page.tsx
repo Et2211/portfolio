@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import './../globals.css';
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
 import { buildImageUrl, fetchSanity } from "@/lib/sanity";
@@ -84,7 +85,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-black dark:text-white">
           {pageWithBuiltUrls.heading}
         </h1>
