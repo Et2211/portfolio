@@ -1,27 +1,16 @@
 import Link from "next/link";
 import React from "react";
 
-import {
-  type NavGroup,
-  type NavItem,
-  type NavigationResponse,
-  fetchCMS,
-} from "@/lib/strapi";
+import { fetchSanity } from "@/lib/sanity";
+import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
 
 import { DropdownMenu } from "./DropdownMenu";
 
 async function getNavigation() {
   try {
-    // Note: Strapi has limitations populating relations within dynamic zones
-    // For now, we use the manual URL field. The getNavItemUrl helper will
-    // automatically use page.URL when Strapi supports it or if populated differently
-    const data = await fetchCMS<NavigationResponse>({
-      endpoint:
-        "/api/navigation?populate=Nav_groups.Nav_list.*&publicationState=preview",
-      revalidate: 60,
-    });
-
-    return (data.data?.Nav_groups as NavGroup[] | undefined) || [];
+    const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,url,page}}}`;
+    const data: Navigation = await fetchSanity(query);
+    return data?.navGroups || [];
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching navigation:", error);
@@ -31,20 +20,10 @@ async function getNavigation() {
 
 // Helper to get URL from either page relation or manual URL field
 function getNavItemUrl(item: NavItem): string {
-  let url: string | null | undefined;
-  // Prefer page relation URL over manual URL
-  if (item.page?.data?.URL) {
-    url = item.page.data.URL;
-  } else {
-    // Fallback to manual URL
-    url = item.URL;
-  }
-
+  const url = item.url;
   if (!url || url === "#") {
     return "#";
   }
-
-  // Ensure URL is absolute (starts with /)
   return url.startsWith("/") ? url : `/${url}`;
 }
 
@@ -67,12 +46,12 @@ const Navbar = async (): Promise<React.ReactElement> => {
             {navGroups.map((group, groupIdx) => (
               <DropdownMenu
                 key={groupIdx}
-                trigger={group.Nav_header}
+                trigger={group.navHeader ?? ""}
                 items={
-                  group.Nav_list?.map((item: NavItem) => ({
-                    label: item.Nav_title,
+                  (group.navList?.map((item: NavItem) => ({
+                    label: item.navTitle ?? "",
                     href: getNavItemUrl(item),
-                  })) || []
+                  })) || []) as { label: string; href: string }[]
                 }
               />
             ))}
