@@ -1,8 +1,8 @@
 import { createClient } from 'next-sanity'
 
 export const sanityClient = createClient({
-  projectId: 'sjte2cbd', // from studio-portfolio/sanity.config.ts
-  dataset: 'production',
+  projectId: process.env.SANITY_PROJECT_ID!,
+  dataset: process.env.SANITY_DATASET!,
   apiVersion: '2023-01-01',
   useCdn: false,
   token: process.env.SANITY_API_TOKEN,
