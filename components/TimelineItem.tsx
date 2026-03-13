@@ -53,6 +53,7 @@ export const TimelineItem = ({ item }: TimelineItemProps) => {
                 width={400}
                 height={300}
                 className="rounded-lg max-w-md w-full md:w-auto"
+                objectFit="contain"
               />
             </div>
           )}

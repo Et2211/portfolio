@@ -30,7 +30,7 @@ export function buildImageUrl(source: SanityImage): string {
     '_ref' in source.asset &&
     typeof source.asset._ref === 'string'
   ) {
-    return builder.image(source).width(400).height(300).url()
+    return builder.image(source).url()
   }
   return ''
 }
