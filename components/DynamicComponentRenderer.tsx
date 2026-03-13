@@ -1,9 +1,13 @@
-import type { DynamicComponent } from "@/lib/strapi";
+
+import type { TimelineItem } from "@/types/generated/sanity";
 
 import { Timeline } from "./Timeline";
 
+
+type SupportedComponent = { _type: "timeline"; _key?: string; items: TimelineItem[] };
+
 interface DynamicComponentRendererProps {
-  components: DynamicComponent[];
+  components: SupportedComponent[];
 }
 
 export const DynamicComponentRenderer = ({
@@ -16,10 +20,10 @@ export const DynamicComponentRenderer = ({
   return (
     <div className="space-y-12">
       {components.map((component, index) => {
-        switch (component.__component) {
-          case "timeline.timeline":
+        switch (component._type) {
+          case "timeline":
             return (
-              <Timeline key={component.id || index} items={component.items} />
+              <Timeline key={component._key || index} items={component.items} />
             );
           default:
             return null;

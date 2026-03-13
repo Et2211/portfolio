@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
-import { type Page as StrapiPage, fetchCMS } from "@/lib/strapi";
+import { fetchSanity } from "@/lib/sanity";
+import type { Page } from "@/types/generated/sanity";
 
 interface PageProps {
   params: Promise<{
@@ -9,18 +10,17 @@ interface PageProps {
   }>;
 }
 
-interface PageResponse {
-  data: StrapiPage[];
-}
+
 
 async function getPageByUrl(url: string) {
-  const data = await fetchCMS<PageResponse>({
-    // Explicitly populate nested timeline items within dynamic zone components
-    endpoint: `/api/pages?filters[URL][$eq]=${encodeURIComponent(url)}&populate[Page_components][on][timeline.timeline][populate][items][populate]=*`,
-    revalidate: 3600, // Cache for 1 hour
-  });
-
-  return data.data && data.data.length > 0 ? data.data[0] : null;
+  // GROQ query to fetch page by url and its components
+  const query = `*[_type == "page" && url == $url][0]{
+    _id,
+    heading,
+    url,
+    pageComponents[]
+  }`;
+  return await fetchSanity(query, { url });
 }
 
 export default async function Page({ params }: PageProps) {
@@ -30,7 +30,7 @@ export default async function Page({ params }: PageProps) {
   const url = slug ? `/${slug.join("/")}` : "/";
 
   // Fetch the page from Strapi
-  const page: StrapiPage | null = await getPageByUrl(url);
+  const page: Page | null = await getPageByUrl(url);
 
   if (!page) {
     notFound();
@@ -40,12 +40,12 @@ export default async function Page({ params }: PageProps) {
     <div className="min-h-screen bg-white dark:bg-black">
       <main className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-8 text-black dark:text-white">
-          {page.Heading}
+          {page.heading}
         </h1>
 
-        {/* Render dynamic components from Strapi */}
-        {page.Page_components && page.Page_components.length > 0 ? (
-          <DynamicComponentRenderer components={page.Page_components} />
+        {/* Render dynamic components from Sanity */}
+        {page.pageComponents && page.pageComponents.length > 0 ? (
+          <DynamicComponentRenderer components={page.pageComponents} />
         ) : (
           <div className="prose dark:prose-invert max-w-none">
             <p className="text-zinc-600 dark:text-zinc-400">
@@ -58,17 +58,13 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
-// Generate static params for all pages by calling Strapi directly
+// Generate static params for all pages by calling Sanity
 export async function generateStaticParams() {
   try {
-    const data = await fetchCMS<PageResponse>({
-      endpoint: "/api/pages?fields[0]=URL",
-    });
-
-    const pages: StrapiPage[] = data.data || [];
-
+    const query = `*[_type == "page"]{url}`;
+    const pages: Page[] = await fetchSanity(query);
     return pages.map((page) => {
-      const url = page.URL || "/";
+      const url = page.url || "/";
       // Remove leading slash and split into segments
       const slug = url === "/" ? undefined : url.replace(/^\//, "").split("/");
       return { slug };

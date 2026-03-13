@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { fetchCMS } from "@/lib/strapi";
 
 /**
  * GET /api/pages?url=/path
@@ -21,13 +20,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const data = await fetchCMS({
-      endpoint: `/api/pages?filters[Url][$eq]=${encodeURIComponent(pageUrl)}&populate=*`,
-      revalidate: 3600, // Cache for 1 hour
-    });
-    return NextResponse.json({
-      page: data.data && data.data.length > 0 ? data.data[0] : null,
-    });
+    // Strapi CMS is deprecated; implement Sanity or remove this endpoint.
+    await new Promise((resolve) => setTimeout(resolve, 0)); // satisfy require-await
+    return NextResponse.json({ error: 'Strapi CMS is deprecated.' }, { status: 410 });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
