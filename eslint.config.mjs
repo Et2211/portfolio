@@ -12,13 +12,14 @@ const eslintConfig = defineConfig([
 
   // Global ignores
   globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
+    "**/.next/**",
+    "**/out/**",
+    "**/build/**",
     "next-env.d.ts",
-    "node_modules/**",
-    ".git/**",
-    "types/generated/**",
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/types/generated/**",
+    "**/.vercel/**",
   ]),
 
   // JavaScript rules
