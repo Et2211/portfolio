@@ -1,3 +1,6 @@
+// Revalidate this page every 60 seconds (ISR)
+export const revalidate = 60;
+
 import { notFound } from "next/navigation";
 import './../globals.css';
 
@@ -61,6 +64,7 @@ async function getPageByUrl(url: string): Promise<Page | null> {
   }`;
   return await fetchSanity<Page | null>(query, { url });
 }
+
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
