@@ -126,6 +126,13 @@ export type NavItem = {
 export type Timeline = {
   _type: "timeline";
   /**
+   * Heading — `string`
+   *
+   * For identifying this timeline in the CMS.
+   */
+  heading?: string;
+
+  /**
    * Items — `array`
    *
    *
@@ -179,6 +186,13 @@ export type TimelineItem = {
 export type ImageWithDescription = {
   _type: "imageWithDescription";
   /**
+   * Heading — `string`
+   *
+   * For identifying this image block in the CMS.
+   */
+  heading?: string;
+
+  /**
    * Image — `image`
    *
    *
@@ -196,10 +210,24 @@ export type ImageWithDescription = {
    * A short description below the image.
    */
   description?: Array<SanityKeyed<SanityBlock>>;
+
+  /**
+   * Text Position — `string`
+   *
+   * Position of the text relative to the image.
+   */
+  textPosition?: "above" | "below" | "before" | "after";
 };
 
 export type DynamicComponent = {
   _type: "dynamicComponent";
+  /**
+   * Heading — `string`
+   *
+   * For identifying this dynamic component in the CMS.
+   */
+  heading?: string;
+
   /**
    * Component — `array`
    *
@@ -215,11 +243,25 @@ export type DynamicComponent = {
 export type Carousel = {
   _type: "carousel";
   /**
+   * Heading — `string`
+   *
+   * For identifying this carousel in the CMS.
+   */
+  heading?: string;
+
+  /**
    * Carousel Items — `array`
    *
    *
    */
   items?: Array<SanityKeyed<ImageWithDescription> | SanityKeyed<Timeline>>;
+
+  /**
+   * Show Navigation Dots — `boolean`
+   *
+   *
+   */
+  showDots?: boolean;
 
   /**
    * Autoplay — `boolean`

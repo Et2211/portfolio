@@ -10,7 +10,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "codegen:sanity": "npx sanity-codegen"
+    "codegen:sanity": "npx sanity-codegen",
+    "codegen:full": "cd ../studio-portfolio && npx rimraf dist && npm run build:schemas && cd ../portfolio && npm run codegen:sanity"
   },
   "dependencies": {
     "@portabletext/react": "^6.0.3",
