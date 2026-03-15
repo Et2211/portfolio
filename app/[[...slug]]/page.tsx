@@ -25,42 +25,90 @@ interface TimelineComponent {
   [key: string]: unknown;
 }
 
+interface ImageWithDescriptionComponent {
+  _type: "imageWithDescription";
+  image?: SanityImage | null;
+  [key: string]: unknown;
+}
+
+interface CarouselComponent {
+  _type: "carousel";
+  items?: (TimelineComponent | ImageWithDescriptionComponent)[];
+  [key: string]: unknown;
+}
+
+interface DynamicComponent {
+  _type: "dynamicComponent";
+  component?: (TimelineComponent | ImageWithDescriptionComponent | CarouselComponent)[];
+  [key: string]: unknown;
+}
+
 type PageComponent = Record<string, unknown>;
+
+function buildImageUrlForItem(item: unknown): unknown {
+  if (typeof item !== "object" || item === null) return item;
+  
+  const obj = item as Record<string, unknown>;
+  
+  // Handle timeline items
+  if ("items" in obj && Array.isArray(obj.items)) {
+    return {
+      ...obj,
+      items: obj.items.map((subItem: unknown) => buildImageUrlForItem(subItem)),
+    };
+  }
+  
+  // Handle image fields
+  if ("image" in obj && obj.image && typeof obj.image === "object" && "asset" in obj.image) {
+    return {
+      ...obj,
+      image: buildImageUrl(obj.image as SanityImage),
+    };
+  }
+  
+  return obj;
+}
 
 function buildImageUrlsForComponents(
   components: PageComponent[],
 ): PageComponent[] {
   return components.map((component): PageComponent => {
-    if (
-      typeof component === "object" &&
-      component !== null &&
-      "_type" in component &&
-      component._type === "timeline" &&
-      "items" in component &&
-      Array.isArray(component.items)
-    ) {
-      const timelineComponent = component as TimelineComponent;
+    if (typeof component !== "object" || component === null) return component;
+    
+    // Handle dynamicComponent wrapper
+    if ("_type" in component && component._type === "dynamicComponent" && "component" in component && Array.isArray(component.component)) {
+      const dynamicComp = component as DynamicComponent;
       return {
-        ...timelineComponent,
-        items: timelineComponent.items.map((item: TimelineItem) => ({
-          ...item,
-          image: item.image ? buildImageUrl(item.image) : null,
-        })),
+        ...dynamicComp,
+        component: dynamicComp.component?.map((block) => buildImageUrlForItem(block)),
       };
     }
-    return component;
+    
+    // Fallback for non-wrapped components
+    return buildImageUrlForItem(component) as PageComponent;
   });
 }
 
 
 
 async function getPageByUrl(url: string): Promise<Page | null> {
-  // GROQ query to fetch page by url and its components
+  // GROQ query to fetch page by url and its components with full expansion
   const query = `*[_type == "page" && url == $url][0]{
     _id,
     heading,
     url,
-    pageComponents[]
+    pageComponents[]{
+      ...,
+      component[]{
+        ...,
+        items[]{
+          ...,
+          items[]{
+            ...
+          }
+        }
+      }
+    }
   }`;
   return await fetchSanity<Page | null>(query, { url });
 }
@@ -83,6 +131,7 @@ export default async function Page({ params }: PageProps) {
   const pageWithBuiltUrls = page.pageComponents
     ? {
         ...page,
+         
         pageComponents: buildImageUrlsForComponents(page.pageComponents),
       }
     : page;

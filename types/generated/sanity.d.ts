@@ -79,9 +79,7 @@ export interface Page extends SanityDocument {
    *
    *
    */
-  pageComponents?: Array<
-    SanityKeyed<Timeline> | SanityKeyed<ImageWithDescription>
-  >;
+  pageComponents?: Array<SanityKeyed<DynamicComponent>>;
 }
 
 export type NavGroup = {
@@ -198,6 +196,44 @@ export type ImageWithDescription = {
    * A short description below the image.
    */
   description?: Array<SanityKeyed<SanityBlock>>;
+};
+
+export type DynamicComponent = {
+  _type: "dynamicComponent";
+  /**
+   * Component — `array`
+   *
+   *
+   */
+  component?: Array<
+    | SanityKeyed<Timeline>
+    | SanityKeyed<ImageWithDescription>
+    | SanityKeyed<Carousel>
+  >;
+};
+
+export type Carousel = {
+  _type: "carousel";
+  /**
+   * Carousel Items — `array`
+   *
+   *
+   */
+  items?: Array<SanityKeyed<ImageWithDescription> | SanityKeyed<Timeline>>;
+
+  /**
+   * Autoplay — `boolean`
+   *
+   *
+   */
+  autoplay?: boolean;
+
+  /**
+   * Autoplay Interval (ms) — `number`
+   *
+   *
+   */
+  interval?: number;
 };
 
 export type Documents = Navigation | Page;
