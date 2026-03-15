@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
     "codegen:sanity": "npx sanity-codegen",
-    "codegen:full": "cd ../studio-portfolio && npx rimraf dist && npm run build:schemas && cd ../portfolio && npm run codegen:sanity"
+    "codegen:full": "npm --prefix ../studio-portfolio run rebuild:schemas && npm run codegen:sanity"
   },
   "dependencies": {
     "@portabletext/react": "^6.0.3",
