@@ -79,7 +79,9 @@ export interface Page extends SanityDocument {
    *
    *
    */
-  pageComponents?: Array<SanityKeyed<Timeline>>;
+  pageComponents?: Array<
+    SanityKeyed<Timeline> | SanityKeyed<ImageWithDescription>
+  >;
 }
 
 export type NavGroup = {
@@ -113,7 +115,7 @@ export type NavItem = {
    *
    *
    */
-  page: SanityReference<Page>;
+  page?: SanityReference<Page>;
 
   /**
    * External URL — `url`
@@ -174,6 +176,28 @@ export type TimelineItem = {
    *
    */
   finishDate?: string;
+};
+
+export type ImageWithDescription = {
+  _type: "imageWithDescription";
+  /**
+   * Image — `image`
+   *
+   *
+   */
+  image?: {
+    _type: "image";
+    asset: SanityReference<SanityImageAsset>;
+    crop?: SanityImageCrop;
+    hotspot?: SanityImageHotspot;
+  };
+
+  /**
+   * Description — `array`
+   *
+   * A short description below the image.
+   */
+  description?: Array<SanityKeyed<SanityBlock>>;
 };
 
 export type Documents = Navigation | Page;

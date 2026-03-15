@@ -343,6 +343,28 @@ This project was migrated from **Strapi CMS** to **Sanity.io**. Important notes:
 
 ---
 
+## Sanity Schema & Type Generation Workflow (2026 Update)
+
+**To ensure type generation works with TypeScript-based Sanity schemas:**
+```
+import { navigation, page } from './navigation-page.js'
+```
+
+1. **Use `.js` extensions in all imports in `studio-portfolio/schemaTypes/index.ts`**
+   - Example: `import { navigation, page } from './navigation-page.js'`
+2. **Compile schemas to `dist/schemaTypes/` before running codegen:**
+   - From `studio-portfolio/`, run: `npm run build:schemas`
+3. **Run type generation from the app directory:**
+   - From `portfolio/`, run: `npm run codegen:sanity`
+4. **If you see module resolution errors:**
+   - Check that all imports in `index.ts` use `.js` extensions
+   - Ensure all schema files are present in `dist/schemaTypes/`
+   - Rebuild schemas if needed
+
+**Why?** Node.js ESM requires explicit `.js` extensions in imports. TypeScript does not add these by default, so you must write them in your source. This ensures `sanity-codegen` can resolve all modules and generate types reliably.
+
+---
+
 ## Key Files Reference
 
 | File | Purpose |
