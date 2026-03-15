@@ -34,7 +34,6 @@ type CarouselBlock = {
   heading?: string;
   autoplay?: boolean;
   interval?: number;
-  slidesToShow?: number;
   showDots?: boolean;
   items?: (TimelineBlock | ImageWithDescriptionBlock)[];
 };
@@ -44,10 +43,24 @@ interface CarouselProps {
 }
 
 export const Carousel = ({ carousel }: CarouselProps) => {
-  const slidesToShow = carousel.slidesToShow ?? 1;
   const showDots = carousel.showDots ?? true;
   
   const [isMobile, setIsMobile] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    
+    resizeObserver.observe(node);
+    setContainerWidth(node.offsetWidth);
+    
+    return () => resizeObserver.disconnect();
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -95,12 +108,17 @@ export const Carousel = ({ carousel }: CarouselProps) => {
 
   if (!carousel.items || carousel.items.length === 0) return null;
 
-  const effectiveSlidesToShow = isMobile ? 1 : slidesToShow;
+  // Calculate how many 300px slides can fit in the container
+  // Each slide has 300px width + 16px padding (8px on each side)
+  const slideWidthWithPadding = 316; // 300px + 16px padding
+  const calculatedSlidesToShow = Math.max(1, Math.floor(containerWidth / slideWidthWithPadding));
+  
+  const effectiveSlidesToShow = isMobile ? 1 : calculatedSlidesToShow || 1;
   const slideWidth = `${100 / effectiveSlidesToShow}%`;
   const shouldCenter = carousel.items.length < effectiveSlidesToShow;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <div className="overflow-hidden" ref={emblaRef}>
         <div className={`flex ${shouldCenter ? 'justify-center' : ''}`}>
           {carousel.items.map((item, idx) => {
@@ -146,16 +164,16 @@ export const Carousel = ({ carousel }: CarouselProps) => {
         </div>
       </div>
 
-      {showDots && scrollSnaps.length > 1 && (
+      {showDots && scrollSnaps.length > 1 && carousel.items.length > effectiveSlidesToShow && (
         <div className="flex justify-center gap-2 mt-4">
           {scrollSnaps.map((snap, index) => (
             <button
               key={index}
               type="button"
-              className={`h-2 w-2 rounded-full transition-all ${
+              className={`h-3 w-3 rounded-full transition-all ${
                 index === selectedIndex
-                  ? "bg-black dark:bg-white w-6"
-                  : "bg-gray-400 dark:bg-gray-600"
+                  ? "bg-black dark:bg-white w-8"
+                  : "bg-gray-600 dark:bg-gray-400"
               }`}
               onClick={() => scrollTo(index)}
               aria-label={`Go to slide ${index + 1}`}
