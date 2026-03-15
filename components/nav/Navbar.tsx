@@ -6,9 +6,10 @@ import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
 
 import { DropdownMenu } from "./DropdownMenu";
 
+
 async function getNavigation() {
   try {
-    const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,url,page}}}`;
+    const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
     const data: Navigation = await fetchSanity(query);
     return data?.navGroups || [];
   } catch (error) {
@@ -18,13 +19,15 @@ async function getNavigation() {
   }
 }
 
-// Helper to get URL from either page relation or manual URL field
-function getNavItemUrl(item: NavItem): string {
-  const url = item.url;
-  if (!url || url === "#") {
-    return "#";
+// Helper to get URL from either page reference or externalUrl
+function getNavItemUrl(item: NavItem & { page?: { url?: string }; externalUrl?: string }): string {
+  if (item.externalUrl) {
+    return item.externalUrl;
   }
-  return url.startsWith("/") ? url : `/${url}`;
+  if (item.page && item.page.url) {
+    return item.page.url;
+  }
+  return "#";
 }
 
 const Navbar = async (): Promise<React.ReactElement> => {
@@ -48,7 +51,7 @@ const Navbar = async (): Promise<React.ReactElement> => {
                 key={groupIdx}
                 trigger={group.navHeader ?? ""}
                 items={
-                  (group.navList?.map((item: NavItem) => ({
+                  (group.navList?.map((item: NavItem & { page?: { url?: string }; externalUrl?: string }) => ({
                     label: item.navTitle ?? "",
                     href: getNavItemUrl(item),
                   })) || []) as { label: string; href: string }[]
