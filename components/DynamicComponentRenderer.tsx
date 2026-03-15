@@ -1,40 +1,32 @@
 
 import type { SanityBlock, SanityKeyed, TimelineItem } from "@/types/generated/sanity";
 
-import { Carousel as CarouselComponent } from "./Carousel";
+import { type CarouselBlock, Carousel as CarouselComponent } from "./Carousel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { Timeline as TimelineComponent } from "./Timeline";
 
 // Runtime types after server-side image URL building
-type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & { image?: string | null };
+export type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & { image?: string | null };
 
-type TimelineBlock = {
+export type TimelineBlock = {
   _type: "timeline";
   _key?: string;
   heading?: string;
   items?: TimelineItemWithBuiltUrl[];
 };
 
-type ImageWithDescriptionBlock = {
+export type ImageWithDescriptionBlock = {
   _type: "imageWithDescription";
   _key?: string;
   heading?: string;
   image?: string | null;
   description?: SanityKeyed<SanityBlock>[];
-};
-
-type CarouselBlock = {
-  _type: "carousel";
-  _key?: string;
-  heading?: string;
-  autoplay?: boolean;
-  interval?: number;
-  items?: (TimelineBlock | ImageWithDescriptionBlock)[];
+  textPosition?: 'above' | 'below' | 'before' | 'after';
 };
 
 type DynamicComponentBlock = TimelineBlock | ImageWithDescriptionBlock | CarouselBlock;
 
-type DynamicComponentWithBuiltUrls = {
+export type DynamicComponentWithBuiltUrls = {
   _type: "dynamicComponent";
   _key?: string;
   heading?: string;
@@ -75,6 +67,7 @@ export const DynamicComponentRenderer = ({ components }: DynamicComponentRendere
                 key={block._key || index}
                 image={(block as ImageWithDescriptionBlock).image}
                 description={(block as ImageWithDescriptionBlock).description}
+                textPosition={(block as ImageWithDescriptionBlock).textPosition}
               />
             );
           case "carousel":

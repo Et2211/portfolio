@@ -5,30 +5,11 @@ import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useState } from "react";
 
-import type { SanityBlock, SanityKeyed, TimelineItem } from "@/types/generated/sanity";
-
+import type { ImageWithDescriptionBlock, TimelineBlock } from "./DynamicComponentRenderer";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { Timeline as TimelineComponent } from "./Timeline";
 
-// Runtime types after server-side image URL building
-type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & { image?: string | null };
-
-type TimelineBlock = {
-  _type: "timeline";
-  _key?: string;
-  heading?: string;
-  items?: TimelineItemWithBuiltUrl[];
-};
-
-type ImageWithDescriptionBlock = {
-  _type: "imageWithDescription";
-  _key?: string;
-  heading?: string;
-  image?: string | null;
-  description?: SanityKeyed<SanityBlock>[];
-};
-
-type CarouselBlock = {
+export type CarouselBlock = {
   _type: "carousel";
   _key?: string;
   heading?: string;
@@ -80,7 +61,8 @@ export const Carousel = ({ carousel }: CarouselProps) => {
     { 
       loop: true,
       slidesToScroll: 1,
-      align: "start"
+      align: "start",
+      containScroll: "trimSnaps"
     },
     autoplayOptions
   );
@@ -120,19 +102,20 @@ export const Carousel = ({ carousel }: CarouselProps) => {
   return (
     <div className="relative" ref={containerRef}>
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className={`flex ${shouldCenter ? 'justify-center' : ''}`}>
+        <div className={`flex ${shouldCenter ? '' : ''}`} style={{ alignItems: 'flex-start', justifyContent: shouldCenter ? 'center' : 'flex-start' }}>
           {carousel.items.map((item, idx) => {
             if (item._type === "imageWithDescription") {
               return (
                 <div
                   key={item._key || idx}
                   className="min-w-0 flex-shrink-0 px-2"
-                  style={{ flexBasis: slideWidth }}
+                  style={{ flexBasis: slideWidth, alignSelf: 'flex-start' }}
                 >
-                  <div className="w-[300px] h-[300px] mx-auto overflow-auto">
+                  <div className="w-[300px] h-[300px] mx-auto overflow-auto flex flex-col">
                     <ImageWithDescriptionComponent
                       image={(item as ImageWithDescriptionBlock).image}
                       description={(item as ImageWithDescriptionBlock).description}
+                      textPosition={(item as ImageWithDescriptionBlock).textPosition}
                     />
                   </div>
                 </div>
@@ -143,9 +126,9 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                 <div
                   key={item._key || idx}
                   className="min-w-0 flex-shrink-0 px-2"
-                  style={{ flexBasis: slideWidth }}
+                  style={{ flexBasis: slideWidth, alignSelf: 'flex-start' }}
                 >
-                  <div className="w-[300px] h-[300px] mx-auto overflow-auto">
+                  <div className="w-[300px] h-[300px] mx-auto overflow-auto flex flex-col">
                     <TimelineComponent items={(item as TimelineBlock).items || []} />
                   </div>
                 </div>
@@ -155,7 +138,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
               <div
                 key={idx}
                 className="min-w-0 flex-shrink-0 px-2"
-                style={{ flexBasis: slideWidth }}
+                style={{ flexBasis: slideWidth, alignSelf: 'flex-start' }}
               >
                 <div className="w-[300px] h-[300px] mx-auto" />
               </div>
