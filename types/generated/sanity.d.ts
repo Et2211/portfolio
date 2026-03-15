@@ -109,18 +109,18 @@ export type NavItem = {
   navTitle?: string;
 
   /**
-   * URL — `string`
-   *
-   *
-   */
-  url?: string;
-
-  /**
    * Page — `reference`
    *
    *
    */
-  page?: SanityReference<Page>;
+  page: SanityReference<Page>;
+
+  /**
+   * External URL — `url`
+   *
+   * Optional: Use for external links. Leave blank for internal pages.
+   */
+  externalUrl?: string;
 };
 
 export type Timeline = {
