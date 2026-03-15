@@ -10,7 +10,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "codegen:sanity": "sanity-codegen"
+    "codegen:sanity": "npx sanity-codegen"
   },
   "dependencies": {
     "@portabletext/react": "^6.0.3",
