@@ -3,6 +3,7 @@ import type { SanityBlock, SanityKeyed, TimelineItem } from "@/types/generated/s
 
 import { type CarouselBlock, Carousel as CarouselComponent } from "./Carousel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
+import { type SystemArchitectureBlock, SystemArchitecture as SystemArchitectureComponent } from "./SystemArchitecture";
 import { Timeline as TimelineComponent } from "./Timeline";
 
 // Runtime types after server-side image URL building
@@ -24,7 +25,7 @@ export type ImageWithDescriptionBlock = {
   textPosition?: 'above' | 'below' | 'before' | 'after';
 };
 
-type DynamicComponentBlock = TimelineBlock | ImageWithDescriptionBlock | CarouselBlock;
+type DynamicComponentBlock = TimelineBlock | ImageWithDescriptionBlock | CarouselBlock | SystemArchitectureBlock;
 
 export type DynamicComponentWithBuiltUrls = {
   _type: "dynamicComponent";
@@ -75,6 +76,13 @@ export const DynamicComponentRenderer = ({ components }: DynamicComponentRendere
               <CarouselComponent
                 key={block._key || index}
                 carousel={block as CarouselBlock}
+              />
+            );
+          case "systemArchitecture":
+            return (
+              <SystemArchitectureComponent
+                key={block._key || index}
+                block={block as SystemArchitectureBlock}
               />
             );
           default:
