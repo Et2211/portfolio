@@ -237,6 +237,7 @@ export type DynamicComponent = {
     | SanityKeyed<Timeline>
     | SanityKeyed<ImageWithDescription>
     | SanityKeyed<Carousel>
+    | SanityKeyed<SystemArchitecture>
   >;
 };
 
@@ -276,6 +277,106 @@ export type Carousel = {
    *
    */
   interval?: number;
+};
+
+export type SystemArchitecture = {
+  _type: "systemArchitecture";
+  /**
+   * Heading — `string`
+   *
+   * For identifying this component in the CMS.
+   */
+  heading?: string;
+
+  /**
+   * Nodes — `array`
+   *
+   * The system components to display as nodes.
+   */
+  nodes?: Array<SanityKeyed<ArchNode>>;
+
+  /**
+   * Edges — `array`
+   *
+   * Connections between nodes.
+   */
+  edges?: Array<SanityKeyed<ArchEdge>>;
+};
+
+export type ArchNode = {
+  _type: "archNode";
+  /**
+   * Node ID — `string`
+   *
+   * Unique identifier (e.g. "nextjs-frontend"). Used to connect edges.
+   */
+  nodeId?: string;
+
+  /**
+   * Label — `string`
+   *
+   * Display name on the node.
+   */
+  label?: string;
+
+  /**
+   * Tier — `string`
+   *
+   * Controls vertical positioning in the diagram.
+   */
+  tier?: "frontend" | "bff" | "services" | "data" | "content" | "infra" | "observability";
+
+  /**
+   * Description — `text`
+   *
+   * Shown in the detail panel when clicking the node.
+   */
+  description?: string;
+
+  /**
+   * Tech Used — `array`
+   *
+   * List of technologies (e.g. "Next.js", "TypeScript").
+   */
+  techUsed?: Array<SanityKeyed<string>>;
+};
+
+export type ArchEdge = {
+  _type: "archEdge";
+  /**
+   * Edge ID — `string`
+   *
+   * Unique identifier for this connection.
+   */
+  edgeId?: string;
+
+  /**
+   * Source Node ID — `string`
+   *
+   * The nodeId of the source node.
+   */
+  sourceId?: string;
+
+  /**
+   * Target Node ID — `string`
+   *
+   * The nodeId of the target node.
+   */
+  targetId?: string;
+
+  /**
+   * Edge Label — `string`
+   *
+   * Optional label shown on the connection arrow.
+   */
+  label?: string;
+
+  /**
+   * Variant — `string`
+   *
+   * Visual style: default (grey), primary (blue animated), error (red dashed).
+   */
+  variant?: "default" | "primary" | "error";
 };
 
 export type Documents = Navigation | Page;
