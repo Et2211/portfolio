@@ -42,4 +42,33 @@ export async function fetchSanity<T>(
   return await sanityClient.fetch<T>(query, params)
 }
 
-// Types for Sanity data are now imported from generated types
+type AnyObject = Record<string, unknown>;
+
+export function buildImageUrlForItem(item: unknown): unknown {
+  if (typeof item !== "object" || item === null) return item;
+  if (Array.isArray(item)) return item.map(buildImageUrlForItem);
+
+  const obj = item as AnyObject;
+  const result: AnyObject = {};
+
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+    if (key === "image" && value && typeof value === "object" && "asset" in value) {
+      result[key] = buildImageUrl(value as SanityImage);
+    } else if (Array.isArray(value)) {
+      result[key] = value.map(buildImageUrlForItem);
+    } else if (typeof value === "object" && value !== null) {
+      result[key] = buildImageUrlForItem(value);
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+export function buildImageUrlsForComponents(
+  components: AnyObject[],
+): AnyObject[] {
+  return components.map((component) => buildImageUrlForItem(component) as AnyObject);
+}
