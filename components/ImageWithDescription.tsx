@@ -15,17 +15,17 @@ export const ImageWithDescription = ({ image, description, textPosition = 'below
   const flexDirection = {
     above: 'flex-col-reverse',
     below: 'flex-col',
-    before: 'flex-row-reverse',
-    after: 'flex-row'
+    before: 'flex-col sm:flex-row-reverse',
+    after: 'flex-col sm:flex-row'
   }[textPosition];
 
   return (
-    <div className={`flex ${flexDirection} ${isHorizontal ? 'items-start' : 'items-center'} gap-2 h-full`} style={{ justifyContent: 'left' }}>
+    <div className={`flex ${flexDirection} ${isHorizontal ? 'items-center sm:items-start' : 'items-center'} gap-2 h-full`} style={{ justifyContent: 'left' }}>
       {image && (
         <Image
           src={image}
           alt="Image with description"
-          className={`rounded-lg mx-3 object-contain flex-shrink-0 ${isHorizontal ? 'w-1/3 h-auto' : 'w-full h-auto'}`}
+          className={`rounded-lg mx-3 object-contain flex-shrink-0 ${isHorizontal ? 'w-full sm:w-1/3 h-auto' : 'w-full h-auto'}`}
           width={600}
           height={400}
           sizes="(max-width: 600px) 100vw, 600px"
@@ -33,7 +33,7 @@ export const ImageWithDescription = ({ image, description, textPosition = 'below
         />
       )}
       {description && description.length > 0 && (
-        <div className={`prose prose-sm prose-gray dark:prose-invert max-w-none overflow-auto ${isHorizontal ? 'w-2/3' : 'text-center'}`}>
+        <div className={`prose prose-sm prose-gray dark:prose-invert max-w-none overflow-auto ${isHorizontal ? 'text-center sm:text-left sm:w-2/3' : 'text-center'}`}>
           <PortableText value={description} />
         </div>
       )}
