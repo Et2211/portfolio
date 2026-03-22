@@ -29,7 +29,6 @@ export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
               <a
                 key={link._key ?? idx}
                 href={link.url}
-                target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block rounded-md border border-zinc-300 dark:border-zinc-600 px-4 py-1.5 text-sm font-medium text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
