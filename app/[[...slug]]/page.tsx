@@ -14,79 +14,35 @@ interface PageProps {
   }>;
 }
 
-interface TimelineItem {
-  image?: SanityImage | null;
-  [key: string]: unknown;
-}
-
-interface TimelineComponent {
-  _type: "timeline";
-  items: TimelineItem[];
-  [key: string]: unknown;
-}
-
-interface ImageWithDescriptionComponent {
-  _type: "imageWithDescription";
-  image?: SanityImage | null;
-  [key: string]: unknown;
-}
-
-interface CarouselComponent {
-  _type: "carousel";
-  items?: (TimelineComponent | ImageWithDescriptionComponent)[];
-  [key: string]: unknown;
-}
-
-interface DynamicComponent {
-  _type: "dynamicComponent";
-  component?: (TimelineComponent | ImageWithDescriptionComponent | CarouselComponent)[];
-  [key: string]: unknown;
-}
-
 type PageComponent = Record<string, unknown>;
 
 function buildImageUrlForItem(item: unknown): unknown {
   if (typeof item !== "object" || item === null) return item;
-  
+  if (Array.isArray(item)) return item.map(buildImageUrlForItem);
+
   const obj = item as Record<string, unknown>;
-  
-  // Handle timeline items
-  if ("items" in obj && Array.isArray(obj.items)) {
-    return {
-      ...obj,
-      items: obj.items.map((subItem: unknown) => buildImageUrlForItem(subItem)),
-    };
+  const result: Record<string, unknown> = {};
+
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+    if (key === "image" && value && typeof value === "object" && "asset" in value) {
+      result[key] = buildImageUrl(value as SanityImage);
+    } else if (Array.isArray(value)) {
+      result[key] = value.map(buildImageUrlForItem);
+    } else if (typeof value === "object" && value !== null) {
+      result[key] = buildImageUrlForItem(value);
+    } else {
+      result[key] = value;
+    }
   }
-  
-  // Handle image fields
-  if ("image" in obj && obj.image && typeof obj.image === "object" && "asset" in obj.image) {
-    return {
-      ...obj,
-      image: buildImageUrl(obj.image as SanityImage),
-    };
-  }
-  
-  return obj;
+
+  return result;
 }
 
 function buildImageUrlsForComponents(
   components: PageComponent[],
 ): PageComponent[] {
-  return components.map((component): PageComponent => {
-    if (typeof component !== "object" || component === null) return component;
-    
-    // Handle dynamicComponent wrapper
-    if ("_type" in component && component._type === "dynamicComponent" && "component" in component && Array.isArray(component.component)) {
-      const dynamicComp = component as DynamicComponent;
-      return {
-        ...dynamicComp,
-        component: dynamicComp.component?.map((block) => buildImageUrlForItem(block)),
-      };
-    }
-    
-    // Fallback for non-wrapped components
-    return buildImageUrlForItem(component) as PageComponent;
-  });
+  return components.map((component) => buildImageUrlForItem(component) as PageComponent);
 }
 
 
