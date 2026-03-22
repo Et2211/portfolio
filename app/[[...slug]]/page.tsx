@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import './../globals.css';
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
-import { buildImageUrl, fetchSanity } from "@/lib/sanity";
-import type { Page, SanityImage } from "@/types/generated/sanity";
+import { buildImageUrlsForComponents, fetchSanity } from "@/lib/sanity";
+import type { Page } from "@/types/generated/sanity";
 
 interface PageProps {
   params: Promise<{
@@ -14,36 +14,6 @@ interface PageProps {
   }>;
 }
 
-type PageComponent = Record<string, unknown>;
-
-function buildImageUrlForItem(item: unknown): unknown {
-  if (typeof item !== "object" || item === null) return item;
-  if (Array.isArray(item)) return item.map(buildImageUrlForItem);
-
-  const obj = item as Record<string, unknown>;
-  const result: Record<string, unknown> = {};
-
-  for (const key of Object.keys(obj)) {
-    const value = obj[key];
-    if (key === "image" && value && typeof value === "object" && "asset" in value) {
-      result[key] = buildImageUrl(value as SanityImage);
-    } else if (Array.isArray(value)) {
-      result[key] = value.map(buildImageUrlForItem);
-    } else if (typeof value === "object" && value !== null) {
-      result[key] = buildImageUrlForItem(value);
-    } else {
-      result[key] = value;
-    }
-  }
-
-  return result;
-}
-
-function buildImageUrlsForComponents(
-  components: PageComponent[],
-): PageComponent[] {
-  return components.map((component) => buildImageUrlForItem(component) as PageComponent);
-}
 
 
 

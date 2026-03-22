@@ -9,7 +9,7 @@ export const ContactSection = ({ heading, intro, email, githubUrl, linkedinUrl }
         <h2 className="text-2xl font-bold text-black dark:text-white">{heading}</h2>
       )}
       {intro && intro.length > 0 && (
-        <div className="prose prose-sm prose-gray dark:prose-invert max-w-lg">
+        <div className="prose prose-sm dark:prose-invert max-w-lg dark:[&_p]:text-zinc-300 dark:[&_a]:text-zinc-300">
           <PortableText value={intro} />
         </div>
       )}
