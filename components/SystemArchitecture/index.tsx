@@ -21,6 +21,7 @@ export type SystemArchitectureBlock = {
   _type: "systemArchitecture";
   _key?: string;
   heading?: string;
+  primaryFlowLabel?: string;
   nodes?: Array<SanityKeyed<ArchNode>>;
   edges?: Array<SanityKeyed<ArchEdge>>;
 };
@@ -70,15 +71,17 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
             </span>
           );
         })}
-        <span
-          className="inline-flex items-center gap-2 text-xs font-medium px-2.5 py-1 rounded-full"
-          style={{ background: "#eff6ff", color: "#1d4ed8", border: "1.5px solid #93c5fd" }}
-        >
-          <svg width="18" height="4" aria-hidden="true" className="shrink-0">
-            <line x1="0" y1="2" x2="18" y2="2" stroke="#3b82f6" strokeWidth="2.5" />
-          </svg>
-          Primary flow (B2B onboarding)
-        </span>
+        {block.primaryFlowLabel && (
+          <span
+            className="inline-flex items-center gap-2 text-xs font-medium px-2.5 py-1 rounded-full"
+            style={{ background: "#eff6ff", color: "#1d4ed8", border: "1.5px solid #93c5fd" }}
+          >
+            <svg width="18" height="4" aria-hidden="true" className="shrink-0">
+              <line x1="0" y1="2" x2="18" y2="2" stroke="#3b82f6" strokeWidth="2.5" />
+            </svg>
+            {block.primaryFlowLabel}
+          </span>
+        )}
       </div>
 
       <div className="flex gap-4">
