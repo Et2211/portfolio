@@ -1,9 +1,16 @@
 
 import type { SanityBlock, SanityKeyed, TimelineItem } from "@/types/generated/sanity";
 
+import { AboutSection as AboutSectionComponent } from "./AboutSection";
 import { type CarouselBlock, Carousel as CarouselComponent } from "./Carousel";
+import { ContactSection as ContactSectionComponent } from "./ContactSection";
+import { FeaturedProjects as FeaturedProjectsComponent } from "./FeaturedProjects";
+import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
+import { SkillsBar as SkillsBarComponent } from "./SkillsBar";
+import { StatsBanner as StatsBannerComponent } from "./StatsBanner";
 import { type SystemArchitectureBlock, SystemArchitecture as SystemArchitectureComponent } from "./SystemArchitecture";
+import { TestimonialsSection as TestimonialsSectionComponent } from "./TestimonialsSection";
 import { Timeline as TimelineComponent } from "./Timeline";
 
 // Runtime types after server-side image URL building
@@ -25,7 +32,110 @@ export type ImageWithDescriptionBlock = {
   textPosition?: 'above' | 'below' | 'before' | 'after';
 };
 
-type DynamicComponentBlock = TimelineBlock | ImageWithDescriptionBlock | CarouselBlock | SystemArchitectureBlock;
+export type HeroPanelBlock = {
+  _type: "heroPanel";
+  _key?: string;
+  name?: string;
+  role?: string;
+  tagline?: string;
+  photo?: string | null;
+  ctaLabel?: string;
+  ctaUrl?: string;
+};
+
+export type SkillItem = {
+  _key?: string;
+  name?: string;
+  category?: string;
+};
+
+export type SkillsBarBlock = {
+  _type: "skillsBar";
+  _key?: string;
+  heading?: string;
+  skills?: SkillItem[];
+};
+
+export type FeaturedProject = {
+  _key?: string;
+  title?: string;
+  description?: SanityKeyed<SanityBlock>[];
+  image?: string | null;
+  tags?: string[];
+  liveUrl?: string;
+  githubUrl?: string;
+};
+
+export type FeaturedProjectsBlock = {
+  _type: "featuredProjects";
+  _key?: string;
+  heading?: string;
+  projects?: FeaturedProject[];
+};
+
+export type StatItem = {
+  _key?: string;
+  value?: string;
+  label?: string;
+};
+
+export type StatsBannerBlock = {
+  _type: "statsBanner";
+  _key?: string;
+  stats?: StatItem[];
+};
+
+export type AboutLink = {
+  _key?: string;
+  label?: string;
+  url?: string;
+};
+
+export type AboutSectionBlock = {
+  _type: "aboutSection";
+  _key?: string;
+  photo?: string | null;
+  bio?: SanityKeyed<SanityBlock>[];
+  links?: AboutLink[];
+};
+
+export type TestimonialItem = {
+  _key?: string;
+  quote?: string;
+  author?: string;
+  role?: string;
+  company?: string;
+};
+
+export type TestimonialsSectionBlock = {
+  _type: "testimonialsSection";
+  _key?: string;
+  heading?: string;
+  testimonials?: TestimonialItem[];
+};
+
+export type ContactSectionBlock = {
+  _type: "contactSection";
+  _key?: string;
+  heading?: string;
+  intro?: SanityKeyed<SanityBlock>[];
+  email?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+};
+
+type DynamicComponentBlock =
+  | TimelineBlock
+  | ImageWithDescriptionBlock
+  | CarouselBlock
+  | SystemArchitectureBlock
+  | HeroPanelBlock
+  | SkillsBarBlock
+  | FeaturedProjectsBlock
+  | StatsBannerBlock
+  | AboutSectionBlock
+  | TestimonialsSectionBlock
+  | ContactSectionBlock;
 
 export type DynamicComponentWithBuiltUrls = {
   _type: "dynamicComponent";
@@ -83,6 +193,55 @@ export const DynamicComponentRenderer = ({ components }: DynamicComponentRendere
               <SystemArchitectureComponent
                 key={block._key || index}
                 block={block as SystemArchitectureBlock}
+              />
+            );
+          case "heroPanel":
+            return (
+              <HeroPanelComponent
+                key={block._key || index}
+                {...(block as HeroPanelBlock)}
+              />
+            );
+          case "skillsBar":
+            return (
+              <SkillsBarComponent
+                key={block._key || index}
+                {...(block as SkillsBarBlock)}
+              />
+            );
+          case "featuredProjects":
+            return (
+              <FeaturedProjectsComponent
+                key={block._key || index}
+                {...(block as FeaturedProjectsBlock)}
+              />
+            );
+          case "statsBanner":
+            return (
+              <StatsBannerComponent
+                key={block._key || index}
+                {...(block as StatsBannerBlock)}
+              />
+            );
+          case "aboutSection":
+            return (
+              <AboutSectionComponent
+                key={block._key || index}
+                {...(block as AboutSectionBlock)}
+              />
+            );
+          case "testimonialsSection":
+            return (
+              <TestimonialsSectionComponent
+                key={block._key || index}
+                {...(block as TestimonialsSectionBlock)}
+              />
+            );
+          case "contactSection":
+            return (
+              <ContactSectionComponent
+                key={block._key || index}
+                {...(block as ContactSectionBlock)}
               />
             );
           default:
