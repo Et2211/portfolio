@@ -4,12 +4,14 @@ import type { SanityBlock, SanityKeyed, TimelineItem } from "@/types/generated/s
 import { AboutSection as AboutSectionComponent } from "./AboutSection";
 import { type CarouselBlock, Carousel as CarouselComponent } from "./Carousel";
 import { ContactSection as ContactSectionComponent } from "./ContactSection";
+import { type FeatureAccordionBlock, FeatureAccordion as FeatureAccordionComponent } from "./FeatureAccordion";
 import { FeaturedProjects as FeaturedProjectsComponent } from "./FeaturedProjects";
 import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { SkillsBar as SkillsBarComponent } from "./SkillsBar";
 import { StatsBanner as StatsBannerComponent } from "./StatsBanner";
 import { type SystemArchitectureBlock, SystemArchitecture as SystemArchitectureComponent } from "./SystemArchitecture";
+import { TechStack as TechStackComponent } from "./TechStack";
 import { TestimonialsSection as TestimonialsSectionComponent } from "./TestimonialsSection";
 import { Timeline as TimelineComponent } from "./Timeline";
 
@@ -124,6 +126,20 @@ export type ContactSectionBlock = {
   linkedinUrl?: string;
 };
 
+export type TechStackGroupItem = {
+  _key?: string;
+  groupName?: string;
+  description?: string;
+  items?: string[];
+};
+
+export type TechStackBlock = {
+  _type: "techStack";
+  _key?: string;
+  heading?: string;
+  groups?: TechStackGroupItem[];
+};
+
 type DynamicComponentBlock =
   | TimelineBlock
   | ImageWithDescriptionBlock
@@ -135,7 +151,9 @@ type DynamicComponentBlock =
   | StatsBannerBlock
   | AboutSectionBlock
   | TestimonialsSectionBlock
-  | ContactSectionBlock;
+  | ContactSectionBlock
+  | TechStackBlock
+  | FeatureAccordionBlock;
 
 export type DynamicComponentWithBuiltUrls = {
   _type: "dynamicComponent";
@@ -242,6 +260,20 @@ export const DynamicComponentRenderer = ({ components }: DynamicComponentRendere
               <ContactSectionComponent
                 key={block._key || index}
                 {...(block as ContactSectionBlock)}
+              />
+            );
+          case "techStack":
+            return (
+              <TechStackComponent
+                key={block._key || index}
+                {...(block as TechStackBlock)}
+              />
+            );
+          case "featureAccordion":
+            return (
+              <FeatureAccordionComponent
+                key={block._key || index}
+                {...(block as FeatureAccordionBlock)}
               />
             );
           default:
