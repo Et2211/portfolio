@@ -1,6 +1,7 @@
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
+import { AppLink } from "./AppLink";
 import type { AboutSectionBlock } from "./DynamicComponentRenderer";
 
 export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
@@ -26,14 +27,13 @@ export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
         {links && links.length > 0 && (
           <div className="flex flex-wrap gap-3 mt-2">
             {links.map((link, idx) => (
-              <a
+              <AppLink
                 key={link._key ?? idx}
-                href={link.url}
-                rel="noopener noreferrer"
-                className="inline-block rounded-md border border-zinc-300 dark:border-zinc-600 px-4 py-1.5 text-sm font-medium text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                href={link.url ?? "#"}
+                variant="secondary"
               >
                 {link.label}
-              </a>
+              </AppLink>
             ))}
           </div>
         )}

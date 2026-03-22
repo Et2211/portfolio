@@ -1,10 +1,9 @@
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
 import { buildImageUrlsForComponents, fetchSanity } from "@/lib/sanity";
-
-type FooterComponent = Record<string, unknown>;
+import type { SanityValue } from "@/lib/sanity";
 
 type FooterDocument = {
-  components?: FooterComponent[];
+  components?: Record<string, SanityValue>[];
 };
 
 async function getFooter(): Promise<FooterDocument | null> {
