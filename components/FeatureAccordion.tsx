@@ -57,7 +57,7 @@ export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
             <button
               type="button"
               onClick={() => toggle(key)}
-              className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <div className="flex flex-col gap-0.5 min-w-0">
                 <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</span>
