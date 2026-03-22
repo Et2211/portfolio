@@ -42,9 +42,17 @@ export async function fetchSanity<T>(
   return await sanityClient.fetch<T>(query, params)
 }
 
-type AnyObject = Record<string, unknown>;
+export type SanityValue = string | number | boolean | null | SanityValue[] | AnyObject;
+interface AnyObject { [key: string]: SanityValue }
 
-export function buildImageUrlForItem(item: unknown): unknown {
+const isSanityImage = (val: SanityValue): val is SanityImage =>
+  typeof val === "object" &&
+  val !== null &&
+  "asset" in (val as AnyObject) &&
+  typeof (val as AnyObject).asset === "object" &&
+  (val as AnyObject).asset !== null;
+
+export function buildImageUrlForItem(item: SanityValue): SanityValue {
   if (typeof item !== "object" || item === null) return item;
   if (Array.isArray(item)) return item.map(buildImageUrlForItem);
 
@@ -53,10 +61,10 @@ export function buildImageUrlForItem(item: unknown): unknown {
 
   for (const key of Object.keys(obj)) {
     const value = obj[key];
-    if (key === "image" && value && typeof value === "object" && "asset" in value) {
-      result[key] = buildImageUrl(value as SanityImage);
+    if (isSanityImage(value)) {
+      result[key] = buildImageUrl(value);
     } else if (Array.isArray(value)) {
-      result[key] = value.map(buildImageUrlForItem);
+      result[key] = (value as SanityValue[]).map(buildImageUrlForItem);
     } else if (typeof value === "object" && value !== null) {
       result[key] = buildImageUrlForItem(value);
     } else {

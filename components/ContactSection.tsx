@@ -1,5 +1,6 @@
 import { PortableText } from "@portabletext/react";
 
+import { AppLink } from "./AppLink";
 import type { ContactSectionBlock } from "./DynamicComponentRenderer";
 
 export const ContactSection = ({ heading, intro, email, githubUrl, linkedinUrl }: ContactSectionBlock) => {
@@ -15,32 +16,19 @@ export const ContactSection = ({ heading, intro, email, githubUrl, linkedinUrl }
       )}
       <div className="flex flex-wrap justify-center gap-4">
         {email && (
-          <a
-            href={`mailto:${email}`}
-            className="inline-flex items-center gap-2 rounded-md border border-zinc-300 dark:border-zinc-600 px-5 py-2 text-sm font-medium text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          >
+          <AppLink href={`mailto:${email}`} variant="secondary">
             Email
-          </a>
+          </AppLink>
         )}
         {githubUrl && (
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-md border border-zinc-300 dark:border-zinc-600 px-5 py-2 text-sm font-medium text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          >
+          <AppLink href={githubUrl} variant="secondary">
             GitHub
-          </a>
+          </AppLink>
         )}
         {linkedinUrl && (
-          <a
-            href={linkedinUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-md border border-zinc-300 dark:border-zinc-600 px-5 py-2 text-sm font-medium text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          >
+          <AppLink href={linkedinUrl} variant="secondary">
             LinkedIn
-          </a>
+          </AppLink>
         )}
       </div>
     </section>
