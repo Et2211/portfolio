@@ -43,6 +43,7 @@ export type HeroPanelBlock = {
   photo?: string | null;
   ctaLabel?: string;
   ctaUrl?: string;
+  imagePosition?: "left" | "right";
 };
 
 export type SkillItem = {
