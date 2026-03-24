@@ -1,10 +1,17 @@
-import { DynamicComponentRenderer } from "./DynamicComponentRenderer";
+import type { DynamicComponentWithBuiltUrls } from "./DynamicComponentRenderer";
 
 export type GridLayoutBlock = {
   _type: "gridLayout";
   _key?: string;
   cols?: number;
-  items?: import("./DynamicComponentRenderer").DynamicComponentWithBuiltUrls[];
+  items?: DynamicComponentWithBuiltUrls[];
+};
+
+type GridProps = GridLayoutBlock & {
+  renderItem: (
+    item: DynamicComponentWithBuiltUrls,
+    idx: number,
+  ) => React.ReactNode;
 };
 
 const COL_CLASSES: Record<number, string> = {
@@ -16,16 +23,14 @@ const COL_CLASSES: Record<number, string> = {
   6: "sm:grid-cols-6",
 };
 
-export const Grid = ({ cols = 2, items = [] }: GridLayoutBlock) => {
+export const Grid = ({ cols = 2, items = [], renderItem }: GridProps) => {
   if (items.length === 0) return null;
 
   const colClass = COL_CLASSES[cols] ?? "sm:grid-cols-2";
 
   return (
     <div className={`grid grid-cols-1 ${colClass} gap-6 items-start`}>
-      {items.map((item, idx) => (
-        <DynamicComponentRenderer key={item._key ?? idx} components={[item]} />
-      ))}
+      {items.map((item, idx) => renderItem(item, idx))}
     </div>
   );
 };

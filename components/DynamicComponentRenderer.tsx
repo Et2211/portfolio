@@ -182,6 +182,87 @@ interface DynamicComponentRendererProps {
   components: DynamicComponentWithBuiltUrls[];
 }
 
+// Type guard functions for discriminated union narrowing
+function isTimelineBlock(block: DynamicComponentBlock): block is TimelineBlock {
+  return block._type === "timeline";
+}
+
+function isImageWithDescriptionBlock(
+  block: DynamicComponentBlock,
+): block is ImageWithDescriptionBlock {
+  return block._type === "imageWithDescription";
+}
+
+function isCarouselBlock(block: DynamicComponentBlock): block is CarouselBlock {
+  return block._type === "carousel";
+}
+
+function isSystemArchitectureBlock(
+  block: DynamicComponentBlock,
+): block is SystemArchitectureBlock {
+  return block._type === "systemArchitecture";
+}
+
+function isHeroPanelBlock(
+  block: DynamicComponentBlock,
+): block is HeroPanelBlock {
+  return block._type === "heroPanel";
+}
+
+function isSkillsBarBlock(
+  block: DynamicComponentBlock,
+): block is SkillsBarBlock {
+  return block._type === "skillsBar";
+}
+
+function isFeaturedProjectsBlock(
+  block: DynamicComponentBlock,
+): block is FeaturedProjectsBlock {
+  return block._type === "featuredProjects";
+}
+
+function isStatsBannerBlock(
+  block: DynamicComponentBlock,
+): block is StatsBannerBlock {
+  return block._type === "statsBanner";
+}
+
+function isAboutSectionBlock(
+  block: DynamicComponentBlock,
+): block is AboutSectionBlock {
+  return block._type === "aboutSection";
+}
+
+function isTestimonialsSectionBlock(
+  block: DynamicComponentBlock,
+): block is TestimonialsSectionBlock {
+  return block._type === "testimonialsSection";
+}
+
+function isContactSectionBlock(
+  block: DynamicComponentBlock,
+): block is ContactSectionBlock {
+  return block._type === "contactSection";
+}
+
+function isTechStackBlock(
+  block: DynamicComponentBlock,
+): block is TechStackBlock {
+  return block._type === "techStack";
+}
+
+function isFeatureAccordionBlock(
+  block: DynamicComponentBlock,
+): block is FeatureAccordionBlock {
+  return block._type === "featureAccordion";
+}
+
+function isGridLayoutBlock(
+  block: DynamicComponentBlock,
+): block is GridLayoutBlock {
+  return block._type === "gridLayout";
+}
+
 export const DynamicComponentRenderer = ({
   components,
 }: DynamicComponentRendererProps) => {
@@ -204,105 +285,132 @@ export const DynamicComponentRenderer = ({
 
         switch (block._type) {
           case "timeline":
-            return (
-              <TimelineComponent
-                key={block._key || index}
-                items={(block as TimelineBlock).items || []}
-              />
-            );
+            if (isTimelineBlock(block)) {
+              return (
+                <TimelineComponent
+                  key={block._key || index}
+                  items={block.items || []}
+                />
+              );
+            }
+            break;
           case "imageWithDescription":
-            return (
-              <ImageWithDescriptionComponent
-                key={block._key || index}
-                image={(block as ImageWithDescriptionBlock).image}
-                description={(block as ImageWithDescriptionBlock).description}
-                textPosition={(block as ImageWithDescriptionBlock).textPosition}
-              />
-            );
+            if (isImageWithDescriptionBlock(block)) {
+              return (
+                <ImageWithDescriptionComponent
+                  key={block._key || index}
+                  image={block.image}
+                  description={block.description}
+                  textPosition={block.textPosition}
+                />
+              );
+            }
+            break;
           case "carousel":
-            return (
-              <CarouselComponent
-                key={block._key || index}
-                carousel={block as CarouselBlock}
-              />
-            );
+            if (isCarouselBlock(block)) {
+              return (
+                <CarouselComponent key={block._key || index} carousel={block} />
+              );
+            }
+            break;
           case "systemArchitecture":
-            return (
-              <SystemArchitectureComponent
-                key={block._key || index}
-                block={block as SystemArchitectureBlock}
-              />
-            );
+            if (isSystemArchitectureBlock(block)) {
+              return (
+                <SystemArchitectureComponent
+                  key={block._key || index}
+                  block={block}
+                />
+              );
+            }
+            break;
           case "heroPanel":
-            return (
-              <HeroPanelComponent
-                key={block._key || index}
-                {...(block as HeroPanelBlock)}
-              />
-            );
+            if (isHeroPanelBlock(block)) {
+              return (
+                <HeroPanelComponent key={block._key || index} {...block} />
+              );
+            }
+            break;
           case "skillsBar":
-            return (
-              <SkillsBarComponent
-                key={block._key || index}
-                {...(block as SkillsBarBlock)}
-              />
-            );
+            if (isSkillsBarBlock(block)) {
+              return (
+                <SkillsBarComponent key={block._key || index} {...block} />
+              );
+            }
+            break;
           case "featuredProjects":
-            return (
-              <FeaturedProjectsComponent
-                key={block._key || index}
-                {...(block as FeaturedProjectsBlock)}
-              />
-            );
+            if (isFeaturedProjectsBlock(block)) {
+              return (
+                <FeaturedProjectsComponent
+                  key={block._key || index}
+                  {...block}
+                />
+              );
+            }
+            break;
           case "statsBanner":
-            return (
-              <StatsBannerComponent
-                key={block._key || index}
-                {...(block as StatsBannerBlock)}
-              />
-            );
+            if (isStatsBannerBlock(block)) {
+              return (
+                <StatsBannerComponent key={block._key || index} {...block} />
+              );
+            }
+            break;
           case "aboutSection":
-            return (
-              <AboutSectionComponent
-                key={block._key || index}
-                {...(block as AboutSectionBlock)}
-              />
-            );
+            if (isAboutSectionBlock(block)) {
+              return (
+                <AboutSectionComponent key={block._key || index} {...block} />
+              );
+            }
+            break;
           case "testimonialsSection":
-            return (
-              <TestimonialsSectionComponent
-                key={block._key || index}
-                {...(block as TestimonialsSectionBlock)}
-              />
-            );
+            if (isTestimonialsSectionBlock(block)) {
+              return (
+                <TestimonialsSectionComponent
+                  key={block._key || index}
+                  {...block}
+                />
+              );
+            }
+            break;
           case "contactSection":
-            return (
-              <ContactSectionComponent
-                key={block._key || index}
-                {...(block as ContactSectionBlock)}
-              />
-            );
+            if (isContactSectionBlock(block)) {
+              return (
+                <ContactSectionComponent key={block._key || index} {...block} />
+              );
+            }
+            break;
           case "techStack":
-            return (
-              <TechStackComponent
-                key={block._key || index}
-                {...(block as TechStackBlock)}
-              />
-            );
+            if (isTechStackBlock(block)) {
+              return (
+                <TechStackComponent key={block._key || index} {...block} />
+              );
+            }
+            break;
           case "featureAccordion":
-            return (
-              <FeatureAccordionComponent
-                key={block._key || index}
-                {...(block as FeatureAccordionBlock)}
-              />
-            );
+            if (isFeatureAccordionBlock(block)) {
+              return (
+                <FeatureAccordionComponent
+                  key={block._key || index}
+                  {...block}
+                />
+              );
+            }
+            break;
           case "gridLayout":
-            return (
-              <GridComponent
-                key={block._key || index}
-                {...(block as GridLayoutBlock)}
-              />
-            );
+            if (isGridLayoutBlock(block)) {
+              return (
+                <GridComponent
+                  key={block._key || index}
+                  {...block}
+                  renderItem={(item, idx) => (
+                    <DynamicComponentRenderer
+                      key={item._key ?? idx}
+                      components={[item]}
+                    />
+                  )}
+                />
+              );
+            }
+            break;
           default:
             return null;
         }
