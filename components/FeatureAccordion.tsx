@@ -85,7 +85,7 @@ export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
                       alt={item.title ?? "Feature image"}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw rounded"
                     />
                   </div>
                 )}
