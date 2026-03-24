@@ -1,8 +1,9 @@
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
+import type { AboutSectionBlock } from "@/types/blocks";
+
 import { AppLink } from "./AppLink";
-import type { AboutSectionBlock } from "./DynamicComponentRenderer";
 
 export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
   return (

@@ -263,6 +263,7 @@ export type DynamicComponent = {
     | SanityKeyed<ContactSection>
     | SanityKeyed<TechStack>
     | SanityKeyed<FeatureAccordion>
+    | SanityKeyed<GridLayout>
   >;
 };
 
@@ -820,6 +821,23 @@ export type FeatureItem = {
     crop?: SanityImageCrop;
     hotspot?: SanityImageHotspot;
   };
+};
+
+export type GridLayout = {
+  _type: "gridLayout";
+  /**
+   * Columns — `number`
+   *
+   * Number of columns in the grid.
+   */
+  cols?: number;
+
+  /**
+   * Items — `array`
+   *
+   * Components to fill the grid cells, left-to-right then top-to-bottom.
+   */
+  items?: Array<SanityKeyed<DynamicComponent>>;
 };
 
 export type Documents = Navigation | Page | Footer;

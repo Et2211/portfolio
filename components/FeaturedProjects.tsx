@@ -1,7 +1,7 @@
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
-import type { FeaturedProject, FeaturedProjectsBlock } from "./DynamicComponentRenderer";
+import type { FeaturedProject, FeaturedProjectsBlock } from "@/types/blocks";
 
 const ProjectCard = ({ project }: { project: FeaturedProject }) => (
   <div className="flex flex-col rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900">
@@ -18,7 +18,9 @@ const ProjectCard = ({ project }: { project: FeaturedProject }) => (
     )}
     <div className="flex flex-col flex-1 gap-3 p-5">
       {project.title && (
-        <h3 className="text-lg font-semibold text-black dark:text-white">{project.title}</h3>
+        <h3 className="text-lg font-semibold text-black dark:text-white">
+          {project.title}
+        </h3>
       )}
       {project.tags && project.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -65,13 +67,18 @@ const ProjectCard = ({ project }: { project: FeaturedProject }) => (
   </div>
 );
 
-export const FeaturedProjects = ({ heading, projects }: FeaturedProjectsBlock) => {
+export const FeaturedProjects = ({
+  heading,
+  projects,
+}: FeaturedProjectsBlock) => {
   if (!projects || projects.length === 0) return null;
 
   return (
     <section className="py-4">
       {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">{heading}</h2>
+        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
+          {heading}
+        </h2>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project, idx) => (
