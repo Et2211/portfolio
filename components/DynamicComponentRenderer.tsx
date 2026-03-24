@@ -1,22 +1,34 @@
-
-import type { SanityBlock, SanityKeyed, TimelineItem } from "@/types/generated/sanity";
+import type {
+  SanityBlock,
+  SanityKeyed,
+  TimelineItem,
+} from "@/types/generated/sanity";
 
 import { AboutSection as AboutSectionComponent } from "./AboutSection";
 import { type CarouselBlock, Carousel as CarouselComponent } from "./Carousel";
 import { ContactSection as ContactSectionComponent } from "./ContactSection";
-import { type FeatureAccordionBlock, FeatureAccordion as FeatureAccordionComponent } from "./FeatureAccordion";
+import {
+  type FeatureAccordionBlock,
+  FeatureAccordion as FeatureAccordionComponent,
+} from "./FeatureAccordion";
 import { FeaturedProjects as FeaturedProjectsComponent } from "./FeaturedProjects";
+import { Grid as GridComponent, type GridLayoutBlock } from "./Grid";
 import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { SkillsBar as SkillsBarComponent } from "./SkillsBar";
 import { StatsBanner as StatsBannerComponent } from "./StatsBanner";
-import { type SystemArchitectureBlock, SystemArchitecture as SystemArchitectureComponent } from "./SystemArchitecture";
+import {
+  type SystemArchitectureBlock,
+  SystemArchitecture as SystemArchitectureComponent,
+} from "./SystemArchitecture";
 import { TechStack as TechStackComponent } from "./TechStack";
 import { TestimonialsSection as TestimonialsSectionComponent } from "./TestimonialsSection";
 import { Timeline as TimelineComponent } from "./Timeline";
 
 // Runtime types after server-side image URL building
-export type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & { image?: string | null };
+export type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & {
+  image?: string | null;
+};
 
 export type TimelineBlock = {
   _type: "timeline";
@@ -31,7 +43,7 @@ export type ImageWithDescriptionBlock = {
   heading?: string;
   image?: string | null;
   description?: SanityKeyed<SanityBlock>[];
-  textPosition?: 'above' | 'below' | 'before' | 'after';
+  textPosition?: "above" | "below" | "before" | "after";
 };
 
 export type HeroPanelBlock = {
@@ -154,7 +166,10 @@ type DynamicComponentBlock =
   | TestimonialsSectionBlock
   | ContactSectionBlock
   | TechStackBlock
-  | FeatureAccordionBlock;
+  | FeatureAccordionBlock
+  | GridLayoutBlock;
+
+export type { GridLayoutBlock };
 
 export type DynamicComponentWithBuiltUrls = {
   _type: "dynamicComponent";
@@ -167,8 +182,9 @@ interface DynamicComponentRendererProps {
   components: DynamicComponentWithBuiltUrls[];
 }
 
-
-export const DynamicComponentRenderer = ({ components }: DynamicComponentRendererProps) => {
+export const DynamicComponentRenderer = ({
+  components,
+}: DynamicComponentRendererProps) => {
   if (!components || components.length === 0) {
     return null;
   }
@@ -176,7 +192,10 @@ export const DynamicComponentRenderer = ({ components }: DynamicComponentRendere
   return (
     <div className="space-y-12">
       {components.map((dynamicComponent, index) => {
-        if (!dynamicComponent.component || dynamicComponent.component.length === 0) {
+        if (
+          !dynamicComponent.component ||
+          dynamicComponent.component.length === 0
+        ) {
           return null;
         }
         // Only one block per dynamicComponent.component due to validation
@@ -275,6 +294,13 @@ export const DynamicComponentRenderer = ({ components }: DynamicComponentRendere
               <FeatureAccordionComponent
                 key={block._key || index}
                 {...(block as FeatureAccordionBlock)}
+              />
+            );
+          case "gridLayout":
+            return (
+              <GridComponent
+                key={block._key || index}
+                {...(block as GridLayoutBlock)}
               />
             );
           default:
