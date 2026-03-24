@@ -1,12 +1,23 @@
 import Image from "next/image";
 
-import { AppLink } from "./AppLink";
-import type { HeroPanelBlock } from "./DynamicComponentRenderer";
+import type { HeroPanelBlock } from "@/types/blocks";
 
-export const HeroPanel = ({ name, role, tagline, photo, ctaLabel, ctaUrl, imagePosition = "left" }: HeroPanelBlock) => {
+import { AppLink } from "./AppLink";
+
+export const HeroPanel = ({
+  name,
+  role,
+  tagline,
+  photo,
+  ctaLabel,
+  ctaUrl,
+  imagePosition = "left",
+}: HeroPanelBlock) => {
   const isRight = imagePosition === "right";
   return (
-    <section className={`flex flex-col items-center gap-8 py-8 ${isRight ? "sm:flex-row-reverse" : "sm:flex-row"}`}>
+    <section
+      className={`flex flex-col items-center gap-8 py-8 ${isRight ? "sm:flex-row-reverse" : "sm:flex-row"}`}
+    >
       {/* Photo */}
       {photo && (
         <div className="flex-shrink-0">
@@ -21,7 +32,9 @@ export const HeroPanel = ({ name, role, tagline, photo, ctaLabel, ctaUrl, imageP
         </div>
       )}
       {/* Text */}
-      <div className={`flex-1 flex flex-col gap-4 text-center ${isRight ? "sm:text-right" : "sm:text-left"}`}>
+      <div
+        className={`flex-1 flex flex-col gap-4 text-center ${isRight ? "sm:text-right" : "sm:text-left"}`}
+      >
         {role && (
           <p className="text-lg sm:text-xl font-medium text-zinc-600 dark:text-zinc-400">
             {role}

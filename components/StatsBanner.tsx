@@ -1,4 +1,4 @@
-import type { StatsBannerBlock } from "./DynamicComponentRenderer";
+import type { StatsBannerBlock } from "@/types/blocks";
 
 export const StatsBanner = ({ stats }: StatsBannerBlock) => {
   if (!stats || stats.length === 0) return null;
@@ -17,7 +17,9 @@ export const StatsBanner = ({ stats }: StatsBannerBlock) => {
               </span>
             )}
             {stat.label && (
-              <span className="text-sm text-zinc-500 dark:text-zinc-400">{stat.label}</span>
+              <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                {stat.label}
+              </span>
             )}
           </div>
         ))}

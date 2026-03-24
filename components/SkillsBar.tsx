@@ -1,4 +1,4 @@
-import type { SkillItem, SkillsBarBlock } from "./DynamicComponentRenderer";
+import type { SkillItem, SkillsBarBlock } from "@/types/blocks";
 
 export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
   if (!skills || skills.length === 0) return null;
@@ -11,12 +11,16 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
     return acc;
   }, {});
 
-  const hasCategories = Object.keys(grouped).some((key) => key !== "Other") || Object.keys(grouped).length > 1;
+  const hasCategories =
+    Object.keys(grouped).some((key) => key !== "Other") ||
+    Object.keys(grouped).length > 1;
 
   return (
     <section className="py-4">
       {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">{heading}</h2>
+        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
+          {heading}
+        </h2>
       )}
       {hasCategories ? (
         <div className="flex flex-col gap-6">

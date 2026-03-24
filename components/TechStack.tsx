@@ -1,4 +1,4 @@
-import type { TechStackBlock } from "./DynamicComponentRenderer";
+import type { TechStackBlock } from "@/types/blocks";
 
 export const TechStack = ({ heading, groups }: TechStackBlock) => {
   if (!groups || groups.length === 0) return null;
@@ -6,7 +6,9 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
   return (
     <section className="py-4">
       {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">{heading}</h2>
+        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
+          {heading}
+        </h2>
       )}
       <div className="flex flex-col gap-8">
         {groups.map((group, idx) => (
@@ -18,7 +20,9 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
                 </p>
               )}
               {group.description && (
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{group.description}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                  {group.description}
+                </p>
               )}
             </div>
             {group.items && group.items.length > 0 && (
