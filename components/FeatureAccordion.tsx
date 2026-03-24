@@ -45,7 +45,7 @@ export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
       {items.map((item, idx) => {
         const key = item._key ?? String(idx);
         const isOpen = openKeys.has(key);
