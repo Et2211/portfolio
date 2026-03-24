@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export type FeatureItem = {
@@ -7,6 +8,7 @@ export type FeatureItem = {
   title?: string;
   summary?: string;
   detail?: string;
+  image?: string | null;
 };
 
 export type FeatureAccordionBlock = {
@@ -60,16 +62,33 @@ export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
               className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <div className="flex flex-col gap-0.5 min-w-0">
-                <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</span>
+                <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  {item.title}
+                </span>
                 {item.summary && (
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400 leading-snug">{item.summary}</span>
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400 leading-snug">
+                    {item.summary}
+                  </span>
                 )}
               </div>
               <ChevronIcon open={isOpen} />
             </button>
             {isOpen && item.detail && (
               <div className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 animate-in fade-in slide-in-from-top-2 duration-200">
-                <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed whitespace-pre-line">{item.detail}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
+                  {item.detail}
+                </p>
+                {item.image && (
+                  <div className="mt-4 relative w-full aspect-video rounded-lg overflow-hidden">
+                    <Image
+                      src={item.image}
+                      alt={item.title ?? "Feature image"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

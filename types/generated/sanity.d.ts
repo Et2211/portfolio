@@ -808,6 +808,18 @@ export type FeatureItem = {
    * Expanded detail shown when the item is clicked open.
    */
   detail?: string;
+
+  /**
+   * Image — `image`
+   *
+   * Optional image displayed below the detail text.
+   */
+  image?: {
+    _type: "image";
+    asset: SanityReference<SanityImageAsset>;
+    crop?: SanityImageCrop;
+    hotspot?: SanityImageHotspot;
+  };
 };
 
 export type Documents = Navigation | Page | Footer;
