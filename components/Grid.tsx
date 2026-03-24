@@ -1,4 +1,4 @@
-import { DynamicComponentRenderer } from "./DynamicComponentRenderer";
+import type { ReactNode } from "react";
 
 export type GridLayoutBlock = {
   _type: "gridLayout";
@@ -16,16 +16,17 @@ const COL_CLASSES: Record<number, string> = {
   6: "sm:grid-cols-6",
 };
 
-export const Grid = ({ cols = 2, items = [] }: GridLayoutBlock) => {
-  if (items.length === 0) return null;
+type GridProps = {
+  cols?: number;
+  children: ReactNode;
+};
 
+export const Grid = ({ cols = 2, children }: GridProps) => {
   const colClass = COL_CLASSES[cols] ?? "sm:grid-cols-2";
 
   return (
     <div className={`grid grid-cols-1 ${colClass} gap-6 items-start`}>
-      {items.map((item, idx) => (
-        <DynamicComponentRenderer key={item._key ?? idx} components={[item]} />
-      ))}
+      {children}
     </div>
   );
 };

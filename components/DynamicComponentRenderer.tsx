@@ -296,13 +296,21 @@ export const DynamicComponentRenderer = ({
                 {...(block as FeatureAccordionBlock)}
               />
             );
-          case "gridLayout":
+          case "gridLayout": {
+            const gridBlock = block as GridLayoutBlock;
+            const gridItems = gridBlock.items ?? [];
+            if (gridItems.length === 0) return null;
             return (
-              <GridComponent
-                key={block._key || index}
-                {...(block as GridLayoutBlock)}
-              />
+              <GridComponent key={block._key || index} cols={gridBlock.cols}>
+                {gridItems.map((item, idx) => (
+                  <DynamicComponentRenderer
+                    key={item._key ?? idx}
+                    components={[item]}
+                  />
+                ))}
+              </GridComponent>
             );
+          }
           default:
             return null;
         }
