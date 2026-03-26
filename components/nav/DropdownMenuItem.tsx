@@ -12,9 +12,10 @@ export const DropdownMenuItem = ({
   onClose,
 }: DropdownMenuItemProps) => {
   return (
-    <li>
+    <li role="none">
       <Link
         href={href}
+        role="menuitem"
         onClick={onClose}
         className="block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
       >

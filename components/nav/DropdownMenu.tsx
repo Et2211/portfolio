@@ -33,15 +33,22 @@ export const DropdownMenu = ({ trigger, items }: DropdownMenuProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") setIsOpen(false);
+  };
+
   return (
     <div
       className="relative"
       ref={dropdownRef}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
+      onKeyDown={handleKeyDown}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
         className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none transition-colors"
       >
         {trigger}
@@ -55,7 +62,7 @@ export const DropdownMenu = ({ trigger, items }: DropdownMenuProps) => {
       {isOpen && (
         <div className="absolute top-full left-0 pt-1 min-w-[200px] overflow-visible z-50">
           <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
-            <ul className="p-1">
+            <ul role="menu" className="p-1">
               {items.map((item, idx) => (
                 <DropdownMenuItem
                   key={idx}

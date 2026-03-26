@@ -2,7 +2,6 @@
 export const revalidate = 60;
 
 import { notFound } from "next/navigation";
-import './../globals.css';
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
 import { buildImageUrlsForComponents, fetchSanity } from "@/lib/sanity";
@@ -39,6 +38,17 @@ async function getPageByUrl(url: string): Promise<Page | null> {
   return await fetchSanity<Page | null>(query, { url });
 }
 
+
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const url = slug ? `/${slug.join("/")}` : "/";
+  const page = await getPageByUrl(url);
+  if (!page?.heading) return {};
+  return {
+    title: page.heading,
+    openGraph: { title: page.heading },
+  };
+}
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
