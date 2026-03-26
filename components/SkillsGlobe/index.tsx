@@ -13,6 +13,7 @@ import { generateFibonacciSpherePositions } from "./utils";
 type SkillsGlobeProps = Omit<SkillsGlobeBlock, "_type">;
 
 export const SkillsGlobe = ({
+  heading,
   skills = [],
   rotationSpeed = 0.3,
 }: SkillsGlobeProps) => {
@@ -24,7 +25,8 @@ export const SkillsGlobe = ({
 
   // Responsive width, with extra vertical space (aspect ratio 1.2:1)
   return (
-    <div className="relative w-full flex items-center justify-center py-10">
+    <div className="relative w-full flex flex-col items-center justify-center">
+      {heading && <h2 className="text-2xl font-bold">{heading}</h2>}
       <div
         style={{
           aspectRatio: "1/1",
