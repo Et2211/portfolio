@@ -13,9 +13,10 @@ interface SkillNodeProps {
   skill: SkillGlobeItem;
   position: [number, number, number];
   radius?: number;
+  onSelect: (skill: SkillGlobeItem) => void;
 }
 
-export const SkillNode = ({ skill, position, radius = 1.7 }: SkillNodeProps) => {
+export const SkillNode = ({ skill, position, radius = 1.7, onSelect }: SkillNodeProps) => {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
   const divRef = useRef<HTMLDivElement>(null);
@@ -63,8 +64,8 @@ export const SkillNode = ({ skill, position, radius = 1.7 }: SkillNodeProps) => 
   }, []);
 
   const handleClick = useCallback(() => {
-    if (skill.url) window.open(skill.url, "_blank", "noopener,noreferrer");
-  }, [skill.url]);
+    onSelect(skill);
+  }, [onSelect, skill]);
 
   return (
     <group ref={groupRef} position={position}>
@@ -80,7 +81,7 @@ export const SkillNode = ({ skill, position, radius = 1.7 }: SkillNodeProps) => 
           onMouseEnter={handlePointerOver}
           onMouseLeave={handlePointerOut}
           style={{
-            cursor: skill.url ? "pointer" : "default",
+            cursor: "pointer",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
