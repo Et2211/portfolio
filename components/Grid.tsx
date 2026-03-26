@@ -15,10 +15,10 @@ type GridProps = GridLayoutBlock & {
 const COL_CLASSES: Record<number, string> = {
   1: "grid-cols-1",
   2: "sm:grid-cols-2",
-  3: "sm:grid-cols-3",
-  4: "sm:grid-cols-4",
-  5: "sm:grid-cols-5",
-  6: "sm:grid-cols-6",
+  3: "sm:grid-cols-2 md:grid-cols-3",
+  4: "sm:grid-cols-2 lg:grid-cols-4",
+  5: "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
+  6: "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6",
 };
 
 export const Grid = ({ cols = 2, items = [], renderItem }: GridProps) => {

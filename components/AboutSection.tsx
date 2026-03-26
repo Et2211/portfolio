@@ -15,7 +15,7 @@ export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
             alt="About photo"
             width={200}
             height={200}
-            className="rounded-xl object-cover w-40 h-40 sm:w-48 sm:h-48"
+            className="rounded-xl object-cover w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56"
           />
         </div>
       )}

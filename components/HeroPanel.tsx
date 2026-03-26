@@ -26,7 +26,7 @@ export const HeroPanel = ({
             alt={name ?? "Profile photo"}
             width={240}
             height={240}
-            className="rounded-full object-cover w-40 h-40 sm:w-56 sm:h-56"
+            className="rounded-full object-cover w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64"
             priority
           />
         </div>

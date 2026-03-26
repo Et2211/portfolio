@@ -65,7 +65,7 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <main className="container mx-auto py-4">
-        <h1 className="text-4xl font-bold mb-8 text-black dark:text-white">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-black dark:text-white">
           {pageWithBuiltUrls.heading}
         </h1>
 
