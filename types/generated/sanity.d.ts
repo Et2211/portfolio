@@ -540,7 +540,7 @@ export type SkillGlobeItem = {
   /**
    * Icon Key — `string`
    *
-   * react-icons key, e.g. "SiReact", "SiTypescript", "SiNodedotjs". See https://react-icons.github.io/react-icons/icons/si/
+   * simple-icons key, e.g. "react", "typescript", "nodedotjs". See https://simpleicons.org/
    */
   icon?: string;
 
