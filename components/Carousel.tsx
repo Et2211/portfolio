@@ -106,7 +106,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
     <div className="relative" ref={containerRef}>
       <div className="overflow-hidden" ref={emblaRef}>
         <div
-          className={`flex ${shouldCenter ? "" : ""}`}
+          className="flex"
           style={{
             alignItems: "flex-start",
             justifyContent: shouldCenter ? "center" : "flex-start",

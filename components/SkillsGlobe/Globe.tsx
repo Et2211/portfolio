@@ -25,7 +25,7 @@ export const Globe = ({
   });
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[radius, 32, 32]} />
+      <sphereGeometry args={[radius, 20, 20]} />
       <meshBasicMaterial color="#6366f1" wireframe transparent opacity={0.25} />
       {/* Render children (skill nodes) as part of the rotating globe */}
       {typeof children !== "undefined" && children}
