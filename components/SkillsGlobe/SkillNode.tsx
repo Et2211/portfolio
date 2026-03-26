@@ -33,6 +33,13 @@ export const SkillNode = ({ skill, position, radius = 1.7 }: SkillNodeProps) => 
     const cameraDir = camera.position.clone().normalize();
     const dot = worldPos.current.dot(cameraDir); // -radius → +radius
     const depth = (dot + radius) / (2 * radius); // 0 = back, 1 = front
+    const isFront = depth >= 0.5;
+
+    // Clear hover state when icon rotates to the back
+    if (!isFront && hoveredRef.current) {
+      hoveredRef.current = false;
+      setHovered(false);
+    }
 
     // Opacity: never fully invisible — 0.2 at back, 1.0 at front
     const opacity = 0.2 + depth * 0.8;
@@ -42,6 +49,7 @@ export const SkillNode = ({ skill, position, radius = 1.7 }: SkillNodeProps) => 
 
     divRef.current.style.opacity = String(opacity);
     divRef.current.style.transform = `scale(${finalScale})`;
+    divRef.current.style.pointerEvents = isFront ? "auto" : "none";
   });
 
   const handlePointerOver = useCallback(() => {
