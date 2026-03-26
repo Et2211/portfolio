@@ -9,6 +9,7 @@ import { Grid as GridComponent } from "./Grid";
 import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { SkillsBar as SkillsBarComponent } from "./SkillsBar";
+import { SkillsGlobe as SkillsGlobeComponent } from "./SkillsGlobe";
 import { StatsBanner as StatsBannerComponent } from "./StatsBanner";
 import { SystemArchitecture as SystemArchitectureComponent } from "./SystemArchitecture";
 import { TechStack as TechStackComponent } from "./TechStack";
@@ -99,6 +100,10 @@ export const DynamicComponentRenderer = ({
           case "featureAccordion":
             return (
               <FeatureAccordionComponent key={block._key || index} {...block} />
+            );
+          case "skillsGlobe":
+            return (
+              <SkillsGlobeComponent key={block._key || index} {...block} />
             );
           case "gridLayout":
             return (

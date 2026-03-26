@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@portabletext/react": "^6.0.3",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
     "@sanity/image-url": "^2.0.3",
     "@strapi/blocks-react-renderer": "^1.0.2",
     "@vercel/analytics": "^2.0.1",
@@ -30,7 +32,10 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-icons": "^5.6.0",
+    "simple-icons": "^16.13.0",
     "tailwind-merge": "^3.5.0",
+    "three": "^0.183.2",
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
@@ -43,6 +48,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.183.1",
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
     "babel-plugin-css-modules-transform": "^1.6.2",

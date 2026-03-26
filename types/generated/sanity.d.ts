@@ -264,6 +264,7 @@ export type DynamicComponent = {
     | SanityKeyed<TechStack>
     | SanityKeyed<FeatureAccordion>
     | SanityKeyed<GridLayout>
+    | SanityKeyed<SkillsGlobe>
   >;
 };
 
@@ -501,6 +502,54 @@ export type SkillItem = {
    * Optional grouping label, e.g. "Frontend", "Infrastructure".
    */
   category?: string;
+};
+
+export type SkillsGlobe = {
+  _type: "skillsGlobe";
+  /**
+   * Heading — `string`
+   *
+   * For identifying this block in the CMS.
+   */
+  heading?: string;
+
+  /**
+   * Rotation Speed — `number`
+   *
+   * Globe rotation speed. Default is 0.3. Higher = faster.
+   */
+  rotationSpeed?: number;
+
+  /**
+   * Skills — `array`
+   *
+   *
+   */
+  skills?: Array<SanityKeyed<SkillGlobeItem>>;
+};
+
+export type SkillGlobeItem = {
+  _type: "skillGlobeItem";
+  /**
+   * Name — `string`
+   *
+   * Display name, e.g. "React"
+   */
+  name?: string;
+
+  /**
+   * Icon Key — `string`
+   *
+   * simple-icons key, e.g. "react", "typescript", "nodedotjs". See https://simpleicons.org/
+   */
+  icon?: string;
+
+  /**
+   * URL (optional) — `url`
+   *
+   * Link to open when this skill is clicked.
+   */
+  url?: string;
 };
 
 export type FeaturedProjects = {

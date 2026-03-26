@@ -9,6 +9,7 @@ import type {
   HeroPanelBlock,
   ImageWithDescriptionBlock,
   SkillsBarBlock,
+  SkillsGlobeBlock,
   StatsBannerBlock,
   TechStackBlock,
   TestimonialsSectionBlock,
@@ -43,4 +44,5 @@ export type DynamicComponentBlock =
   | ContactSectionBlock
   | TechStackBlock
   | FeatureAccordionBlock
-  | GridLayoutBlock;
+  | GridLayoutBlock
+  | SkillsGlobeBlock;

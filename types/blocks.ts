@@ -131,3 +131,18 @@ export type TechStackBlock = {
   heading?: string;
   groups?: TechStackGroupItem[];
 };
+
+export type SkillGlobeItem = {
+  _key?: string;
+  name?: string;
+  icon?: string;
+  url?: string;
+};
+
+export type SkillsGlobeBlock = {
+  _type: "skillsGlobe";
+  _key?: string;
+  heading?: string;
+  rotationSpeed?: number;
+  skills?: SkillGlobeItem[];
+};
