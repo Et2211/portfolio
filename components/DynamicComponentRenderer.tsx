@@ -3,6 +3,7 @@ import type { DynamicComponentWithBuiltUrls } from "@/types/dynamicComponent";
 import { AboutSection as AboutSectionComponent } from "./AboutSection";
 import { Carousel as CarouselComponent } from "./Carousel";
 import { ContactSection as ContactSectionComponent } from "./ContactSection";
+import { CtaButton as CtaButtonComponent } from "./CtaButton";
 import { FeatureAccordion as FeatureAccordionComponent } from "./FeatureAccordion";
 import { FeaturedProjects as FeaturedProjectsComponent } from "./FeaturedProjects";
 import { Grid as GridComponent } from "./Grid";
@@ -118,6 +119,8 @@ export const DynamicComponentRenderer = ({
                 )}
               />
             );
+          case "ctaButton":
+            return <CtaButtonComponent key={block._key || index} {...block} />;
           default:
             return null;
         }

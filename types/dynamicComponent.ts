@@ -5,6 +5,7 @@ import type { SystemArchitectureBlock } from "@/components/SystemArchitecture";
 import type {
   AboutSectionBlock,
   ContactSectionBlock,
+  CtaButtonBlock,
   FeaturedProjectsBlock,
   HeroPanelBlock,
   ImageWithDescriptionBlock,
@@ -45,4 +46,5 @@ export type DynamicComponentBlock =
   | TechStackBlock
   | FeatureAccordionBlock
   | GridLayoutBlock
-  | SkillsGlobeBlock;
+  | SkillsGlobeBlock
+  | CtaButtonBlock;

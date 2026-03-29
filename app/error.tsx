@@ -10,6 +10,7 @@ interface ErrorProps {
 
 const ErrorPage = ({ error, reset }: ErrorProps): React.ReactElement => {
   useEffect(() => {
+    // eslint-disable-next-line no-console
     console.error(error);
   }, [error]);
 

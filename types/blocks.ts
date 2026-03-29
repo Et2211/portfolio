@@ -147,3 +147,11 @@ export type SkillsGlobeBlock = {
   rotationSpeed?: number;
   skills?: SkillGlobeItem[];
 };
+
+export type CtaButtonBlock = {
+  _type: "ctaButton";
+  _key?: string;
+  label?: string;
+  url?: string;
+  variant?: "primary" | "secondary";
+};
