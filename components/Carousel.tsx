@@ -122,13 +122,10 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                 >
                   <div className="w-[300px] h-[300px] mx-auto overflow-auto flex flex-col">
                     <ImageWithDescriptionComponent
-                      image={(item as ImageWithDescriptionBlock).image}
-                      description={
-                        (item as ImageWithDescriptionBlock).description
-                      }
-                      textPosition={
-                        (item as ImageWithDescriptionBlock).textPosition
-                      }
+                      icon={item.icon}
+                      image={item.image}
+                      description={item.description}
+                      textPosition={item.textPosition}
                     />
                   </div>
                 </div>

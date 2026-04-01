@@ -53,6 +53,7 @@ export const DynamicComponentRenderer = ({
             return (
               <ImageWithDescriptionComponent
                 key={block._key || index}
+                icon={block.icon}
                 image={block.image}
                 description={block.description}
                 textPosition={block.textPosition}

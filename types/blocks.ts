@@ -20,6 +20,7 @@ export type ImageWithDescriptionBlock = {
   _type: "imageWithDescription";
   _key?: string;
   heading?: string;
+  icon?: string | null;
   image?: string | null;
   description?: SanityKeyed<SanityBlock>[];
   textPosition?: "above" | "below" | "before" | "after";
