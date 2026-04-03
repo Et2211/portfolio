@@ -54,6 +54,8 @@ export const Timeline = ({ items }: TimelineProps) => {
             key={(item as { _key?: string })._key ?? idx}
             item={item}
             index={idx}
+            containerRef={containerRef}
+            fillPercent={fillPercent}
           />
         ))}
       </div>

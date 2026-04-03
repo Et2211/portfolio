@@ -2,10 +2,10 @@
 
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 import { useInView } from "@/hooks/useInView";
 import type { SanityBlock, TimelineItem as TimelineItemType } from "@/types/generated/sanity";
-
 
 type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
   image?: string | null;
@@ -14,6 +14,8 @@ type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
 interface TimelineItemProps {
   item: TimelineItemWithBuiltUrl;
   index: number;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  fillPercent: number;
 }
 
 const formatDate = (dateString: string): string => {
@@ -24,13 +26,52 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-export const TimelineItem = ({ item, index }: TimelineItemProps) => {
+export const TimelineItem = ({ item, index, containerRef, fillPercent }: TimelineItemProps) => {
   const isLeft = index % 2 === 0;
   const { ref, isInView } = useInView({ threshold: 0.2 });
+  const dotRef = useRef<HTMLDivElement>(null);
+  const [dotThreshold, setDotThreshold] = useState(1);
+
+  useEffect(() => {
+    const measure = () => {
+      const dot = dotRef.current;
+      const container = containerRef.current;
+      if (!dot || !container) return;
+      const containerTop = container.getBoundingClientRect().top;
+      const dotMid = dot.getBoundingClientRect().top + dot.offsetHeight / 2 - containerTop;
+      setDotThreshold(dotMid / container.offsetHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [containerRef]);
+
+  const isFilled = fillPercent >= dotThreshold;
 
   const startDate = item.startDate ? formatDate(item.startDate) : "";
   const endDate = item.finishDate ? formatDate(item.finishDate) : "Present";
   const dateRange = startDate ? `${startDate} – ${endDate}` : "";
+
+  const dotClasses = `w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+    isInView ? "scale-100" : "scale-0"
+  } ${
+    isFilled
+      ? "border-zinc-900 dark:border-white bg-zinc-900 dark:bg-white"
+      : "border-zinc-900 dark:border-white bg-white dark:bg-zinc-900"
+  }`;
+
+  // Mobile dot — no ref needed, threshold is measured from the desktop dot
+  const mobileDot = (
+    <div className="flex flex-col items-center flex-shrink-0 w-8">
+      <div className={dotClasses} />
+    </div>
+  );
+
+  const desktopDot = (
+    <div className="flex flex-col items-center flex-shrink-0 w-16">
+      <div className={dotClasses} />
+    </div>
+  );
 
   const card = (
     <div
@@ -71,39 +112,29 @@ export const TimelineItem = ({ item, index }: TimelineItemProps) => {
     </div>
   );
 
-  const dot = (
-    <div className="flex flex-col items-center flex-shrink-0 w-8 md:w-16">
-      <div
-        className={`w-4 h-4 rounded-full border-2 border-zinc-900 dark:border-white bg-white dark:bg-zinc-900 transition-all duration-500 ${
-          isInView ? "scale-100" : "scale-0"
-        }`}
-      />
-    </div>
-  );
-
   return (
-    <div
-      ref={ref}
-      className="relative flex items-start gap-0 py-8"
-    >
-      {/* Mobile: always left-aligned dot + full-width card */}
+    <div ref={ref} className="relative flex items-start gap-0 py-8">
+      {/* Always-rendered anchor for dot position measurement */}
+      <div ref={dotRef} className="absolute top-8 left-0 w-0 h-4 pointer-events-none" aria-hidden />
+
+      {/* Mobile: left-aligned line + dot + card */}
       <div className="flex md:hidden items-start w-full">
-        {dot}
+        {mobileDot}
         <div className="flex-1">{card}</div>
       </div>
 
-      {/* Desktop: alternating layout */}
+      {/* Desktop: alternating */}
       <div className="hidden md:flex w-full items-start">
         {isLeft ? (
           <>
             {card}
-            {dot}
+            {desktopDot}
             <div className="w-[calc(50%-2rem)]" />
           </>
         ) : (
           <>
             <div className="w-[calc(50%-2rem)]" />
-            {dot}
+            {desktopDot}
             {card}
           </>
         )}
