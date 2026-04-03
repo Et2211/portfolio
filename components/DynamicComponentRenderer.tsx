@@ -9,6 +9,7 @@ import { FeaturedProjects as FeaturedProjectsComponent } from "./FeaturedProject
 import { Grid as GridComponent } from "./Grid";
 import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
+import { CvDownload as CvDownloadComponent } from "./CvDownload";
 import { ProjectBento as ProjectBentoComponent } from "./ProjectBento";
 import { ProjectSpotlight as ProjectSpotlightComponent } from "./ProjectSpotlight";
 import { ScrollReveal } from "./ScrollReveal";
@@ -119,6 +120,9 @@ export const DynamicComponentRenderer = ({
             break;
           case "projectBento":
             content = <ProjectBentoComponent {...block} />;
+            break;
+          case "cvDownload":
+            content = <CvDownloadComponent {...block} />;
             break;
           default:
             return null;

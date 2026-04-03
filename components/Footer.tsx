@@ -12,6 +12,7 @@ async function getFooter(): Promise<FooterDocument | null> {
       ...,
       component[]{
         ...,
+        "fileUrl": file.asset->url,
         items[]{
           ...,
           items[]{
