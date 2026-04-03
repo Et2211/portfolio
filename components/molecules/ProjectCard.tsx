@@ -2,8 +2,8 @@ import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
 import { Badge } from "@/components/atoms/Badge";
-import { ProjectLinks } from "@/components/molecules/ProjectLinks";
 import { RichText } from "@/components/atoms/RichText";
+import { ProjectLinks } from "@/components/molecules/ProjectLinks";
 import type { FeaturedProject } from "@/types/blocks";
 
 interface ProjectCardProps {
