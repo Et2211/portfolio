@@ -39,7 +39,7 @@ const ProjectCard = ({ project }: { project: FeaturedProject }) => (
           <PortableText value={project.description} />
         </div>
       )}
-      {(project.liveUrl || project.githubUrl) && (
+      {(project.liveUrl || project.githubUrl || project.moreInfoUrl) && (
         <div className="flex gap-3 mt-auto pt-2">
           {project.liveUrl && (
             <a
@@ -59,6 +59,14 @@ const ProjectCard = ({ project }: { project: FeaturedProject }) => (
               className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
             >
               GitHub ↗
+            </a>
+          )}
+          {project.moreInfoUrl && (
+            <a
+              href={project.moreInfoUrl}
+              className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
+            >
+              More info ↗
             </a>
           )}
         </div>

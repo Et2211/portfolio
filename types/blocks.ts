@@ -59,6 +59,7 @@ export type FeaturedProject = {
   tags?: string[];
   liveUrl?: string;
   githubUrl?: string;
+  moreInfoUrl?: string;
 };
 
 export type FeaturedProjectsBlock = {

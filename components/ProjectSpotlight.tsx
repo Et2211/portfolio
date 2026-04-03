@@ -67,7 +67,7 @@ export const ProjectSpotlight = ({
                 <PortableText value={project.description} />
               </div>
             )}
-            {(project.liveUrl || project.githubUrl) && (
+            {(project.liveUrl || project.githubUrl || project.moreInfoUrl) && (
               <div className="flex gap-3 mt-auto">
                 {project.liveUrl && (
                   <a
@@ -87,6 +87,14 @@ export const ProjectSpotlight = ({
                     className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
                   >
                     GitHub ↗
+                  </a>
+                )}
+                {project.moreInfoUrl && (
+                  <a
+                    href={project.moreInfoUrl}
+                    className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
+                  >
+                    More info ↗
                   </a>
                 )}
               </div>
