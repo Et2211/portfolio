@@ -3,9 +3,9 @@
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
+import { useInView } from "@/hooks/useInView";
 import type { SanityBlock, TimelineItem as TimelineItemType } from "@/types/generated/sanity";
 
-import { useInView } from "@/hooks/useInView";
 
 type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
   image?: string | null;
