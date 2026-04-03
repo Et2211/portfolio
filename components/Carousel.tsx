@@ -126,6 +126,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                       image={item.image}
                       description={item.description}
                       textPosition={item.textPosition}
+                      imageSize={96}
                     />
                   </div>
                 </div>

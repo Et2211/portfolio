@@ -9,6 +9,7 @@ interface ImageWithDescriptionProps {
   image?: string | null;
   description?: SanityKeyed<SanityBlock>[];
   textPosition?: "above" | "below" | "before" | "after";
+  imageSize?: number;
 }
 
 export const ImageWithDescription = ({
@@ -16,6 +17,7 @@ export const ImageWithDescription = ({
   image,
   description,
   textPosition = "below",
+  imageSize,
 }: ImageWithDescriptionProps) => {
   const isHorizontal = textPosition === "before" || textPosition === "after";
   const flexDirection = {
@@ -49,11 +51,11 @@ export const ImageWithDescription = ({
         <Image
           src={image}
           alt="Image with description"
-          className={`rounded-lg mx-3 object-contain flex-shrink-0 ${isHorizontal ? "w-full lg:w-1/3 h-auto" : "w-full h-auto"}`}
-          width={600}
-          height={400}
-          sizes="(max-width: 600px) 100vw, 600px"
-          style={isHorizontal ? undefined : { maxHeight: "60%" }}
+          className={`rounded-lg mx-3 object-contain flex-shrink-0 ${imageSize ? "" : isHorizontal ? "w-full lg:w-1/3 h-auto" : "w-full h-auto"}`}
+          width={imageSize ?? 600}
+          height={imageSize ?? 400}
+          sizes={imageSize ? `${imageSize}px` : "(max-width: 600px) 100vw, 600px"}
+          style={imageSize ? { width: imageSize, height: imageSize } : isHorizontal ? undefined : { maxHeight: "60%" }}
         />
       ) : null}
       {description && description.length > 0 && (

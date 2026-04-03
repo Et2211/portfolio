@@ -6,7 +6,6 @@ import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
 
 import { DropdownMenu } from "./DropdownMenu";
 
-
 async function getNavigation() {
   try {
     const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
@@ -20,7 +19,9 @@ async function getNavigation() {
 }
 
 // Helper to get URL from either page reference or externalUrl
-function getNavItemUrl(item: NavItem & { page?: { url?: string }; externalUrl?: string }): string {
+function getNavItemUrl(
+  item: NavItem & { page?: { url?: string }; externalUrl?: string },
+): string {
   if (item.externalUrl) {
     return item.externalUrl;
   }
@@ -41,7 +42,7 @@ const Navbar = async (): Promise<React.ReactElement> => {
             href="/"
             className="text-xl font-bold text-black dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
           >
-            Portfolio
+            Etienne Sharkey
           </Link>
 
           {/* Navigation Menu */}
@@ -51,10 +52,17 @@ const Navbar = async (): Promise<React.ReactElement> => {
                 key={groupIdx}
                 trigger={group.navHeader ?? ""}
                 items={
-                  (group.navList?.map((item: NavItem & { page?: { url?: string }; externalUrl?: string }) => ({
-                    label: item.navTitle ?? "",
-                    href: getNavItemUrl(item),
-                  })) || []) as { label: string; href: string }[]
+                  (group.navList?.map(
+                    (
+                      item: NavItem & {
+                        page?: { url?: string };
+                        externalUrl?: string;
+                      },
+                    ) => ({
+                      label: item.navTitle ?? "",
+                      href: getNavItemUrl(item),
+                    }),
+                  ) || []) as { label: string; href: string }[]
                 }
               />
             ))}

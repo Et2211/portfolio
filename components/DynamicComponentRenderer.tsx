@@ -9,6 +9,8 @@ import { FeaturedProjects as FeaturedProjectsComponent } from "./FeaturedProject
 import { Grid as GridComponent } from "./Grid";
 import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
+import { ProjectBento as ProjectBentoComponent } from "./ProjectBento";
+import { ProjectSpotlight as ProjectSpotlightComponent } from "./ProjectSpotlight";
 import { SkillsBar as SkillsBarComponent } from "./SkillsBar";
 import { SkillsGlobe as SkillsGlobeComponent } from "./SkillsGlobe";
 import { StatsBanner as StatsBannerComponent } from "./StatsBanner";
@@ -122,6 +124,14 @@ export const DynamicComponentRenderer = ({
             );
           case "ctaButton":
             return <CtaButtonComponent key={block._key || index} {...block} />;
+          case "projectSpotlight":
+            return (
+              <ProjectSpotlightComponent key={block._key || index} {...block} />
+            );
+          case "projectBento":
+            return (
+              <ProjectBentoComponent key={block._key || index} {...block} />
+            );
           default:
             return null;
         }

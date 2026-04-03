@@ -1,5 +1,7 @@
 import type { CarouselBlock } from "@/components/Carousel";
 import type { FeatureAccordionBlock } from "@/components/FeatureAccordion";
+import type { ProjectBentoBlock } from "@/components/ProjectBento";
+import type { ProjectSpotlightBlock } from "@/components/ProjectSpotlight";
 import type { SystemArchitectureBlock } from "@/components/SystemArchitecture";
 
 import type {
@@ -47,4 +49,6 @@ export type DynamicComponentBlock =
   | FeatureAccordionBlock
   | GridLayoutBlock
   | SkillsGlobeBlock
-  | CtaButtonBlock;
+  | CtaButtonBlock
+  | ProjectSpotlightBlock
+  | ProjectBentoBlock;
