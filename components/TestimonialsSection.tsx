@@ -1,3 +1,4 @@
+import { SectionHeading } from "@/components/atoms/SectionHeading";
 import type { TestimonialItem, TestimonialsSectionBlock } from "@/types/blocks";
 
 const TestimonialCard = ({ testimonial }: { testimonial: TestimonialItem }) => (
@@ -30,11 +31,7 @@ export const TestimonialsSection = ({
 
   return (
     <section className="py-4">
-      {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
-          {heading}
-        </h2>
-      )}
+      {heading && <SectionHeading>{heading}</SectionHeading>}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {testimonials.map((testimonial, idx) => (
           <TestimonialCard

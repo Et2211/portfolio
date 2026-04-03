@@ -4,7 +4,9 @@ import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+import { RichText } from "@/components/atoms/RichText";
 import { useInView } from "@/hooks/useInView";
+import { formatDate } from "@/lib/utils";
 import type { SanityBlock, TimelineItem as TimelineItemType } from "@/types/generated/sanity";
 
 type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
@@ -18,13 +20,6 @@ interface TimelineItemProps {
   fillPercent: number;
 }
 
-const formatDate = (dateString: string): string => {
-  if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-  });
-};
 
 export const TimelineItem = ({ item, index, containerRef, fillPercent }: TimelineItemProps) => {
   const isLeft = index % 2 === 0;
@@ -104,9 +99,9 @@ export const TimelineItem = ({ item, index, containerRef, fillPercent }: Timelin
           </div>
         )}
         {item.description && item.description.length > 0 && (
-          <div className={`prose prose-sm prose-gray dark:prose-invert max-w-none ${isLeft ? "md:text-right" : "md:text-left"}`}>
+          <RichText className={isLeft ? "md:text-right" : "md:text-left"}>
             <PortableText value={item.description as SanityBlock[]} />
-          </div>
+          </RichText>
         )}
       </div>
     </div>

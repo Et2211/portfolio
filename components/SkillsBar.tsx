@@ -1,15 +1,12 @@
+import { Badge } from "@/components/atoms/Badge";
+import { SectionHeading } from "@/components/atoms/SectionHeading";
+import { groupBy } from "@/lib/utils";
 import type { SkillItem, SkillsBarBlock } from "@/types/blocks";
 
 export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
   if (!skills || skills.length === 0) return null;
 
-  // Group skills by category
-  const grouped = skills.reduce<Record<string, SkillItem[]>>((acc, skill) => {
-    const cat = skill.category ?? "Other";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(skill);
-    return acc;
-  }, {});
+  const grouped = groupBy<SkillItem>(skills, (skill) => skill.category ?? "Other");
 
   const hasCategories =
     Object.keys(grouped).some((key) => key !== "Other") ||
@@ -17,11 +14,7 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
 
   return (
     <section className="py-4">
-      {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
-          {heading}
-        </h2>
-      )}
+      {heading && <SectionHeading>{heading}</SectionHeading>}
       {hasCategories ? (
         <div className="flex flex-col gap-6">
           {Object.entries(grouped).map(([category, items]) => (
@@ -31,12 +24,9 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
               </p>
               <div className="flex flex-wrap gap-2">
                 {items.map((skill, idx) => (
-                  <span
-                    key={skill._key ?? idx}
-                    className="rounded-full border border-zinc-300 dark:border-zinc-600 px-3 py-1 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900"
-                  >
+                  <Badge key={skill._key ?? idx} variant="skill">
                     {skill.name}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -45,12 +35,9 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
       ) : (
         <div className="flex flex-wrap gap-2">
           {skills.map((skill, idx) => (
-            <span
-              key={skill._key ?? idx}
-              className="rounded-full border border-zinc-300 dark:border-zinc-600 px-3 py-1 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900"
-            >
+            <Badge key={skill._key ?? idx} variant="skill">
               {skill.name}
-            </span>
+            </Badge>
           ))}
         </div>
       )}

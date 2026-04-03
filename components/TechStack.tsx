@@ -1,3 +1,5 @@
+import { Badge } from "@/components/atoms/Badge";
+import { SectionHeading } from "@/components/atoms/SectionHeading";
 import type { TechStackBlock } from "@/types/blocks";
 
 export const TechStack = ({ heading, groups }: TechStackBlock) => {
@@ -5,11 +7,7 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
 
   return (
     <section className="py-4">
-      {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
-          {heading}
-        </h2>
-      )}
+      {heading && <SectionHeading>{heading}</SectionHeading>}
       <div className="flex flex-col gap-8">
         {groups.map((group, idx) => (
           <div key={group._key ?? idx}>
@@ -28,12 +26,9 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
             {group.items && group.items.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {group.items.map((item, itemIdx) => (
-                  <span
-                    key={itemIdx}
-                    className="rounded-full border border-zinc-300 dark:border-zinc-600 px-3 py-1 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900"
-                  >
+                  <Badge key={itemIdx} variant="skill">
                     {item}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             )}
