@@ -6,11 +6,14 @@ export type CvDownloadBlock = {
   fileUrl?: string | null;
 };
 
-export const CvDownload = ({ label = "Download CV", fileUrl }: CvDownloadBlock) => {
+export const CvDownload = ({
+  label = "Download CV",
+  fileUrl,
+}: CvDownloadBlock) => {
   if (!fileUrl) return null;
 
   return (
-    <div className="flex justify-center py-4">
+    <div className="flex justify-center my-4">
       <a
         href={fileUrl}
         download

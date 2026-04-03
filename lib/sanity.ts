@@ -45,12 +45,14 @@ export async function fetchSanity<T>(
 export type SanityValue = string | number | boolean | null | SanityValue[] | AnyObject;
 interface AnyObject { [key: string]: SanityValue }
 
-const isSanityImage = (val: SanityValue): val is SanityImage =>
-  typeof val === "object" &&
-  val !== null &&
-  "asset" in (val as AnyObject) &&
-  typeof (val as AnyObject).asset === "object" &&
-  (val as AnyObject).asset !== null;
+const isSanityImage = (val: SanityValue): val is SanityImage => {
+  if (typeof val !== "object" || val === null) return false;
+  const obj = val as AnyObject;
+  if (!("asset" in obj) || typeof obj.asset !== "object" || obj.asset === null) return false;
+  const ref = (obj.asset as AnyObject)._ref;
+  // Only treat as image if the ref starts with "image-"
+  return typeof ref === "string" && ref.startsWith("image-");
+};
 
 export function buildImageUrlForItem(item: SanityValue): SanityValue {
   if (typeof item !== "object" || item === null) return item;
