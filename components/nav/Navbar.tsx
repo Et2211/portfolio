@@ -1,8 +1,10 @@
 import Link from "next/link";
 import React from "react";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { fetchSanity } from "@/lib/sanity";
 import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
+
 
 import { DropdownMenu } from "./DropdownMenu";
 
@@ -66,6 +68,7 @@ const Navbar = async (): Promise<React.ReactElement> => {
                 }
               />
             ))}
+            <ThemeToggle />
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { HeroPanel as HeroPanelComponent } from "./HeroPanel";
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { ProjectBento as ProjectBentoComponent } from "./ProjectBento";
 import { ProjectSpotlight as ProjectSpotlightComponent } from "./ProjectSpotlight";
+import { ScrollReveal } from "./ScrollReveal";
 import { SkillsBar as SkillsBarComponent } from "./SkillsBar";
 import { SkillsGlobe as SkillsGlobeComponent } from "./SkillsGlobe";
 import { StatsBanner as StatsBannerComponent } from "./StatsBanner";
@@ -43,76 +44,63 @@ export const DynamicComponentRenderer = ({
         const block = dynamicComponent.component[0];
         if (!block) return null;
 
+        const blockKey = block._key || index;
+        const delay = Math.min(index * 80, 320);
+
+        let content: React.ReactNode = null;
         switch (block._type) {
           case "timeline":
-            return (
-              <TimelineComponent
-                key={block._key || index}
-                items={block.items || []}
-              />
-            );
+            content = <TimelineComponent items={block.items || []} />;
+            break;
           case "imageWithDescription":
-            return (
+            content = (
               <ImageWithDescriptionComponent
-                key={block._key || index}
                 icon={block.icon}
                 image={block.image}
                 description={block.description}
                 textPosition={block.textPosition}
               />
             );
+            break;
           case "carousel":
-            return (
-              <CarouselComponent key={block._key || index} carousel={block} />
-            );
+            content = <CarouselComponent carousel={block} />;
+            break;
           case "systemArchitecture":
-            return (
-              <SystemArchitectureComponent
-                key={block._key || index}
-                block={block}
-              />
-            );
+            content = <SystemArchitectureComponent block={block} />;
+            break;
           case "heroPanel":
-            return <HeroPanelComponent key={block._key || index} {...block} />;
+            content = <HeroPanelComponent {...block} />;
+            break;
           case "skillsBar":
-            return <SkillsBarComponent key={block._key || index} {...block} />;
+            content = <SkillsBarComponent {...block} />;
+            break;
           case "featuredProjects":
-            return (
-              <FeaturedProjectsComponent key={block._key || index} {...block} />
-            );
+            content = <FeaturedProjectsComponent {...block} />;
+            break;
           case "statsBanner":
-            return (
-              <StatsBannerComponent key={block._key || index} {...block} />
-            );
+            content = <StatsBannerComponent {...block} />;
+            break;
           case "aboutSection":
-            return (
-              <AboutSectionComponent key={block._key || index} {...block} />
-            );
+            content = <AboutSectionComponent {...block} />;
+            break;
           case "testimonialsSection":
-            return (
-              <TestimonialsSectionComponent
-                key={block._key || index}
-                {...block}
-              />
-            );
+            content = <TestimonialsSectionComponent {...block} />;
+            break;
           case "contactSection":
-            return (
-              <ContactSectionComponent key={block._key || index} {...block} />
-            );
+            content = <ContactSectionComponent {...block} />;
+            break;
           case "techStack":
-            return <TechStackComponent key={block._key || index} {...block} />;
+            content = <TechStackComponent {...block} />;
+            break;
           case "featureAccordion":
-            return (
-              <FeatureAccordionComponent key={block._key || index} {...block} />
-            );
+            content = <FeatureAccordionComponent {...block} />;
+            break;
           case "skillsGlobe":
-            return (
-              <SkillsGlobeComponent key={block._key || index} {...block} />
-            );
+            content = <SkillsGlobeComponent {...block} />;
+            break;
           case "gridLayout":
-            return (
+            content = (
               <GridComponent
-                key={block._key || index}
                 {...block}
                 renderItem={(item, idx) => (
                   <DynamicComponentRenderer
@@ -122,19 +110,25 @@ export const DynamicComponentRenderer = ({
                 )}
               />
             );
+            break;
           case "ctaButton":
-            return <CtaButtonComponent key={block._key || index} {...block} />;
+            content = <CtaButtonComponent {...block} />;
+            break;
           case "projectSpotlight":
-            return (
-              <ProjectSpotlightComponent key={block._key || index} {...block} />
-            );
+            content = <ProjectSpotlightComponent {...block} />;
+            break;
           case "projectBento":
-            return (
-              <ProjectBentoComponent key={block._key || index} {...block} />
-            );
+            content = <ProjectBentoComponent {...block} />;
+            break;
           default:
             return null;
         }
+
+        return (
+          <ScrollReveal key={blockKey} delay={delay}>
+            {content}
+          </ScrollReveal>
+        );
       })}
     </div>
   );
