@@ -1,6 +1,7 @@
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
+import { RichText } from "@/components/atoms/RichText";
 import { getSimpleIcon } from "@/components/SkillsGlobe/simpleIconsRegistry";
 import type { SanityBlock, SanityKeyed } from "@/types/generated/sanity";
 
@@ -59,11 +60,9 @@ export const ImageWithDescription = ({
         />
       ) : null}
       {description && description.length > 0 && (
-        <div
-          className={`prose prose-sm prose-gray dark:prose-invert max-w-none overflow-auto ${isHorizontal ? "text-center lg:text-left lg:w-2/3" : "text-center"}`}
-        >
+        <RichText className={`overflow-auto ${isHorizontal ? "text-center lg:text-left lg:w-2/3" : "text-center"}`}>
           <PortableText value={description} />
-        </div>
+        </RichText>
       )}
     </div>
   );

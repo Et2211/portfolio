@@ -1,7 +1,9 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 import { DropdownMenuItem } from "./DropdownMenuItem";
 
@@ -17,21 +19,7 @@ interface DropdownMenuProps {
 
 export const DropdownMenu = ({ trigger, items }: DropdownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const dropdownRef = useOutsideClick<HTMLDivElement>(() => setIsOpen(false));
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") setIsOpen(false);

@@ -4,6 +4,10 @@ import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 import { useState } from "react";
 
+import { Badge } from "@/components/atoms/Badge";
+import { RichText } from "@/components/atoms/RichText";
+import { SectionHeading } from "@/components/atoms/SectionHeading";
+import { ProjectLinks } from "@/components/molecules/ProjectLinks";
 import type { FeaturedProject } from "@/types/blocks";
 
 export type ProjectSpotlightBlock = {
@@ -26,11 +30,7 @@ export const ProjectSpotlight = ({
 
   return (
     <section className="py-4">
-      {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
-          {heading}
-        </h2>
-      )}
+      {heading && <SectionHeading>{heading}</SectionHeading>}
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900">
         <div className="flex flex-col lg:flex-row">
           {project.image && (
@@ -53,52 +53,23 @@ export const ProjectSpotlight = ({
             {project.tags && project.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {project.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-700 dark:text-zinc-300"
-                  >
+                  <Badge key={idx} variant="tag">
                     {tag}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             )}
             {project.description && project.description.length > 0 && (
-              <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
+              <RichText>
                 <PortableText value={project.description} />
-              </div>
+              </RichText>
             )}
-            {(project.liveUrl || project.githubUrl || project.moreInfoUrl) && (
-              <div className="flex gap-3 mt-auto">
-                {project.liveUrl && (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
-                  >
-                    Live ↗
-                  </a>
-                )}
-                {project.githubUrl && (
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
-                  >
-                    GitHub ↗
-                  </a>
-                )}
-                {project.moreInfoUrl && (
-                  <a
-                    href={project.moreInfoUrl}
-                    className="text-sm font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity"
-                  >
-                    More info ↗
-                  </a>
-                )}
-              </div>
-            )}
+            <ProjectLinks
+              liveUrl={project.liveUrl}
+              githubUrl={project.githubUrl}
+              moreInfoUrl={project.moreInfoUrl}
+              className="mt-auto"
+            />
           </div>
         </div>
 

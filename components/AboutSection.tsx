@@ -1,6 +1,7 @@
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
+import { RichText } from "@/components/atoms/RichText";
 import type { AboutSectionBlock } from "@/types/blocks";
 
 import { AppLink } from "./AppLink";
@@ -21,9 +22,9 @@ export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
       )}
       <div className="flex flex-col gap-4 flex-1">
         {bio && bio.length > 0 && (
-          <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
+          <RichText>
             <PortableText value={bio} />
-          </div>
+          </RichText>
         )}
         {links && links.length > 0 && (
           <div className="flex flex-wrap gap-3 mt-2">
