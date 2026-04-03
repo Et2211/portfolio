@@ -7,6 +7,7 @@ import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
 
 
 import { DropdownMenu } from "./DropdownMenu";
+import { MobileMenu } from "./MobileMenu";
 
 async function getNavigation() {
   try {
@@ -47,8 +48,8 @@ const Navbar = async (): Promise<React.ReactElement> => {
             Etienne Sharkey
           </Link>
 
-          {/* Navigation Menu */}
-          <div className="flex items-center gap-2">
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-2">
             {navGroups.map((group, groupIdx) => (
               <DropdownMenu
                 key={groupIdx}
@@ -69,6 +70,22 @@ const Navbar = async (): Promise<React.ReactElement> => {
               />
             ))}
             <ThemeToggle />
+          </div>
+
+          {/* Mobile nav */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <MobileMenu
+              navGroups={navGroups.map((group) => ({
+                heading: group.navHeader ?? "",
+                items: (group.navList?.map(
+                  (item: NavItem & { page?: { url?: string }; externalUrl?: string }) => ({
+                    label: item.navTitle ?? "",
+                    href: getNavItemUrl(item),
+                  }),
+                ) || []) as { label: string; href: string }[],
+              }))}
+            />
           </div>
         </div>
       </div>
