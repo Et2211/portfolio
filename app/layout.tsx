@@ -39,7 +39,7 @@ const RootLayout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>): React.ReactElement => (
-  <html lang="en">
+  <html lang="en" suppressHydrationWarning>
     <head>
       <Script
         id="theme-init"

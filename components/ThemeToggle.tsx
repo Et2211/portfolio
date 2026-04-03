@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
+
+function subscribe(cb: () => void) {
+  const observer = new MutationObserver(cb);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
+}
 
 export const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(
-    () => typeof window !== "undefined" && document.documentElement.classList.contains("dark"),
+  const isDark = useSyncExternalStore(
+    subscribe,
+    () => document.documentElement.classList.contains("dark"),
+    () => false,
   );
 
   const toggle = () => {
     const next = !isDark;
-    setIsDark(next);
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("theme", next ? "dark" : "light");
   };
