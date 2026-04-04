@@ -111,7 +111,17 @@ export const SkillsGlobe = ({
   const [displayedSkill, setDisplayedSkill] = useState<SkillGlobeItem | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [layoutOpen, setLayoutOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   const positions = useMemo(
     () => generateFibonacciSpherePositions(skills.length, globeRadius),
@@ -153,12 +163,12 @@ export const SkillsGlobe = ({
         <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">{heading}</h2>
       )}
 
-      <div className="w-full flex flex-col lg:flex-row items-center">
+      <div className="w-full flex flex-col lg:flex-row items-start lg:items-center gap-6">
         {/* Globe */}
         <div
           className="flex-shrink-0 flex justify-center"
           style={{
-            width: layoutOpen ? "50%" : "100%",
+            width: isDesktop && layoutOpen ? '50%' : '100%',
             transition: "width 500ms ease-in-out",
           }}
         >
@@ -189,12 +199,14 @@ export const SkillsGlobe = ({
           </div>
         </div>
 
-        {/* Desktop panel — always in DOM so width can animate. Hidden on mobile (bottom sheet used instead). */}
+        {/* Desktop panel — only takes space when skill is selected */}
         <div
-          className="hidden lg:block overflow-hidden flex-shrink-0"
+          className="hidden lg:block overflow-hidden"
           style={{
-            width: layoutOpen ? "50%" : "0%",
-            transition: "width 500ms ease-in-out",
+            width: isDesktop && layoutOpen ? '50%' : '0%',
+            transition: "width 500ms ease-in-out, opacity 500ms ease-in-out",
+            opacity: layoutOpen ? 1 : 0,
+            pointerEvents: layoutOpen ? 'auto' : 'none',
           }}
         >
           {displayedSkill && (
@@ -209,25 +221,14 @@ export const SkillsGlobe = ({
         </div>
       </div>
 
-      {/* Mobile bottom sheet */}
+      {/* Mobile panel — appears below globe in normal flow */}
       {displayedSkill && (
-        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
-          {/* Backdrop */}
+        <div className="lg:hidden w-full mt-6">
           <AnimatedPanel
             isClosing={isClosing}
-            hiddenTransform="none"
-            className="absolute inset-0 bg-black/40"
+            hiddenTransform="translateY(1rem)"
+            className="flex flex-col items-start gap-4 p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 relative"
           >
-            <div className="absolute inset-0" onClick={triggerClose} />
-          </AnimatedPanel>
-
-          {/* Sheet */}
-          <AnimatedPanel
-            isClosing={isClosing}
-            hiddenTransform="translateY(100%)"
-            className="relative bg-white dark:bg-zinc-900 rounded-t-2xl p-6 pb-10 flex flex-col gap-4"
-          >
-            <div className="w-10 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full mx-auto -mt-1 mb-1" />
             <SkillDetail skill={displayedSkill} onClose={triggerClose} />
           </AnimatedPanel>
         </div>
