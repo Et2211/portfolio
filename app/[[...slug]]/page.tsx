@@ -32,7 +32,12 @@ async function getPageByUrl(url: string): Promise<Page | null> {
       }
     }
   }`;
-  return await fetchSanity<Page | null>(query, { url });
+  // Tag this fetch with the page URL so we can invalidate it specifically when this page changes
+  return await fetchSanity<Page | null>(
+    query,
+    { url },
+    { tags: [`page-${url}`] },
+  );
 }
 
 export async function generateMetadata({ params }: PageProps) {

@@ -39,12 +39,12 @@ export async function fetchSanity<T>(
   params: Record<string, string | number | boolean | null> = {},
   options?: { tags?: string[] },
 ): Promise<T> {
-  // If tags are provided, cache the data and allow tag-based revalidation.
-  // Otherwise, always fetch fresh data so that when ISR regenerates the page
-  // via revalidatePath, the data cache doesn't serve stale Sanity content.
-  const nextOptions = options?.tags
-    ? { tags: options.tags }
-    : { revalidate: 0 };
+  // Cache data with revalidate time and tag-based invalidation.
+  // When tags are provided, webhooks can invalidate specific data via revalidateTag.
+  const nextOptions = {
+    revalidate: 3600,
+    ...(options?.tags && { tags: options.tags }),
+  };
   return await sanityClient.fetch<T>(query, params, { next: nextOptions });
 }
 
