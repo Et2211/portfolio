@@ -32,8 +32,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // eslint-disable-next-line no-console
     console.log(`[webhook] Revalidating page: ${url}`);
     revalidatePath(url, "page");
-    // Also invalidate the data cache tag for this page
-    revalidateTag(`page-${url}`, "page");
     // eslint-disable-next-line no-console
     console.log(`[webhook] Revalidated page: ${url}`);
     return NextResponse.json({ revalidated: true, path: url });
