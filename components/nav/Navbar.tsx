@@ -1,4 +1,4 @@
-import { cacheTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 import React from "react";
 
@@ -11,6 +11,7 @@ import { MobileMenu } from "./MobileMenu";
 
 async function getNavigation() {
   "use cache";
+  cacheLife("days");
   cacheTag("sanity:global");
   try {
     const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
