@@ -39,12 +39,11 @@ export async function fetchSanity<T>(
   params: Record<string, string | number | boolean | null> = {},
   options?: { tags?: string[] },
 ): Promise<T> {
-  // Cache data with revalidate time and tag-based invalidation.
-  // When tags are provided, webhooks can invalidate specific data via revalidateTag.
-  const nextOptions = {
-    revalidate: 3600,
-    ...(options?.tags && { tags: options.tags }),
-  };
+  // Cache data for 60 seconds. Webhooks will clear the page route cache,
+  // and on regeneration the data will be freshly fetched.
+  const nextOptions = options?.tags
+    ? { tags: options.tags, revalidate: 3600 }
+    : { revalidate: 60 };
   return await sanityClient.fetch<T>(query, params, { next: nextOptions });
 }
 
