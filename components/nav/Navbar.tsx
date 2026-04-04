@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { cacheTag } from "next/cache";
+import Link from "next/link";
 import React from "react";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
