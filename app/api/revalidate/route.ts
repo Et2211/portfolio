@@ -1,5 +1,5 @@
 import { SIGNATURE_HEADER_NAME, isValidSignature } from "@sanity/webhook";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -27,14 +27,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const { _type, url } = payload;
 
-  if (_type !== "page" || typeof url !== "string" || !url) {
-    return NextResponse.json(
-      { message: "Nothing to revalidate" },
-      { status: 200 },
-    );
+  // Handle page-specific revalidation
+  if (_type === "page" && typeof url === "string" && url) {
+    revalidatePath(url, "page");
+    return NextResponse.json({ revalidated: true, path: url });
   }
 
-  revalidatePath(url, "page");
+  // Handle global content (navigation, footer) that touches all pages
+  if (_type === "navigation" || _type === "footer") {
+    revalidateTag("sanity:global", "page");
+    return NextResponse.json({ revalidated: true, tag: "sanity:global" });
+  }
 
-  return NextResponse.json({ revalidated: true, path: url });
+  // Unknown type
+  return NextResponse.json(
+    { message: "Nothing to revalidate" },
+    { status: 200 },
+  );
 }
