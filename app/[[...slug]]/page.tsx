@@ -1,6 +1,3 @@
-// Fallback ISR revalidation — on-demand revalidation via /api/revalidate webhook is the primary mechanism
-export const revalidate = 3600;
-
 import { cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 
