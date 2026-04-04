@@ -1,5 +1,5 @@
 import { SIGNATURE_HEADER_NAME, isValidSignature } from "@sanity/webhook";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -31,9 +31,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (_type === "page" && typeof url === "string" && url) {
     // eslint-disable-next-line no-console
     console.log(`[webhook] Revalidating page: ${url}`);
-    revalidatePath(url, "page");
-    // Also invalidate the data cache tag for this page
-    revalidateTag(`page-${url}`, "page");
+    // { expire: 0 } immediately expires the 'use cache' entry (required for webhook-triggered invalidation)
+    revalidateTag(`page:${url}`, { expire: 0 });
     // eslint-disable-next-line no-console
     console.log(`[webhook] Revalidated page: ${url}`);
     return NextResponse.json({ revalidated: true, path: url });
@@ -43,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (_type === "navigation" || _type === "footer") {
     // eslint-disable-next-line no-console
     console.log(`[webhook] Revalidating tag: sanity:global`);
-    revalidateTag("sanity:global", "page");
+    revalidateTag("sanity:global", { expire: 0 });
     // eslint-disable-next-line no-console
     console.log(`[webhook] Revalidated tag: sanity:global`);
     return NextResponse.json({ revalidated: true, tag: "sanity:global" });

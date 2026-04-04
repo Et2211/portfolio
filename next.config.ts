@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
   images: {
     // Disable image optimization to avoid issues with Strapi Cloud media subdomain
     unoptimized: true,
