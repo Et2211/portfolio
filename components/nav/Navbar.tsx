@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cacheTag } from "next/cache";
 import React from "react";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -9,13 +10,11 @@ import { DropdownMenu } from "./DropdownMenu";
 import { MobileMenu } from "./MobileMenu";
 
 async function getNavigation() {
+  "use cache";
+  cacheTag("sanity:global");
   try {
     const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
-    const data: Navigation = await fetchSanity(
-      query,
-      {},
-      { tags: ["sanity:global"] },
-    );
+    const data: Navigation = await fetchSanity(query);
     return data?.navGroups || [];
   } catch (error) {
     // eslint-disable-next-line no-console
