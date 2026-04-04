@@ -39,11 +39,12 @@ export async function fetchSanity<T>(
   params: Record<string, string | number | boolean | null> = {},
   options?: { tags?: string[] },
 ): Promise<T> {
-  // Cache data for 60 seconds. Webhooks will clear the page route cache,
-  // and on regeneration the data will be freshly fetched.
+  // For tagged fetches (navigation, footer): cache for 1 hour and use tag-based invalidation
+  // For page data: don't cache at the data layer (revalidate: 0) so webhook invalidation works cleanly.
+  // ISR still handles route caching, but data is always fresh on regeneration.
   const nextOptions = options?.tags
     ? { tags: options.tags, revalidate: 3600 }
-    : { revalidate: 60 };
+    : { revalidate: 0 };
   return await sanityClient.fetch<T>(query, params, { next: nextOptions });
 }
 
