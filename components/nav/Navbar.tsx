@@ -5,14 +5,17 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { fetchSanity } from "@/lib/sanity";
 import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
 
-
 import { DropdownMenu } from "./DropdownMenu";
 import { MobileMenu } from "./MobileMenu";
 
 async function getNavigation() {
   try {
     const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
-    const data: Navigation = await fetchSanity(query);
+    const data: Navigation = await fetchSanity(
+      query,
+      {},
+      { tags: ["sanity:global"] },
+    );
     return data?.navGroups || [];
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -79,7 +82,12 @@ const Navbar = async (): Promise<React.ReactElement> => {
               navGroups={navGroups.map((group) => ({
                 heading: group.navHeader ?? "",
                 items: (group.navList?.map(
-                  (item: NavItem & { page?: { url?: string }; externalUrl?: string }) => ({
+                  (
+                    item: NavItem & {
+                      page?: { url?: string };
+                      externalUrl?: string;
+                    },
+                  ) => ({
                     label: item.navTitle ?? "",
                     href: getNavItemUrl(item),
                   }),

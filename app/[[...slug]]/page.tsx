@@ -1,5 +1,5 @@
-// Revalidate this page every 60 seconds (ISR)
-export const revalidate = 60;
+// Fallback ISR revalidation — on-demand revalidation via /api/revalidate webhook is the primary mechanism
+export const revalidate = 3600;
 
 import { notFound } from "next/navigation";
 
@@ -12,9 +12,6 @@ interface PageProps {
     slug?: string[];
   }>;
 }
-
-
-
 
 async function getPageByUrl(url: string): Promise<Page | null> {
   // GROQ query to fetch page by url and its components with full expansion
@@ -37,7 +34,6 @@ async function getPageByUrl(url: string): Promise<Page | null> {
   }`;
   return await fetchSanity<Page | null>(query, { url });
 }
-
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
@@ -67,7 +63,7 @@ export default async function Page({ params }: PageProps) {
   const pageWithBuiltUrls = page.pageComponents
     ? {
         ...page,
-         
+
         pageComponents: buildImageUrlsForComponents(page.pageComponents),
       }
     : page;
@@ -80,8 +76,11 @@ export default async function Page({ params }: PageProps) {
         </h1>
 
         {/* Render dynamic components from Sanity */}
-        {pageWithBuiltUrls.pageComponents && pageWithBuiltUrls.pageComponents.length > 0 ? (
-          <DynamicComponentRenderer components={pageWithBuiltUrls.pageComponents} />
+        {pageWithBuiltUrls.pageComponents &&
+        pageWithBuiltUrls.pageComponents.length > 0 ? (
+          <DynamicComponentRenderer
+            components={pageWithBuiltUrls.pageComponents}
+          />
         ) : (
           <div className="prose dark:prose-invert max-w-none">
             <p className="text-zinc-600 dark:text-zinc-400">
