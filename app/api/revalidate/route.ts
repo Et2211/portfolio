@@ -29,13 +29,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   // Handle page-specific revalidation
   if (_type === "page" && typeof url === "string" && url) {
+    // eslint-disable-next-line no-console
+    console.log(`[webhook] Revalidating page: ${url}`);
     revalidatePath(url, "page");
+    // eslint-disable-next-line no-console
+    console.log(`[webhook] Revalidated page: ${url}`);
     return NextResponse.json({ revalidated: true, path: url });
   }
 
   // Handle global content (navigation, footer) that touches all pages
   if (_type === "navigation" || _type === "footer") {
+    // eslint-disable-next-line no-console
+    console.log(`[webhook] Revalidating tag: sanity:global`);
     revalidateTag("sanity:global", "page");
+    // eslint-disable-next-line no-console
+    console.log(`[webhook] Revalidated tag: sanity:global`);
     return NextResponse.json({ revalidated: true, tag: "sanity:global" });
   }
 
