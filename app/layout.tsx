@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { Suspense } from "react";
 
 import "./globals.css";
 
@@ -47,9 +48,11 @@ const RootLayout = ({
       >{`(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})()`}</Script>
     </head>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <Navbar />
-      {children}
-      <Footer />
+      <Suspense>
+        <Navbar />
+        {children}
+        <Footer />
+      </Suspense>
       <Analytics />
       <SpeedInsights />
     </body>

@@ -1,7 +1,4 @@
-// Fallback ISR revalidation — on-demand revalidation via /api/revalidate webhook is the primary mechanism
-export const revalidate = 3600;
-
-import { cacheTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
@@ -16,6 +13,7 @@ interface PageProps {
 
 async function getPageByUrl(url: string): Promise<Page | null> {
   "use cache";
+  cacheLife("days");
   cacheTag(`page:${url}`);
   // GROQ query to fetch page by url and its components with full expansion
   const query = `*[_type == "page" && url == $url][0]{
