@@ -9,23 +9,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Badge } from "@/components/atoms/Badge";
 import { RichText } from "@/components/atoms/RichText";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
+import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import type { FeaturedProject } from "@/types/blocks";
 
 interface ProjectCardProps {
   project: FeaturedProject;
   /** compact: tighter padding, no description, smaller text */
   compact?: boolean;
-}
-
-// Only true on mouse/trackpad — never on touch screens.
-// Defaults false (SSR-safe) so mobile gets plain static cards and the
-// tilt springs are never pushed during a touch scroll.
-function useIsPointerDevice() {
-  const [ok, setOk] = useState(false);
-  useEffect(() => {
-    setOk(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
-  }, []);
-  return ok;
 }
 
 export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
@@ -37,7 +27,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
   const safeId = uid.replace(/:/g, "-");
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [cardDims, setCardDims] = useState({ w: 0, h: 0 });
+  const [cardDims, setCardDims] = useState({ width: 0, height: 0 });
 
   // Critically-damped springs (ratio > 1) — cannot oscillate
   const rotateX = useSpring(0, { stiffness: 180, damping: 30 });
@@ -47,13 +37,17 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
     ([rx, ry]: number[]) => `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`,
   );
 
+  // Image shifts opposite to tilt — creates glass-depth illusion
+  const imageX = useTransform(rotateY, (ry: number) => -ry * 0.7);
+  const imageY = useTransform(rotateX, (rx: number) => rx * 0.7);
+
   // ResizeObserver only needed for the SVG tracer on pointer devices
   useEffect(() => {
     if (!interactive) return;
     const el = cardRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([e]) =>
-      setCardDims({ w: e.contentRect.width, h: e.contentRect.height })
+      setCardDims({ width: e.contentRect.width, height: e.contentRect.height })
     );
     ro.observe(el);
     return () => ro.disconnect();
@@ -94,11 +88,11 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
       className="relative flex flex-col rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900"
     >
       {/* SVG border tracer — pointer devices only */}
-      {cardDims.w > 0 && interactive && (
+      {cardDims.width > 0 && interactive && (
         <svg
           className="absolute inset-0 pointer-events-none z-20"
-          width={cardDims.w}
-          height={cardDims.h}
+          width={cardDims.width}
+          height={cardDims.height}
           style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
         >
           <defs>
@@ -110,8 +104,8 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
           </defs>
           <motion.rect
             x="1" y="1"
-            width={cardDims.w - 2}
-            height={cardDims.h - 2}
+            width={cardDims.width - 2}
+            height={cardDims.height - 2}
             rx="10.5"
             fill="none"
             stroke={`url(#tg-${safeId})`}
@@ -136,17 +130,23 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
 
       {project.image && (
         <div className="relative w-full aspect-video overflow-hidden">
-          <Image
-            src={project.image}
-            alt={project.title ?? "Project screenshot"}
-            fill
-            className="object-cover transition-transform duration-500 ease-out"
-            style={{ transform: isHovered && interactive ? "scale(1.05)" : "scale(1)" }}
-            sizes={compact ? "(max-width: 640px) 100vw, 33vw" : "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"}
-          />
+          <motion.div
+            className="absolute inset-0"
+            style={interactive ? { x: imageX, y: imageY } : undefined}
+            animate={interactive ? { scale: isHovered ? 1.06 : 1.02 } : undefined}
+            transition={{ scale: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
+          >
+            <Image
+              src={project.image}
+              alt={project.title ?? "Project screenshot"}
+              fill
+              className="object-cover"
+              sizes={compact ? "(max-width: 640px) 100vw, 33vw" : "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"}
+            />
+          </motion.div>
           {interactive && (
             <div
-              className="absolute inset-0 transition-opacity duration-500"
+              className="absolute inset-0 transition-opacity duration-500 pointer-events-none z-10"
               style={{
                 opacity: isHovered ? 1 : 0,
                 background: "linear-gradient(135deg, oklch(0.56 0.28 280 / 0.22) 0%, oklch(0.72 0.18 196 / 0.1) 100%)",
@@ -167,8 +167,8 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
         )}
         {project.tags && project.tags.length > 0 && (
           <div className={`flex flex-wrap ${compact ? "gap-1" : "gap-1.5"}`}>
-            {project.tags.map((tag, i) => (
-              <Badge key={i} variant="tag">{tag}</Badge>
+            {project.tags.map((tag, tagIdx) => (
+              <Badge key={tagIdx} variant="tag">{tag}</Badge>
             ))}
           </div>
         )}

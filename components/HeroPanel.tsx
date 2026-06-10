@@ -40,8 +40,8 @@ const ctaVariants: Variants = {
 
 const SplitWords = ({ text, className }: { text: string; className?: string }) => (
   <span className={className} aria-label={text}>
-    {text.split(" ").map((word, i) => (
-      <motion.span key={i} variants={wordVariants} style={{ display: "inline-block", marginRight: "0.3em" }}>
+    {text.split(" ").map((word, wordIdx) => (
+      <motion.span key={wordIdx} variants={wordVariants} style={{ display: "inline-block", marginRight: "0.3em" }}>
         {word}
       </motion.span>
     ))}
