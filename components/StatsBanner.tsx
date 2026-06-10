@@ -1,7 +1,7 @@
 "use client";
 
 import { animate } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useInView } from "@/hooks/useInView";
 import type { StatsBannerBlock } from "@/types/blocks";
@@ -15,7 +15,7 @@ function parseStatValue(raw: string): { num: number; suffix: string } | null {
 }
 
 const AnimatedStat = ({ value }: { value: string }) => {
-  const parsed = parseStatValue(value);
+  const parsed = useMemo(() => parseStatValue(value), [value]);
   const [displayed, setDisplayed] = useState(parsed ? `0${parsed.suffix}` : value);
   const { ref, isInView } = useInView({ threshold: 0.5, once: true });
   const hasAnimated = useRef(false);
