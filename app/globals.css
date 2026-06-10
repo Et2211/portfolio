@@ -193,6 +193,12 @@
 .ring-spin         { animation: ring-spin  9s linear infinite; transform-origin: center; }
 .ring-spin-reverse { animation: ring-spin 14s linear infinite reverse; transform-origin: center; }
 
+/* ── Custom cursor ─────────────────────────────────── */
+@media (pointer: fine) {
+  body { cursor: none; }
+  a, button, [role="button"] { cursor: none; }
+}
+
 /* ── Reduced motion ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
