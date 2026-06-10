@@ -9,23 +9,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Badge } from "@/components/atoms/Badge";
 import { RichText } from "@/components/atoms/RichText";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
+import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import type { FeaturedProject } from "@/types/blocks";
 
 interface ProjectCardProps {
   project: FeaturedProject;
   /** compact: tighter padding, no description, smaller text */
   compact?: boolean;
-}
-
-// Only true on mouse/trackpad — never on touch screens.
-// Defaults false (SSR-safe) so mobile gets plain static cards and the
-// tilt springs are never pushed during a touch scroll.
-function useIsPointerDevice() {
-  const [ok, setOk] = useState(false);
-  useEffect(() => {
-    setOk(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
-  }, []);
-  return ok;
 }
 
 export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {

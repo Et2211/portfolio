@@ -1,9 +1,10 @@
 "use client";
 
-import { animate } from "motion/react";
+import { animate, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useInView } from "@/hooks/useInView";
+import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import type { StatsBannerBlock } from "@/types/blocks";
 
 function parseStatValue(raw: string): { num: number; suffix: string } | null {
@@ -50,26 +51,46 @@ const AnimatedStat = ({ value }: { value: string }) => {
   );
 };
 
+const StatCard = ({
+  stat,
+  idx,
+  isPointer,
+}: {
+  stat: NonNullable<StatsBannerBlock["stats"]>[number];
+  idx: number;
+  isPointer: boolean;
+}) => (
+  <motion.div
+    key={stat._key ?? idx}
+    className="flex flex-col items-center gap-1 text-center py-8 px-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors duration-300 hover:border-[var(--accent-vivid)]/40"
+    whileHover={isPointer ? {
+      y: -4,
+      scale: 1.02,
+      boxShadow: "0 0 30px oklch(0.56 0.28 280 / 0.22), 0 8px 24px oklch(0 0 0 / 0.1)"
+    } : undefined}
+    transition={{ type: "spring", stiffness: 260, damping: 26 }}
+  >
+    {stat.value && <AnimatedStat value={stat.value} />}
+    {stat.label && (
+      <span className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{stat.label}</span>
+    )}
+    <div
+      className="mt-3 h-0.5 w-10 rounded-full"
+      style={{ background: "linear-gradient(90deg, var(--accent-vivid), var(--accent-vivid-2))" }}
+    />
+  </motion.div>
+);
+
 export const StatsBanner = ({ stats }: StatsBannerBlock) => {
+  const isPointer = useIsPointerDevice();
+
   if (!stats || stats.length === 0) return null;
 
   return (
     <section className="py-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat, idx) => (
-          <div
-            key={stat._key ?? idx}
-            className="flex flex-col items-center gap-1 text-center py-8 px-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors duration-300 hover:border-[var(--accent-vivid)]/40"
-          >
-            {stat.value && <AnimatedStat value={stat.value} />}
-            {stat.label && (
-              <span className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{stat.label}</span>
-            )}
-            <div
-              className="mt-3 h-0.5 w-10 rounded-full"
-              style={{ background: "linear-gradient(90deg, var(--accent-vivid), var(--accent-vivid-2))" }}
-            />
-          </div>
+          <StatCard key={stat._key ?? idx} stat={stat} idx={idx} isPointer={isPointer} />
         ))}
       </div>
     </section>

@@ -2,10 +2,12 @@
 
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 import { RichText } from "@/components/atoms/RichText";
 import { useInView } from "@/hooks/useInView";
+import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import { formatDate } from "@/lib/utils";
 import type { SanityBlock, TimelineItem as TimelineItemType } from "@/types/generated/sanity";
 
@@ -26,6 +28,8 @@ export const TimelineItem = ({ item, index, containerRef, fillPercent }: Timelin
   const { ref, isInView } = useInView({ threshold: 0.2 });
   const dotRef = useRef<HTMLDivElement>(null);
   const [dotThreshold, setDotThreshold] = useState(1);
+  const [cardHovered, setCardHovered] = useState(false);
+  const isPointer = useIsPointerDevice();
 
   useEffect(() => {
     const measure = () => {
@@ -55,16 +59,21 @@ export const TimelineItem = ({ item, index, containerRef, fillPercent }: Timelin
       : "border-zinc-900 dark:border-white bg-white dark:bg-zinc-900"
   }`;
 
+  const dotGlowStyle =
+    isFilled && cardHovered && isPointer
+      ? { boxShadow: "0 0 10px 3px oklch(0.56 0.28 280 / 0.5)" }
+      : undefined;
+
   // Mobile dot — no ref needed, threshold is measured from the desktop dot
   const mobileDot = (
     <div className="flex flex-col items-center flex-shrink-0 w-8">
-      <div className={dotClasses} />
+      <div className={dotClasses} style={dotGlowStyle} />
     </div>
   );
 
   const desktopDot = (
     <div className="flex flex-col items-center flex-shrink-0 w-16">
-      <div className={dotClasses} />
+      <div className={dotClasses} style={dotGlowStyle} />
     </div>
   );
 
@@ -78,8 +87,19 @@ export const TimelineItem = ({ item, index, containerRef, fillPercent }: Timelin
             : "opacity-0 md:translate-x-8"
       }`}
     >
-      <div className={`rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 ${isLeft ? "md:text-right" : "md:text-left"}`}>
-        <h3 className="text-lg font-semibold text-black dark:text-white mb-1">
+      <motion.div
+        className={`rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 ${isLeft ? "md:text-right" : "md:text-left"}`}
+        whileHover={isPointer ? {
+          boxShadow: "0 0 28px oklch(0.56 0.28 280 / 0.18), 0 4px 16px oklch(0 0 0 / 0.08)",
+        } : undefined}
+        transition={{ boxShadow: { duration: 0.25 } }}
+        onHoverStart={() => isPointer && setCardHovered(true)}
+        onHoverEnd={() => isPointer && setCardHovered(false)}
+      >
+        <h3
+          className="text-lg font-semibold mb-1 transition-colors duration-300"
+          style={{ color: cardHovered && isPointer ? "var(--accent-vivid)" : undefined }}
+        >
           {item.title}
         </h3>
         {dateRange && (
@@ -103,7 +123,7 @@ export const TimelineItem = ({ item, index, containerRef, fillPercent }: Timelin
             <PortableText value={item.description as SanityBlock[]} />
           </RichText>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 
