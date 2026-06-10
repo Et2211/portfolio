@@ -5,6 +5,9 @@ import type { TechStackBlock } from "@/types/blocks";
 export const TechStack = ({ heading, groups }: TechStackBlock) => {
   if (!groups || groups.length === 0) return null;
 
+  const allItems = groups.flatMap((g) => g.items ?? []);
+  const stripItems = allItems.length > 0 ? [...allItems, ...allItems] : [];
+
   return (
     <section className="py-4">
       {heading && <SectionHeading>{heading}</SectionHeading>}
@@ -35,6 +38,19 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
           </div>
         ))}
       </div>
+
+      {/* Scrolling strip of all technologies */}
+      {stripItems.length > 0 && (
+        <div className="tech-strip-wrap mt-10 -mx-4 overflow-hidden">
+          <div className="tech-strip flex gap-3 w-max py-2">
+            {stripItems.map((item, i) => (
+              <Badge key={i} variant="skill">
+                {item}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

@@ -47,6 +47,10 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
     ([rx, ry]: number[]) => `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`,
   );
 
+  // Image shifts opposite to tilt — creates glass-depth illusion
+  const imageX = useTransform(rotateY, (ry: number) => -ry * 0.7);
+  const imageY = useTransform(rotateX, (rx: number) => rx * 0.7);
+
   // ResizeObserver only needed for the SVG tracer on pointer devices
   useEffect(() => {
     if (!interactive) return;
@@ -136,17 +140,23 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
 
       {project.image && (
         <div className="relative w-full aspect-video overflow-hidden">
-          <Image
-            src={project.image}
-            alt={project.title ?? "Project screenshot"}
-            fill
-            className="object-cover transition-transform duration-500 ease-out"
-            style={{ transform: isHovered && interactive ? "scale(1.05)" : "scale(1)" }}
-            sizes={compact ? "(max-width: 640px) 100vw, 33vw" : "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"}
-          />
+          <motion.div
+            className="absolute inset-0"
+            style={interactive ? { x: imageX, y: imageY } : undefined}
+            animate={interactive ? { scale: isHovered ? 1.06 : 1.02 } : undefined}
+            transition={{ scale: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
+          >
+            <Image
+              src={project.image}
+              alt={project.title ?? "Project screenshot"}
+              fill
+              className="object-cover"
+              sizes={compact ? "(max-width: 640px) 100vw, 33vw" : "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"}
+            />
+          </motion.div>
           {interactive && (
             <div
-              className="absolute inset-0 transition-opacity duration-500"
+              className="absolute inset-0 transition-opacity duration-500 pointer-events-none z-10"
               style={{
                 opacity: isHovered ? 1 : 0,
                 background: "linear-gradient(135deg, oklch(0.56 0.28 280 / 0.22) 0%, oklch(0.72 0.18 196 / 0.1) 100%)",

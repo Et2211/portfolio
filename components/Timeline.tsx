@@ -42,10 +42,13 @@ export const Timeline = ({ items }: TimelineProps) => {
     <div ref={containerRef} className="relative">
       {/* Track line — left on mobile, centre on desktop */}
       <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-zinc-200 dark:bg-zinc-800" />
-      {/* Fill line */}
+      {/* Fill line — gradient accent matches the rest of the visual system */}
       <div
-        className="absolute left-4 md:left-1/2 top-0 w-px md:-translate-x-1/2 bg-zinc-900 dark:bg-white transition-none origin-top"
-        style={{ height: `${fillPercent * 100}%` }}
+        className="absolute left-4 md:left-1/2 top-0 w-[2px] md:-translate-x-1/2 transition-none origin-top"
+        style={{
+          height: `${fillPercent * 100}%`,
+          background: "linear-gradient(to bottom, var(--accent-vivid), var(--accent-vivid-2))",
+        }}
       />
 
       <div className="space-y-0">

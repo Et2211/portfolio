@@ -193,6 +193,67 @@
 .ring-spin         { animation: ring-spin  9s linear infinite; transform-origin: center; }
 .ring-spin-reverse { animation: ring-spin 14s linear infinite reverse; transform-origin: center; }
 
+/* ── Testimonials marquee ──────────────────────────── */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.marquee-left  { animation: marquee-left  32s linear infinite; }
+.marquee-right { animation: marquee-right 28s linear infinite; }
+.marquee-track:hover .marquee-left,
+.marquee-track:hover .marquee-right { animation-play-state: paused; }
+
+/* ── Tech strip marquee ────────────────────────────── */
+.tech-strip { animation: marquee-left 40s linear infinite; }
+.tech-strip-wrap:hover .tech-strip { animation-play-state: paused; }
+
+/* ── Badge shimmer ─────────────────────────────────── */
+@keyframes badge-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+.badge-shimmer { position: relative; overflow: hidden; }
+.badge-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+.badge-shimmer:hover::after,
+.badge-shimmer:focus-visible::after { animation: badge-shimmer 0.5s ease forwards; }
+
+/* ── Nav underline ─────────────────────────────────── */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 12px; /* matches px-3 padding */
+  right: 12px;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, var(--accent-vivid), var(--accent-vivid-2));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-underline:hover::after { transform: scaleX(1); }
+
+/* ── Custom cursor ─────────────────────────────────── */
+@media (pointer: fine) {
+  body { cursor: none; }
+  a, button, [role="button"] { cursor: none; }
+}
+
 /* ── Reduced motion ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
