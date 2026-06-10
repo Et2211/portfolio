@@ -155,3 +155,49 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ── Accent color tokens ───────────────────────────── */
+:root {
+  --accent-vivid:   oklch(0.56 0.28 280);
+  --accent-vivid-2: oklch(0.72 0.18 196);
+}
+.dark {
+  --accent-vivid:   oklch(0.72 0.28 280);
+  --accent-vivid-2: oklch(0.82 0.18 196);
+}
+
+/* ── Primary button ────────────────────────────────── */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, var(--accent-vivid) 0%, oklch(0.48 0.26 260) 100%);
+}
+.btn-primary-gradient:hover {
+  box-shadow: 0 0 28px oklch(0.56 0.28 280 / 0.45), 0 4px 16px oklch(0 0 0 / 0.25);
+}
+.dark .btn-primary-gradient:hover {
+  box-shadow: 0 0 28px oklch(0.72 0.28 280 / 0.55), 0 4px 16px oklch(0 0 0 / 0.4);
+}
+
+/* ── Hero blob animations ──────────────────────────── */
+@keyframes hero-blob-drift {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  50%       { transform: translate(8%, 14%) scale(1.15); }
+}
+.hero-blob         { animation: hero-blob-drift 16s ease-in-out infinite; will-change: transform; }
+.hero-blob-reverse { animation: hero-blob-drift 20s ease-in-out infinite reverse; will-change: transform; }
+
+/* ── Hero photo rings ──────────────────────────────── */
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.ring-spin         { animation: ring-spin  9s linear infinite; transform-origin: center; }
+.ring-spin-reverse { animation: ring-spin 14s linear infinite reverse; transform-origin: center; }
+
+/* ── Reduced motion ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

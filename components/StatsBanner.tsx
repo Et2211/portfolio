@@ -1,26 +1,74 @@
+"use client";
+
+import { animate } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+
+import { useInView } from "@/hooks/useInView";
 import type { StatsBannerBlock } from "@/types/blocks";
+
+function parseStatValue(raw: string): { num: number; suffix: string } | null {
+  const match = raw.match(/^([\d.,]+)(.*)$/);
+  if (!match) return null;
+  const num = parseFloat(match[1].replace(/,/g, ""));
+  if (isNaN(num)) return null;
+  return { num, suffix: match[2] ?? "" };
+}
+
+const AnimatedStat = ({ value }: { value: string }) => {
+  const parsed = parseStatValue(value);
+  const [displayed, setDisplayed] = useState(parsed ? `0${parsed.suffix}` : value);
+  const { ref, isInView } = useInView({ threshold: 0.5, once: true });
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!isInView || hasAnimated.current || !parsed) return;
+    hasAnimated.current = true;
+    const controls = animate(0, parsed.num, {
+      duration: 2,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+      onUpdate: (val) => {
+        const rounded = Number.isInteger(parsed.num) ? Math.round(val) : Math.round(val * 10) / 10;
+        setDisplayed(`${rounded}${parsed.suffix}`);
+      },
+    });
+    return () => controls.stop();
+  }, [isInView, parsed]);
+
+  return (
+    <span
+      ref={ref}
+      className="text-3xl sm:text-4xl font-bold tabular-nums"
+      style={{
+        background: "linear-gradient(135deg, var(--accent-vivid) 0%, var(--accent-vivid-2) 100%)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text",
+      }}
+    >
+      {displayed}
+    </span>
+  );
+};
 
 export const StatsBanner = ({ stats }: StatsBannerBlock) => {
   if (!stats || stats.length === 0) return null;
 
   return (
     <section className="py-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat, idx) => (
           <div
             key={stat._key ?? idx}
-            className="flex flex-col items-center gap-1 text-center py-6 px-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+            className="flex flex-col items-center gap-1 text-center py-8 px-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors duration-300 hover:border-[var(--accent-vivid)]/40"
           >
-            {stat.value && (
-              <span className="text-3xl sm:text-4xl font-bold text-black dark:text-white">
-                {stat.value}
-              </span>
-            )}
+            {stat.value && <AnimatedStat value={stat.value} />}
             {stat.label && (
-              <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                {stat.label}
-              </span>
+              <span className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{stat.label}</span>
             )}
+            <div
+              className="mt-3 h-0.5 w-10 rounded-full"
+              style={{ background: "linear-gradient(90deg, var(--accent-vivid), var(--accent-vivid-2))" }}
+            />
           </div>
         ))}
       </div>
