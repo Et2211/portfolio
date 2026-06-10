@@ -62,7 +62,7 @@ export const HeroPanel = ({
 
   return (
     <section
-      className={`relative flex flex-col items-center gap-8 py-12 overflow-hidden ${isRight ? "sm:flex-row-reverse" : "sm:flex-row"}`}
+      className={`relative flex flex-col items-center gap-8 py-12 ${isRight ? "sm:flex-row-reverse" : "sm:flex-row"}`}
     >
       {/* Vivid gradient blobs — CSS animations only, no JS scroll tracking */}
       <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
