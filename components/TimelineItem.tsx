@@ -1,8 +1,8 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import Image from "next/image";
 import { motion } from "motion/react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 import { RichText } from "@/components/atoms/RichText";

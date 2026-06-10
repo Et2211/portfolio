@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 export function useIsPointerDevice() {
-  const [ok, setOk] = useState(false);
-  useEffect(() => {
-    setOk(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
-  }, []);
-  return ok;
+  return useMemo(
+    () => typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches,
+    []
+  );
 }

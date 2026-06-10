@@ -35,8 +35,8 @@ const MarqueeRow = ({
   return (
     <div className="overflow-hidden">
       <div className={`flex gap-4 w-max ${direction === "left" ? "marquee-left" : "marquee-right"}`}>
-        {doubled.map((t, i) => (
-          <TestimonialCard key={i} testimonial={t} />
+        {doubled.map((testimonial, idx) => (
+          <TestimonialCard key={idx} testimonial={testimonial} />
         ))}
       </div>
     </div>

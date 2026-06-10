@@ -27,7 +27,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
   const safeId = uid.replace(/:/g, "-");
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [cardDims, setCardDims] = useState({ w: 0, h: 0 });
+  const [cardDims, setCardDims] = useState({ width: 0, height: 0 });
 
   // Critically-damped springs (ratio > 1) — cannot oscillate
   const rotateX = useSpring(0, { stiffness: 180, damping: 30 });
@@ -47,7 +47,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
     const el = cardRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([e]) =>
-      setCardDims({ w: e.contentRect.width, h: e.contentRect.height })
+      setCardDims({ width: e.contentRect.width, height: e.contentRect.height })
     );
     ro.observe(el);
     return () => ro.disconnect();
@@ -88,11 +88,11 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
       className="relative flex flex-col rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900"
     >
       {/* SVG border tracer — pointer devices only */}
-      {cardDims.w > 0 && interactive && (
+      {cardDims.width > 0 && interactive && (
         <svg
           className="absolute inset-0 pointer-events-none z-20"
-          width={cardDims.w}
-          height={cardDims.h}
+          width={cardDims.width}
+          height={cardDims.height}
           style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
         >
           <defs>
@@ -104,8 +104,8 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
           </defs>
           <motion.rect
             x="1" y="1"
-            width={cardDims.w - 2}
-            height={cardDims.h - 2}
+            width={cardDims.width - 2}
+            height={cardDims.height - 2}
             rx="10.5"
             fill="none"
             stroke={`url(#tg-${safeId})`}
@@ -167,8 +167,8 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
         )}
         {project.tags && project.tags.length > 0 && (
           <div className={`flex flex-wrap ${compact ? "gap-1" : "gap-1.5"}`}>
-            {project.tags.map((tag, i) => (
-              <Badge key={i} variant="tag">{tag}</Badge>
+            {project.tags.map((tag, tagIdx) => (
+              <Badge key={tagIdx} variant="tag">{tag}</Badge>
             ))}
           </div>
         )}
