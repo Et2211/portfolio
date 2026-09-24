@@ -3,14 +3,62 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 import prettierConfig from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import react from "eslint-plugin-react";
 import tseslint from "typescript-eslint";
+
+// Formatting (quotes, semicolons, line length) is owned by Prettier —
+// eslint-config-prettier is applied last and switches those rules off.
+const sharedRules = {
+  // Imports
+  "sort-imports": [
+    "error",
+    {
+      ignoreCase: false,
+      ignoreDeclarationSort: true,
+      ignoreMemberSort: false,
+      memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
+      allowSeparatedGroups: true,
+    },
+  ],
+  "import/no-unresolved": "error",
+  "import/no-named-as-default": "error",
+  "import/order": [
+    "error",
+    {
+      groups: [
+        "builtin",
+        "external",
+        "internal",
+        ["sibling", "parent"],
+        "index",
+        "unknown",
+      ],
+      "newlines-between": "always",
+      alphabetize: { order: "asc", caseInsensitive: true },
+    },
+  ],
+  "import/no-unassigned-import": [
+    "error",
+    { allow: ["**/*.css", "**/*.scss", "server-only"] },
+  ],
+  "import/prefer-default-export": "off",
+
+  // General
+  "no-underscore-dangle": "off",
+  "no-console": "error",
+  "id-length": ["error", { exceptions: ["e", "x", "y", "_"] }],
+  "arrow-body-style": "off",
+  "consistent-return": "off",
+  "class-methods-use-this": "off",
+  "dot-notation": "off",
+  "require-await": "error",
+};
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
 
-  // Global ignores
   globalIgnores([
     "**/.next/**",
     "**/out/**",
@@ -22,135 +70,36 @@ const eslintConfig = defineConfig([
     "**/.vercel/**",
   ]),
 
-  // JavaScript rules
   {
     files: ["**/*.js", "**/*.mjs"],
-    plugins: {
-      import: importPlugin,
-    },
-    rules: {
-      // Import rules
-      "sort-imports": [
-        "error",
-        {
-          ignoreCase: false,
-          ignoreDeclarationSort: true,
-          ignoreMemberSort: false,
-          memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
-          allowSeparatedGroups: true,
-        },
-      ],
-      "import/no-unresolved": "error",
-      "import/no-named-as-default": "error",
-      "import/order": [
-        "error",
-        {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            ["sibling", "parent"],
-            "index",
-            "unknown",
-          ],
-          "newlines-between": "always",
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
-        },
-      ],
-      "import/no-unassigned-import": [
-        "error",
-        { allow: ["**/*.css", "**/*.scss"] },
-      ],
-      "import/prefer-default-export": "off",
-
-      // Common rules
-      quotes: ["error", "double", { avoidEscape: true }],
-      "no-underscore-dangle": "off",
-      "no-console": "error",
-      "id-length": ["error", { exceptions: ["e", "x", "y", "_"] }],
-      "arrow-body-style": "off",
-      "consistent-return": "off",
-      "class-methods-use-this": "off",
-      "dot-notation": "off",
-      "require-await": "error",
-      curly: ["error", "all"],
-      "max-len": [
-        "error",
-        {
-          code: 120,
-          ignoreStrings: true,
-          ignorePattern: "^.*https?.*$|^.*eslint-disable.*$",
-          ignoreTemplateLiterals: true,
-          ignoreRegExpLiterals: true,
-        },
-      ],
-    },
+    plugins: { import: importPlugin },
+    rules: sharedRules,
   },
 
-  // TypeScript rules
   {
     files: ["**/*.ts", "**/*.tsx"],
     plugins: {
       "@typescript-eslint": tseslint.plugin,
       import: importPlugin,
-      react: react,
+      react,
     },
     languageOptions: {
       parser: tseslint.parser,
-      parserOptions: {
-        project: "./tsconfig.json",
-      },
+      parserOptions: { project: "./tsconfig.json" },
     },
     rules: {
-      // TypeScript-specific rules
+      ...sharedRules,
+
+      // The jsx-a11y plugin is registered by eslint-config-next, which only
+      // enables a handful of its rules — turn on the full recommended set.
+      ...jsxA11y.flatConfigs.recommended.rules,
+
       "@typescript-eslint/no-unused-expressions": [
         "error",
         { allowShortCircuit: true, allowTernary: true },
       ],
       "@typescript-eslint/dot-notation": "off",
-      "@typescript-eslint/quotes": ["error", "double", { avoidEscape: true }],
 
-      // Import rules
-      "sort-imports": [
-        "error",
-        {
-          ignoreCase: false,
-          ignoreDeclarationSort: true,
-          ignoreMemberSort: false,
-          memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
-          allowSeparatedGroups: true,
-        },
-      ],
-      "import/no-unresolved": "error",
-      "import/no-named-as-default": "error",
-      "import/order": [
-        "error",
-        {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            ["sibling", "parent"],
-            "index",
-            "unknown",
-          ],
-          "newlines-between": "always",
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
-        },
-      ],
-      "import/no-unassigned-import": [
-        "error",
-        { allow: ["**/*.css", "**/*.scss"] },
-      ],
-      "import/prefer-default-export": "off",
-
-      // React rules
       "react/jsx-props-no-spreading": "off",
       "react/require-default-props": "off",
       "react/function-component-definition": [
@@ -160,42 +109,25 @@ const eslintConfig = defineConfig([
           unnamedComponents: "arrow-function",
         },
       ],
-      "react-hooks/exhaustive-deps": "off",
-
-      // Common rules
-      quotes: ["error", "double", { avoidEscape: true }],
-      "no-underscore-dangle": "off",
-      "no-console": "error",
-      "id-length": ["error", { exceptions: ["e", "x", "y", "_"] }],
-      "arrow-body-style": "off",
-      "consistent-return": "off",
-      "class-methods-use-this": "off",
-      "dot-notation": "off",
-      "require-await": "error",
-      curly: ["error", "all"],
-      "max-len": [
-        "error",
-        {
-          code: 120,
-          ignoreStrings: true,
-          ignorePattern: "^.*https?.*$|^.*eslint-disable.*$",
-          ignoreTemplateLiterals: true,
-          ignoreRegExpLiterals: true,
-        },
-      ],
+      "react-hooks/exhaustive-deps": "warn",
     },
   },
 
-  // Next.js page and layout files - they require async functions
+  // Async server components are declared as functions
   {
-    files: ["app/**/page.tsx", "app/**/layout.tsx", "components/Navbar.tsx"],
-    rules: {
-      "react/function-component-definition": "off",
-    },
+    files: [
+      "app/**/page.tsx",
+      "app/**/layout.tsx",
+      "components/nav/Navbar.tsx",
+    ],
+    rules: { "react/function-component-definition": "off" },
   },
 
-  // Prettier config to disable conflicting rules
   prettierConfig,
+
+  // eslint-config-prettier disables `curly`, but "all" never conflicts with
+  // Prettier, so re-enable it after the Prettier config.
+  { rules: { curly: ["error", "all"] } },
 ]);
 
 export default eslintConfig;
