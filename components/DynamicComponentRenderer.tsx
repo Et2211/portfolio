@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import type { DynamicComponentWithBuiltUrls } from "@/types/dynamicComponent";
 
 import { AboutSection as AboutSectionComponent } from "./AboutSection";
@@ -128,6 +130,12 @@ export const DynamicComponentRenderer = ({
             break;
           default:
             return null;
+        }
+
+        // The first block is usually above the fold (and often the LCP
+        // element), so render it straight away instead of revealing it.
+        if (index === 0) {
+          return <Fragment key={blockKey}>{content}</Fragment>;
         }
 
         return (

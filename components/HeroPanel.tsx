@@ -1,69 +1,30 @@
-"use client";
-
-import type { Variants } from "motion/react";
-import { motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 
 import type { HeroPanelBlock } from "@/types/blocks";
 
 import { AppLink } from "./AppLink";
 
-const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+// Entrance timing (see .hero-enter-* in globals.css): elements enter one after
+// another, and the words inside the name and role stagger within their slot.
+const FIRST_DELAY_MS = 50;
+const STEP_MS = 100;
 
-const containerVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
-};
+const enterDelay = (ms: number) => ({ animationDelay: `${ms}ms` });
 
-const photoVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.85 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: EASE } },
-};
-
-const wordVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.5, ease: EASE },
-  },
-};
-
-const taglineVariants: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
-};
-
-const ctaVariants: Variants = {
-  hidden: { opacity: 0, y: 10, scale: 0.96 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring" as const, stiffness: 220, damping: 24 },
-  },
-};
-
-const SplitWords = ({
-  text,
-  className,
-}: {
-  text: string;
-  className?: string;
-}) => (
-  <span className={className} aria-label={text}>
-    {text.split(" ").map((word, wordIdx) => (
-      <motion.span
-        key={wordIdx}
-        variants={wordVariants}
-        style={{ display: "inline-block", marginRight: "0.3em" }}
+const SplitWords = ({ text, startMs }: { text: string; startMs: number }) =>
+  text.split(" ").map((word, wordIdx) => (
+    // Real spaces between the inline-block words keep the text readable to
+    // copy/paste, innerText and screen readers.
+    <span key={wordIdx}>
+      {wordIdx > 0 && " "}
+      <span
+        className="hero-enter-word"
+        style={enterDelay(startMs + FIRST_DELAY_MS + wordIdx * STEP_MS)}
       >
         {word}
-      </motion.span>
-    ))}
-  </span>
-);
+      </span>
+    </span>
+  ));
 
 export const HeroPanel = ({
   name,
@@ -75,7 +36,15 @@ export const HeroPanel = ({
   imagePosition = "left",
 }: HeroPanelBlock) => {
   const isRight = imagePosition === "right";
-  const shouldReduceMotion = useReducedMotion();
+
+  // Slots are assigned in render order, skipping anything not rendered.
+  let slot = 0;
+  const nextSlot = () => FIRST_DELAY_MS + slot++ * STEP_MS;
+  const photoMs = photo ? nextSlot() : 0;
+  const nameMs = name ? nextSlot() : 0;
+  const roleMs = role ? nextSlot() : 0;
+  const taglineMs = tagline ? nextSlot() : 0;
+  const ctaMs = ctaLabel && ctaUrl ? nextSlot() : 0;
 
   return (
     <section
@@ -93,131 +62,115 @@ export const HeroPanel = ({
         />
       </div>
 
-      <motion.div
-        variants={containerVariants}
-        initial={shouldReduceMotion ? "visible" : "hidden"}
-        animate="visible"
-        className="contents"
-      >
-        {/* Photo */}
-        {photo && (
-          <motion.div
-            variants={photoVariants}
-            className="relative flex-shrink-0"
-          >
-            {/* Outer spinning dashed ring */}
-            {!shouldReduceMotion && (
-              <>
-                <div className="ring-spin absolute" style={{ inset: "-20px" }}>
-                  <svg viewBox="0 0 100 100" className="h-full w-full">
-                    <defs>
-                      <linearGradient
-                        id="ring-grad"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="100%"
-                      >
-                        <stop offset="0%" stopColor="oklch(0.56 0.28 280)" />
-                        <stop offset="100%" stopColor="oklch(0.72 0.18 196)" />
-                      </linearGradient>
-                    </defs>
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="47"
-                      fill="none"
-                      stroke="url(#ring-grad)"
-                      strokeWidth="1.2"
-                      strokeDasharray="8 7"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <div
-                  className="ring-spin-reverse absolute"
-                  style={{ inset: "-8px" }}
-                >
-                  <svg viewBox="0 0 100 100" className="h-full w-full">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="47"
-                      fill="none"
-                      stroke="oklch(0.72 0.18 196 / 0.55)"
-                      strokeWidth="0.8"
-                      strokeDasharray="3 14"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              </>
-            )}
-            {/* Glow halo */}
-            <div
-              className="absolute inset-0 -z-10 rounded-full"
-              style={{
-                background: "oklch(0.56 0.28 280 / 0.35)",
-                filter: "blur(24px)",
-                transform: "scale(1.2)",
-              }}
-            />
-            <Image
-              src={photo}
-              alt={name ?? "Profile photo"}
-              width={240}
-              height={240}
-              className="relative z-10 h-40 w-40 rounded-full object-cover sm:h-56 sm:w-56 md:h-64 md:w-64"
-              priority
-            />
-          </motion.div>
-        )}
-
-        {/* Text */}
+      {/* Photo */}
+      {photo && (
         <div
-          className={`flex flex-1 flex-col gap-4 text-center ${isRight ? "sm:text-right" : "sm:text-left"}`}
+          className="hero-enter-photo relative flex-shrink-0"
+          style={enterDelay(photoMs)}
         >
-          {name && (
-            <motion.h1
-              className="text-3xl leading-tight font-bold sm:text-4xl md:text-5xl"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--foreground) 50%, var(--accent-vivid) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-              variants={containerVariants}
-            >
-              <SplitWords text={name} />
-            </motion.h1>
-          )}
-          {role && (
-            <motion.p
-              className="text-lg font-medium sm:text-xl"
-              style={{ color: "var(--accent-vivid)" }}
-              variants={containerVariants}
-            >
-              <SplitWords text={role} />
-            </motion.p>
-          )}
-          {tagline && (
-            <motion.p
-              className="text-base text-zinc-600 dark:text-zinc-300"
-              variants={taglineVariants}
-            >
-              {tagline}
-            </motion.p>
-          )}
-          {ctaLabel && ctaUrl && (
-            <motion.div className="mt-2" variants={ctaVariants}>
-              <AppLink href={ctaUrl} variant="primary">
-                {ctaLabel}
-              </AppLink>
-            </motion.div>
-          )}
+          {/* Spinning dashed rings (the reduced-motion CSS rule stops them) */}
+          <div className="ring-spin absolute" style={{ inset: "-20px" }}>
+            <svg viewBox="0 0 100 100" className="h-full w-full">
+              <defs>
+                <linearGradient
+                  id="ring-grad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="oklch(0.56 0.28 280)" />
+                  <stop offset="100%" stopColor="oklch(0.72 0.18 196)" />
+                </linearGradient>
+              </defs>
+              <circle
+                cx="50"
+                cy="50"
+                r="47"
+                fill="none"
+                stroke="url(#ring-grad)"
+                strokeWidth="1.2"
+                strokeDasharray="8 7"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          <div className="ring-spin-reverse absolute" style={{ inset: "-8px" }}>
+            <svg viewBox="0 0 100 100" className="h-full w-full">
+              <circle
+                cx="50"
+                cy="50"
+                r="47"
+                fill="none"
+                stroke="oklch(0.72 0.18 196 / 0.55)"
+                strokeWidth="0.8"
+                strokeDasharray="3 14"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          {/* Glow halo */}
+          <div
+            className="absolute inset-0 -z-10 rounded-full"
+            style={{
+              background: "oklch(0.56 0.28 280 / 0.35)",
+              filter: "blur(24px)",
+              transform: "scale(1.2)",
+            }}
+          />
+          <Image
+            src={photo}
+            alt={name ?? "Profile photo"}
+            width={240}
+            height={240}
+            className="relative z-10 h-40 w-40 rounded-full object-cover sm:h-56 sm:w-56 md:h-64 md:w-64"
+            priority
+          />
         </div>
-      </motion.div>
+      )}
+
+      {/* Text */}
+      <div
+        className={`flex flex-1 flex-col gap-4 text-center ${isRight ? "sm:text-right" : "sm:text-left"}`}
+      >
+        {name && (
+          <h1
+            className="text-3xl leading-tight font-bold sm:text-4xl md:text-5xl"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--foreground) 50%, var(--accent-vivid) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            <SplitWords text={name} startMs={nameMs} />
+          </h1>
+        )}
+        {role && (
+          <p
+            className="text-lg font-medium sm:text-xl"
+            style={{ color: "var(--accent-vivid)" }}
+          >
+            <SplitWords text={role} startMs={roleMs} />
+          </p>
+        )}
+        {tagline && (
+          <p
+            className="hero-enter-rise text-base text-zinc-600 dark:text-zinc-300"
+            style={enterDelay(taglineMs)}
+          >
+            {tagline}
+          </p>
+        )}
+        {ctaLabel && ctaUrl && (
+          <div className="hero-enter-pop mt-2" style={enterDelay(ctaMs)}>
+            <AppLink href={ctaUrl} variant="primary">
+              {ctaLabel}
+            </AppLink>
+          </div>
+        )}
+      </div>
     </section>
   );
 };

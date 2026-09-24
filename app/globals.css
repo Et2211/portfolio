@@ -35,6 +35,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -317,13 +322,76 @@
   transform: scaleX(1);
 }
 
+/* ── Entrance animations ───────────────────────────── */
+/*
+ * Progressive enhancement: content is visible by default. The theme script
+ * in app/layout.tsx adds `js` to <html> before first paint, so blocks only
+ * start hidden when JavaScript is running to reveal them. No-JS visitors,
+ * crawlers and link unfurlers always get the content.
+ */
+.scroll-reveal {
+  transition:
+    opacity 600ms var(--ease-out-expo),
+    transform 600ms var(--ease-out-expo);
+}
+.js .scroll-reveal:not([data-revealed]) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/*
+ * Hero entrance: CSS keyframes rather than JS so it plays on first paint,
+ * before hydration, and still ends visible without JavaScript. Stagger with
+ * an inline animation-delay.
+ */
+@keyframes hero-enter-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+@keyframes hero-enter-word {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+  }
+}
+@keyframes hero-enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes hero-enter-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+.hero-enter-photo {
+  animation: hero-enter-scale 0.7s var(--ease-out-expo) both;
+}
+.hero-enter-word {
+  display: inline-block;
+  animation: hero-enter-word 0.5s var(--ease-out-expo) both;
+}
+.hero-enter-rise {
+  animation: hero-enter-rise 0.5s var(--ease-out-expo) both;
+}
+.hero-enter-pop {
+  animation: hero-enter-pop 0.6s var(--ease-out-back) both;
+}
+
 /* ── Reduced motion ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
     animation-iteration-count: 1 !important;
   }
 }

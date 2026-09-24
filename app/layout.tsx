@@ -46,7 +46,7 @@ const RootLayout = ({
       <Script
         id="theme-init"
         strategy="beforeInteractive"
-      >{`(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})()`}</Script>
+      >{`(function(){var d=document.documentElement;d.classList.add('js');var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){d.classList.add('dark')}})()`}</Script>
     </head>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <ScrollProgressBar />
