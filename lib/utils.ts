@@ -9,9 +9,13 @@ export function formatDate(dateString: string): string {
   if (!dateString) {
     return "";
   }
+  // Sanity dates are plain YYYY-MM-DD strings, which JS parses as UTC
+  // midnight. Format in UTC too, otherwise visitors west of UTC see the
+  // previous month (and the server/client render disagree).
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
+    timeZone: "UTC",
   });
 }
 
