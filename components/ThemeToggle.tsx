@@ -4,7 +4,10 @@ import { useSyncExternalStore } from "react";
 
 function subscribe(cb: () => void) {
   const observer = new MutationObserver(cb);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
   return () => observer.disconnect();
 }
 
@@ -26,7 +29,7 @@ export const ThemeToggle = () => {
       type="button"
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="flex items-center justify-center w-9 h-9 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+      className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
     >
       {isDark ? (
         // Sun

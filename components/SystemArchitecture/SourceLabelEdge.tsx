@@ -36,11 +36,15 @@ export const SourceLabelEdge = ({
   });
 
   const pathRef = useRef<SVGPathElement>(null);
-  const [labelPos, setLabelPos] = useState<{ px: number; py: number } | null>(null);
+  const [labelPos, setLabelPos] = useState<{ px: number; py: number } | null>(
+    null,
+  );
 
   useEffect(() => {
     const el = pathRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const len = el.getTotalLength();
     const pt = el.getPointAtLength(len * labelOffset);
     setLabelPos({ px: pt.x, py: pt.y });

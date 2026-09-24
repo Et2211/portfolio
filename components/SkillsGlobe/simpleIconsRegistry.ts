@@ -9,7 +9,9 @@ export interface SimpleIconData {
 
 // Map a skill key (e.g. "react", "typescript") to a simple-icons icon data object
 export function getSimpleIcon(skillKey: string): SimpleIconData | null {
-  if (!skillKey) return null;
+  if (!skillKey) {
+    return null;
+  }
   // Accept both "react" and "siReact" (case-insensitive)
   const normalized = skillKey.replace(/^si/i, "").toLowerCase();
   for (const iconKey in simpleIcons) {

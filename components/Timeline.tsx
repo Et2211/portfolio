@@ -21,7 +21,9 @@ export const Timeline = ({ items }: TimelineProps) => {
   useEffect(() => {
     const handleScroll = () => {
       const el = containerRef.current;
-      if (!el) return;
+      if (!el) {
+        return;
+      }
 
       const { top, height } = el.getBoundingClientRect();
       const windowH = window.innerHeight;
@@ -36,18 +38,21 @@ export const Timeline = ({ items }: TimelineProps) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (!items || items.length === 0) return null;
+  if (!items || items.length === 0) {
+    return null;
+  }
 
   return (
     <div ref={containerRef} className="relative">
       {/* Track line — left on mobile, centre on desktop */}
-      <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-zinc-200 dark:bg-zinc-800" />
+      <div className="absolute top-0 bottom-0 left-4 w-px bg-zinc-200 md:left-1/2 md:-translate-x-1/2 dark:bg-zinc-800" />
       {/* Fill line — gradient accent matches the rest of the visual system */}
       <div
-        className="absolute left-4 md:left-1/2 top-0 w-[2px] md:-translate-x-1/2 transition-none origin-top"
+        className="absolute top-0 left-4 w-[2px] origin-top transition-none md:left-1/2 md:-translate-x-1/2"
         style={{
           height: `${fillPercent * 100}%`,
-          background: "linear-gradient(to bottom, var(--accent-vivid), var(--accent-vivid-2))",
+          background:
+            "linear-gradient(to bottom, var(--accent-vivid), var(--accent-vivid-2))",
         }}
       />
 

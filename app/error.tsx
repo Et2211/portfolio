@@ -15,27 +15,27 @@ const ErrorPage = ({ error, reset }: ErrorProps): React.ReactElement => {
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
       <div className="text-center">
-        <h1 className="text-6xl font-bold text-black dark:text-white mb-4">
+        <h1 className="mb-4 text-6xl font-bold text-black dark:text-white">
           500
         </h1>
-        <h2 className="text-2xl font-semibold text-zinc-600 dark:text-zinc-400 mb-8">
+        <h2 className="mb-8 text-2xl font-semibold text-zinc-600 dark:text-zinc-400">
           Something went wrong
         </h2>
-        <p className="text-zinc-500 dark:text-zinc-500 mb-8">
+        <p className="mb-8 text-zinc-500 dark:text-zinc-500">
           An unexpected error occurred. Please try again.
         </p>
-        <div className="flex gap-4 justify-center">
+        <div className="flex justify-center gap-4">
           <button
             onClick={reset}
-            className="inline-block px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
+            className="inline-block rounded-lg bg-black px-6 py-3 text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
           >
             Try Again
           </button>
           <Link
             href="/"
-            className="inline-block px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-black dark:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            className="inline-block rounded-lg border border-zinc-300 px-6 py-3 text-black transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-900"
           >
             Go Home
           </Link>

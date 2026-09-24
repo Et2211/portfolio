@@ -29,7 +29,9 @@ export const Carousel = ({ carousel }: CarouselProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
+    if (!node) {
+      return;
+    }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -76,19 +78,25 @@ export const Carousel = ({ carousel }: CarouselProps) => {
   );
 
   const onSelect = useCallback(() => {
-    if (!emblaApi) return;
+    if (!emblaApi) {
+      return;
+    }
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
 
   useEffect(() => {
-    if (!emblaApi) return;
+    if (!emblaApi) {
+      return;
+    }
     onSelect();
     setScrollSnaps(emblaApi.scrollSnapList());
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
   }, [emblaApi, onSelect]);
 
-  if (!carousel.items || carousel.items.length === 0) return null;
+  if (!carousel.items || carousel.items.length === 0) {
+    return null;
+  }
 
   // Calculate how many 300px slides can fit in the container
   // Each slide has 300px width + 16px padding (8px on each side)
@@ -120,7 +128,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                   className="min-w-0 flex-shrink-0 px-2"
                   style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
                 >
-                  <div className="w-[300px] h-[300px] mx-auto overflow-auto flex flex-col">
+                  <div className="mx-auto flex h-[300px] w-[300px] flex-col overflow-auto">
                     <ImageWithDescriptionComponent
                       icon={item.icon}
                       image={item.image}
@@ -139,7 +147,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                   className="min-w-0 flex-shrink-0 px-2"
                   style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
                 >
-                  <div className="w-[300px] h-[300px] mx-auto overflow-auto flex flex-col">
+                  <div className="mx-auto flex h-[300px] w-[300px] flex-col overflow-auto">
                     <TimelineComponent
                       items={(item as TimelineBlock).items || []}
                     />
@@ -153,7 +161,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                 className="min-w-0 flex-shrink-0 px-2"
                 style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
               >
-                <div className="w-[300px] h-[300px] mx-auto" />
+                <div className="mx-auto h-[300px] w-[300px]" />
               </div>
             );
           })}
@@ -163,14 +171,14 @@ export const Carousel = ({ carousel }: CarouselProps) => {
       {showDots &&
         scrollSnaps.length > 1 &&
         carousel.items.length > effectiveSlidesToShow && (
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="mt-4 flex justify-center gap-2">
             {scrollSnaps.map((snap, index) => (
               <button
                 key={index}
                 type="button"
                 className={`h-3 w-3 rounded-full transition-all ${
                   index === selectedIndex
-                    ? "bg-black dark:bg-white w-8"
+                    ? "w-8 bg-black dark:bg-white"
                     : "bg-gray-600 dark:bg-gray-400"
                 }`}
                 onClick={() => scrollTo(index)}

@@ -41,7 +41,9 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const url = slug ? `/${slug.join("/")}` : "/";
   const page = await getPageByUrl(url);
-  if (!page?.heading) return {};
+  if (!page?.heading) {
+    return {};
+  }
   return {
     title: page.heading,
     openGraph: { title: page.heading },
@@ -73,7 +75,7 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <main className="container mx-auto py-4">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-black dark:text-white">
+        <h1 className="mb-8 text-3xl font-bold text-black sm:text-4xl dark:text-white">
           {pageWithBuiltUrls.heading}
         </h1>
 

@@ -43,7 +43,9 @@ export const DynamicComponentRenderer = ({
         }
         // Only one block per dynamicComponent.component due to validation
         const block = dynamicComponent.component[0];
-        if (!block) return null;
+        if (!block) {
+          return null;
+        }
 
         const blockKey = block._key || index;
         const delay = Math.min(index * 80, 320);

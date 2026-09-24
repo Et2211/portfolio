@@ -49,7 +49,7 @@ const AnimatedPanel = ({
       {children}
     </div>
   );
-}
+};
 
 const SkillDetail = ({
   skill,
@@ -64,26 +64,33 @@ const SkillDetail = ({
     <>
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors text-lg leading-none"
+        className="absolute top-4 right-4 text-lg leading-none text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-200"
         aria-label="Close"
       >
         ✕
       </button>
 
       {simpleIcon && (
-        <svg width={56} height={56} viewBox="0 0 24 24" aria-label={simpleIcon.title}>
+        <svg
+          width={56}
+          height={56}
+          viewBox="0 0 24 24"
+          aria-label={simpleIcon.title}
+        >
           <path d={simpleIcon.path} fill={`#${simpleIcon.hex}`} />
         </svg>
       )}
 
-      <h3 className="text-xl font-bold text-black dark:text-white">{skill.name}</h3>
+      <h3 className="text-xl font-bold text-black dark:text-white">
+        {skill.name}
+      </h3>
 
       {skill.description ? (
-        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
           {skill.description}
         </p>
       ) : (
-        <p className="text-zinc-400 dark:text-zinc-600 text-sm italic">
+        <p className="text-sm text-zinc-400 italic dark:text-zinc-600">
           No description yet.
         </p>
       )}
@@ -93,14 +100,14 @@ const SkillDetail = ({
           href={skill.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-80 dark:bg-white dark:text-black"
         >
           Visit ↗
         </a>
       )}
     </>
   );
-}
+};
 
 export const SkillsGlobe = ({
   heading,
@@ -108,7 +115,9 @@ export const SkillsGlobe = ({
   rotationSpeed = 0.3,
 }: SkillsGlobeProps) => {
   const globeRadius = 1.7;
-  const [displayedSkill, setDisplayedSkill] = useState<SkillGlobeItem | null>(null);
+  const [displayedSkill, setDisplayedSkill] = useState<SkillGlobeItem | null>(
+    null,
+  );
   const [isClosing, setIsClosing] = useState(false);
   const [layoutOpen, setLayoutOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -119,8 +128,8 @@ export const SkillsGlobe = ({
       setIsDesktop(window.innerWidth >= 1024);
     };
     checkDesktop();
-    window.addEventListener('resize', checkDesktop);
-    return () => window.removeEventListener('resize', checkDesktop);
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
   const positions = useMemo(
@@ -128,12 +137,19 @@ export const SkillsGlobe = ({
     [skills.length, globeRadius],
   );
 
-  useEffect(() => () => {
-    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const triggerClose = () => {
-    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+    }
     setIsClosing(true);
     closeTimerRef.current = setTimeout(() => {
       setDisplayedSkill(null);
@@ -158,33 +174,56 @@ export const SkillsGlobe = ({
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center justify-center py-10">
+    <div className="relative flex w-full flex-col items-center justify-center py-10">
       {heading && (
-        <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">{heading}</h2>
+        <h2 className="mb-4 text-2xl font-bold text-black dark:text-white">
+          {heading}
+        </h2>
       )}
 
-      <div className="w-full flex flex-col lg:flex-row items-start lg:items-center gap-6">
+      <div className="flex w-full flex-col items-start gap-6 lg:flex-row lg:items-center">
         {/* Globe */}
         <div
-          className="flex-shrink-0 flex justify-center"
+          className="flex flex-shrink-0 justify-center"
           style={{
-            width: isDesktop && layoutOpen ? '50%' : '100%',
+            width: isDesktop && layoutOpen ? "50%" : "100%",
             transition: "width 500ms ease-in-out",
           }}
         >
           <div
-            style={{ aspectRatio: "1/1", width: "min(90vw, 600px)", maxWidth: 700, margin: "0 auto" }}
+            style={{
+              aspectRatio: "1/1",
+              width: "min(90vw, 600px)",
+              maxWidth: 700,
+              margin: "0 auto",
+            }}
           >
             <Canvas
               camera={{ position: [0, 0, 6], fov: 50 }}
               gl={{ alpha: true, antialias: true }}
-              style={{ background: "transparent", width: "100%", height: "100%" }}
+              style={{
+                background: "transparent",
+                width: "100%",
+                height: "100%",
+              }}
             >
-              <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} dampingFactor={0.1} enableDamping />
-              <Globe rotationSpeed={rotationSpeed} paused={!!displayedSkill} radius={globeRadius}>
+              <OrbitControls
+                enableZoom={false}
+                enablePan={false}
+                autoRotate={false}
+                dampingFactor={0.1}
+                enableDamping
+              />
+              <Globe
+                rotationSpeed={rotationSpeed}
+                paused={!!displayedSkill}
+                radius={globeRadius}
+              >
                 {skills.map((skill, index) => {
                   const position = positions[index];
-                  if (!position) return null;
+                  if (!position) {
+                    return null;
+                  }
                   return (
                     <SkillNode
                       key={skill._key ?? `skill-${index}`}
@@ -201,19 +240,19 @@ export const SkillsGlobe = ({
 
         {/* Desktop panel — only takes space when skill is selected */}
         <div
-          className="hidden lg:block overflow-hidden"
+          className="hidden overflow-hidden lg:block"
           style={{
-            width: isDesktop && layoutOpen ? '50%' : '0%',
+            width: isDesktop && layoutOpen ? "50%" : "0%",
             transition: "width 500ms ease-in-out, opacity 500ms ease-in-out",
             opacity: layoutOpen ? 1 : 0,
-            pointerEvents: layoutOpen ? 'auto' : 'none',
+            pointerEvents: layoutOpen ? "auto" : "none",
           }}
         >
           {displayedSkill && (
             <AnimatedPanel
               isClosing={isClosing}
               hiddenTransform="translateX(2rem)"
-              className="flex flex-col items-start gap-4 p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 relative"
+              className="relative flex flex-col items-start gap-4 rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900"
             >
               <SkillDetail skill={displayedSkill} onClose={triggerClose} />
             </AnimatedPanel>
@@ -223,11 +262,11 @@ export const SkillsGlobe = ({
 
       {/* Mobile panel — appears below globe in normal flow */}
       {displayedSkill && (
-        <div className="lg:hidden w-full mt-6">
+        <div className="mt-6 w-full lg:hidden">
           <AnimatedPanel
             isClosing={isClosing}
             hiddenTransform="translateY(1rem)"
-            className="flex flex-col items-start gap-4 p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 relative"
+            className="relative flex flex-col items-start gap-4 rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900"
           >
             <SkillDetail skill={displayedSkill} onClose={triggerClose} />
           </AnimatedPanel>

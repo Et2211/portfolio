@@ -10,16 +10,18 @@ export const CvDownload = ({
   label = "Download CV",
   fileUrl,
 }: CvDownloadBlock) => {
-  if (!fileUrl) return null;
+  if (!fileUrl) {
+    return null;
+  }
 
   return (
-    <div className="flex justify-center my-4">
+    <div className="my-4 flex justify-center">
       <a
         href={fileUrl}
         download
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors"
+        className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/20"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

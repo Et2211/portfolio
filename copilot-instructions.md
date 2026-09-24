@@ -70,6 +70,7 @@ portfolio-root/
 **ZERO `any` or `unknown` types allowed.** Every variable, parameter, and return type must be explicitly defined.
 
 ✅ **Good:**
+
 ```typescript
 import type { Page } from "@/types/generated/sanity";
 
@@ -80,6 +81,7 @@ const getPageByUrl = async (url: string): Promise<Page | null> => {
 ```
 
 ❌ **Bad:**
+
 ```typescript
 const getPageByUrl = async (url: any): any => {
   return await fetchSanity(query, { url });
@@ -87,6 +89,7 @@ const getPageByUrl = async (url: any): any => {
 ```
 
 **When importing types:**
+
 - Always use `import type { TypeName } from "@/types/generated/sanity"`
 - This ensures types are stripped at runtime (no bundle bloat)
 - For unknown structures, use type assertions or generics, **never** `any`
@@ -101,6 +104,7 @@ npm run lint --fix    # Auto-fix fixable errors
 ```
 
 **ESLint is configured to:**
+
 - Enforce no `var` (use `const` by default, `let` if needed)
 - Enforce no trailing semicolons (handled by Prettier via ESLint)
 - Enforce consistent formatting
@@ -108,6 +112,7 @@ npm run lint --fix    # Auto-fix fixable errors
 - Enforce React best practices (hooks, naming conventions)
 
 **VS Code auto-fixes on save:** ESLint auto-fix runs on file save because `.vscode/settings.json` includes:
+
 ```json
 "editor.codeActionsOnSave": {
   "source.fixAll.eslint": true
@@ -123,6 +128,7 @@ npm run typecheck      # Type check entire project
 ```
 
 **TypeScript strict mode enforces:**
+
 - No implicit `any` types
 - Null/undefined safety (strict null checks)
 - Function parameter and return types required
@@ -146,6 +152,7 @@ Before committing any code changes, verify:
 **Images must be processed server-side to prevent hydration mismatch.**
 
 ✅ **Correct (server-side in page.tsx):**
+
 ```typescript
 import { buildImageUrl } from "@/lib/sanity";
 import type { SanityImage } from "@/types/generated/sanity";
@@ -175,12 +182,14 @@ const pageWithBuiltUrls = page.pageComponents
 ```
 
 ❌ **Wrong (client-side):**
+
 ```typescript
 // ❌ Never do this in client components:
-const imageUrl = buildImageUrl(image);  // env vars undefined on client!
+const imageUrl = buildImageUrl(image); // env vars undefined on client!
 ```
 
-**Why server-side?** 
+**Why server-side?**
+
 - `buildImageUrl()` uses SANITY_PROJECT_ID and SANITY_DATASET
 - Environment variables are only available on server at Next.js build/runtime
 - Server renders HTML with correct image URLs
@@ -189,6 +198,7 @@ const imageUrl = buildImageUrl(image);  // env vars undefined on client!
 ### Fetching Data from Sanity
 
 ✅ **Use type-safe GROQ queries:**
+
 ```typescript
 import { fetchSanity } from "@/lib/sanity";
 import type { Page } from "@/types/generated/sanity";
@@ -206,6 +216,7 @@ const page = await fetchSanity<Page>(query, { url: "/about" });
 ### Rendering Portable Text (Rich Text)
 
 ✅ **Use @portabletext/react:**
+
 ```typescript
 import { PortableText } from "@portabletext/react";
 import type { SanityBlock } from "@/types/generated/sanity";
@@ -230,6 +241,7 @@ export function TimelineItem({ description }: Props) {
 ### Component Prop Types
 
 ✅ **Always define prop interfaces:**
+
 ```typescript
 interface TimelineProps {
   items: TimelineItem[];
@@ -243,8 +255,10 @@ export function Timeline({ items, title, variant = "default" }: TimelineProps) {
 ```
 
 ❌ **Never use inline `any`:**
+
 ```typescript
-export function Timeline(props: any) {  // ❌ BANNED
+export function Timeline(props: any) {
+  // ❌ BANNED
   // ...
 }
 ```
@@ -263,6 +277,7 @@ export function Timeline(props: any) {  // ❌ BANNED
 ### Q: How do I regenerate types after schema changes?
 
 In `studio-portfolio/`:
+
 ```bash
 npm run sanity:codegen
 # Generates: ../portfolio/types/generated/sanity.d.ts
@@ -271,21 +286,24 @@ npm run sanity:codegen
 ### Q: Can I use `any` for external libraries I don't have types for?
 
 No. Instead:
+
 1. Look for `@types/library-name` package
 2. If none exists, define a minimal interface wrapper
 3. Use `as` type assertions sparingly and with explanation comments
 
 Example:
+
 ```typescript
 // ✅ Acceptable with explanation
 interface ExternalLibraryConfig {
-  [key: string]: unknown;  // External library doesn't have types
+  [key: string]: unknown; // External library doesn't have types
 }
 ```
 
 ### Q: How do I debug hydration mismatches?
 
 **Check:**
+
 1. Is data fetched server-side? ✓
 2. Are environment variables used server-side only? ✓
 3. Does client receive pre-processed data (strings, primitives)? ✓
@@ -346,6 +364,7 @@ This project was migrated from **Strapi CMS** to **Sanity.io**. Important notes:
 ## Sanity Schema & Type Generation Workflow (2026 Update)
 
 **To ensure type generation works with TypeScript-based Sanity schemas:**
+
 ```
 import { navigation, page } from './navigation-page.js'
 ```
@@ -367,14 +386,14 @@ import { navigation, page } from './navigation-page.js'
 
 ## Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| `portfolio/lib/sanity.ts` | Sanity client, `fetchSanity()`, `buildImageUrl()` |
-| `portfolio/app/[[...slug]]/page.tsx` | Dynamic page rendering, image URL building |
-| `portfolio/types/generated/sanity.d.ts` | **Auto-generated types from Sanity schemas** |
-| `studio-portfolio/schemaTypes/index.ts` | Sanity content type exports |
-| `portfolio/.env.local` | Environment variables (git-ignored) |
-| `.vscode/settings.json` | ESLint auto-fix on save, TypeScript validation |
+| File                                    | Purpose                                           |
+| --------------------------------------- | ------------------------------------------------- |
+| `portfolio/lib/sanity.ts`               | Sanity client, `fetchSanity()`, `buildImageUrl()` |
+| `portfolio/app/[[...slug]]/page.tsx`    | Dynamic page rendering, image URL building        |
+| `portfolio/types/generated/sanity.d.ts` | **Auto-generated types from Sanity schemas**      |
+| `studio-portfolio/schemaTypes/index.ts` | Sanity content type exports                       |
+| `portfolio/.env.local`                  | Environment variables (git-ignored)               |
+| `.vscode/settings.json`                 | ESLint auto-fix on save, TypeScript validation    |
 
 ---
 

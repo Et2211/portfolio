@@ -8,7 +8,7 @@ export const ScrollProgressBar = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-[3px] z-50 origin-left"
+      className="fixed top-0 right-0 left-0 z-50 h-[3px] origin-left"
       style={{
         scaleX: scrollYProgress,
         background:

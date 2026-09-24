@@ -32,17 +32,17 @@ export const ImageWithDescription = ({
 
   return (
     <div
-      className={`flex ${flexDirection} ${isHorizontal ? "items-center lg:items-start" : "items-center"} gap-2 h-full`}
+      className={`flex ${flexDirection} ${isHorizontal ? "items-center lg:items-start" : "items-center"} h-full gap-2`}
       style={{ justifyContent: "left" }}
     >
       {simpleIcon ? (
         <div
-          className={`flex items-center justify-center flex-shrink-0 ${isHorizontal ? "w-full lg:w-1/3" : "w-full"}`}
+          className={`flex flex-shrink-0 items-center justify-center ${isHorizontal ? "w-full lg:w-1/3" : "w-full"}`}
         >
           <svg
             viewBox="0 0 24 24"
             aria-label={simpleIcon.title}
-            className="w-24 h-24"
+            className="h-24 w-24"
             style={{ fill: `#${simpleIcon.hex}` }}
           >
             <path d={simpleIcon.path} />
@@ -52,15 +52,25 @@ export const ImageWithDescription = ({
         <Image
           src={image}
           alt="Image with description"
-          className={`rounded-lg mx-3 object-contain flex-shrink-0 ${imageSize ? "" : isHorizontal ? "w-full lg:w-1/3 h-auto" : "w-full h-auto"}`}
+          className={`mx-3 flex-shrink-0 rounded-lg object-contain ${imageSize ? "" : isHorizontal ? "h-auto w-full lg:w-1/3" : "h-auto w-full"}`}
           width={imageSize ?? 600}
           height={imageSize ?? 400}
-          sizes={imageSize ? `${imageSize}px` : "(max-width: 600px) 100vw, 600px"}
-          style={imageSize ? { width: imageSize, height: imageSize } : isHorizontal ? undefined : { maxHeight: "60%" }}
+          sizes={
+            imageSize ? `${imageSize}px` : "(max-width: 600px) 100vw, 600px"
+          }
+          style={
+            imageSize
+              ? { width: imageSize, height: imageSize }
+              : isHorizontal
+                ? undefined
+                : { maxHeight: "60%" }
+          }
         />
       ) : null}
       {description && description.length > 0 && (
-        <RichText className={`overflow-auto ${isHorizontal ? "text-center lg:text-left lg:w-2/3" : "text-center"}`}>
+        <RichText
+          className={`overflow-auto ${isHorizontal ? "text-center lg:w-2/3 lg:text-left" : "text-center"}`}
+        >
           <PortableText value={description} />
         </RichText>
       )}

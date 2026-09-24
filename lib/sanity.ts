@@ -17,8 +17,12 @@ const builder = createImageUrlBuilder({
 });
 
 export function buildImageUrl(source: SanityImage): string {
-  if (!source) return "";
-  if (typeof source === "string") return source;
+  if (!source) {
+    return "";
+  }
+  if (typeof source === "string") {
+    return source;
+  }
   // Only allow SanityImage objects
   if (
     typeof source === "object" &&
@@ -42,29 +46,35 @@ export async function fetchSanity<T>(
 }
 
 export type SanityValue =
-  | string
-  | number
-  | boolean
-  | null
-  | SanityValue[]
-  | AnyObject;
+  string | number | boolean | null | SanityValue[] | AnyObject;
 interface AnyObject {
   [key: string]: SanityValue;
 }
 
 const isSanityImage = (val: SanityValue): val is SanityImage => {
-  if (typeof val !== "object" || val === null) return false;
-  const obj = val as AnyObject;
-  if (!("asset" in obj) || typeof obj.asset !== "object" || obj.asset === null)
+  if (typeof val !== "object" || val === null) {
     return false;
+  }
+  const obj = val as AnyObject;
+  if (
+    !("asset" in obj) ||
+    typeof obj.asset !== "object" ||
+    obj.asset === null
+  ) {
+    return false;
+  }
   const ref = (obj.asset as AnyObject)._ref;
   // Only treat as image if the ref starts with "image-"
   return typeof ref === "string" && ref.startsWith("image-");
 };
 
 export function buildImageUrlForItem(item: SanityValue): SanityValue {
-  if (typeof item !== "object" || item === null) return item;
-  if (Array.isArray(item)) return item.map(buildImageUrlForItem);
+  if (typeof item !== "object" || item === null) {
+    return item;
+  }
+  if (Array.isArray(item)) {
+    return item.map(buildImageUrlForItem);
+  }
 
   const obj = item as AnyObject;
   const result: AnyObject = {};

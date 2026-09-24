@@ -13,13 +13,15 @@ import {
 
 export function buildFlowNodes(
   sanityNodes: Array<SanityKeyed<ArchNode>>,
-  sanityEdges: Array<SanityKeyed<ArchEdge>>
+  sanityEdges: Array<SanityKeyed<ArchEdge>>,
 ): Node[] {
   // Group nodes by tier
   const byTier: Record<string, Array<SanityKeyed<ArchNode>>> = {};
   for (const node of sanityNodes) {
     const tier = node.tier ?? "infra";
-    if (!byTier[tier]) byTier[tier] = [];
+    if (!byTier[tier]) {
+      byTier[tier] = [];
+    }
     byTier[tier].push(node);
   }
 
@@ -50,7 +52,9 @@ export function buildFlowNodes(
 
   // First pass: center all non-content tiers in their row
   for (const [tier, nodes] of Object.entries(byTier)) {
-    if (tier === "content") continue;
+    if (tier === "content") {
+      continue;
+    }
     const posY = (TIER_ORDER[tier] ?? 5) * TIER_Y_GAP + 40;
     const totalWidth = nodes.length * NODE_X_GAP;
     const startX = -totalWidth / 2 + NODE_X_GAP / 2;
@@ -69,10 +73,12 @@ export function buildFlowNodes(
 
   // Second pass: realign single-node tiers directly below their source node.
   for (const [tier, nodes] of Object.entries(byTier)) {
-    if (tier === "content" || nodes.length !== 1) continue;
+    if (tier === "content" || nodes.length !== 1) {
+      continue;
+    }
     const nodeId = nodes[0].nodeId ?? "";
     const incomingEdge = sanityEdges.find(
-      (e) => e.targetId === nodeId && nodePositions[e.sourceId ?? ""]
+      (e) => e.targetId === nodeId && nodePositions[e.sourceId ?? ""],
     );
     if (incomingEdge?.sourceId && nodePositions[incomingEdge.sourceId]) {
       const sourceX = nodePositions[incomingEdge.sourceId].x;
@@ -88,7 +94,8 @@ export function buildFlowNodes(
   const contentNodes = byTier["content"] ?? [];
   if (contentNodes.length > 0) {
     const allRightEdges = flowNodes.map((fn) => fn.position.x + NODE_WIDTH);
-    const maxRightEdge = allRightEdges.length > 0 ? Math.max(...allRightEdges) : 0;
+    const maxRightEdge =
+      allRightEdges.length > 0 ? Math.max(...allRightEdges) : 0;
     const contentStartX = maxRightEdge + NODE_X_GAP;
     const frontendY = (TIER_ORDER["frontend"] ?? 0) * TIER_Y_GAP + 40;
     contentNodes.forEach((node, idx) => {
@@ -105,10 +112,14 @@ export function buildFlowNodes(
   return flowNodes;
 }
 
-export function buildFlowEdges(sanityEdges: Array<SanityKeyed<ArchEdge>>): Edge[] {
+export function buildFlowEdges(
+  sanityEdges: Array<SanityKeyed<ArchEdge>>,
+): Edge[] {
   const sourceLabelTotal: Record<string, number> = {};
   for (const edge of sanityEdges) {
-    if (!edge.label) continue;
+    if (!edge.label) {
+      continue;
+    }
     const src = edge.sourceId ?? "";
     sourceLabelTotal[src] = (sourceLabelTotal[src] ?? 0) + 1;
   }

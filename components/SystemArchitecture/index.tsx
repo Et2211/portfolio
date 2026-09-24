@@ -2,12 +2,7 @@
 
 import "@xyflow/react/dist/style.css";
 
-import {
-  Background,
-  Controls,
-  type Node,
-  ReactFlow,
-} from "@xyflow/react";
+import { Background, Controls, type Node, ReactFlow } from "@xyflow/react";
 import { useState } from "react";
 
 import type { ArchEdge, ArchNode, SanityKeyed } from "@/types/generated/sanity";
@@ -33,7 +28,8 @@ interface SystemArchitectureProps {
 const edgeTypes = { sourceLabel: SourceLabelEdge };
 
 export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
-  const [selectedNode, setSelectedNode] = useState<SanityKeyed<ArchNode> | null>(null);
+  const [selectedNode, setSelectedNode] =
+    useState<SanityKeyed<ArchNode> | null>(null);
 
   const sanityNodes = block.nodes ?? [];
   const sanityEdges = block.edges ?? [];
@@ -41,9 +37,7 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
   const flowNodes = buildFlowNodes(sanityNodes, sanityEdges);
   const flowEdges = buildFlowEdges(sanityEdges);
 
-  const nodeMap = Object.fromEntries(
-    sanityNodes.map((sn) => [sn.nodeId, sn])
-  );
+  const nodeMap = Object.fromEntries(sanityNodes.map((sn) => [sn.nodeId, sn]));
 
   const handleNodeClick = (_evt: React.MouseEvent, node: Node) => {
     const sanityNode = nodeMap[node.id];
@@ -51,12 +45,12 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
   };
 
   // Derive unique tiers present for the legend
-  const tiersPresent = [...new Set(sanityNodes.map((sn) => sn.tier ?? "infra"))].sort(
-    (ta, tb) => (TIER_ORDER[ta] ?? 3) - (TIER_ORDER[tb] ?? 3)
-  );
+  const tiersPresent = [
+    ...new Set(sanityNodes.map((sn) => sn.tier ?? "infra")),
+  ].sort((ta, tb) => (TIER_ORDER[ta] ?? 3) - (TIER_ORDER[tb] ?? 3));
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex w-full flex-col gap-4">
       {/* Legend */}
       <div className="flex flex-wrap gap-3">
         {tiersPresent.map((tier) => {
@@ -64,8 +58,12 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
           return (
             <span
               key={tier}
-              className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full"
-              style={{ background: colors.bg, color: colors.text, border: `1.5px solid ${colors.border}` }}
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
+              style={{
+                background: colors.bg,
+                color: colors.text,
+                border: `1.5px solid ${colors.border}`,
+              }}
             >
               {TIER_LABELS[tier] ?? tier}
             </span>
@@ -73,11 +71,22 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
         })}
         {block.primaryFlowLabel && (
           <span
-            className="inline-flex items-center gap-2 text-xs font-medium px-2.5 py-1 rounded-full"
-            style={{ background: "#eff6ff", color: "#1d4ed8", border: "1.5px solid #93c5fd" }}
+            className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium"
+            style={{
+              background: "#eff6ff",
+              color: "#1d4ed8",
+              border: "1.5px solid #93c5fd",
+            }}
           >
             <svg width="18" height="4" aria-hidden="true" className="shrink-0">
-              <line x1="0" y1="2" x2="18" y2="2" stroke="#3b82f6" strokeWidth="2.5" />
+              <line
+                x1="0"
+                y1="2"
+                x2="18"
+                y2="2"
+                stroke="#3b82f6"
+                strokeWidth="2.5"
+              />
             </svg>
             {block.primaryFlowLabel}
           </span>
@@ -87,7 +96,7 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
       <div className="flex gap-4">
         {/* Diagram */}
         <div
-          className="rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden"
+          className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
           style={{ height: 1050, flexGrow: 1, minWidth: 0 }}
         >
           <ReactFlow
@@ -108,7 +117,10 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
         </div>
 
         {/* Detail panel */}
-        <NodeDetailPanel selectedNode={selectedNode} onClose={() => setSelectedNode(null)} />
+        <NodeDetailPanel
+          selectedNode={selectedNode}
+          onClose={() => setSelectedNode(null)}
+        />
       </div>
     </div>
   );

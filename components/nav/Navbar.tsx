@@ -40,19 +40,19 @@ function getNavItemUrl(
 const Navbar = async (): Promise<React.ReactElement> => {
   const navGroups: NavGroup[] = await getNavigation();
   return (
-    <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
+    <nav className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
           <Link
             href="/"
-            className="text-xl font-bold text-black dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+            className="text-xl font-bold text-black transition-colors hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
           >
             Etienne Sharkey
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden items-center gap-2 md:flex">
             {navGroups.map((group, groupIdx) => (
               <DropdownMenu
                 key={groupIdx}
@@ -76,7 +76,7 @@ const Navbar = async (): Promise<React.ReactElement> => {
           </div>
 
           {/* Mobile nav */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
             <MobileMenu
               navGroups={navGroups.map((group) => ({

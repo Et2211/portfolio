@@ -5,11 +5,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 This project requires a Strapi CMS instance. Before running the development server, set up your environment variables:
 
 1. Copy `.env.example` to `.env.local`:
+
    ```bash
    cp .env.example .env.local
    ```
 
 2. Update `.env.local` with your Strapi CMS settings:
+
    ```
    STRAPI_URL=http://localhost:1337
    STRAPI_API_TOKEN=your_api_token_here

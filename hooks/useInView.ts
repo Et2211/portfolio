@@ -18,13 +18,17 @@ export function useInView({
 
   useEffect(() => {
     const element = ref.current;
-    if (!element) return;
+    if (!element) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          if (once) observer.disconnect();
+          if (once) {
+            observer.disconnect();
+          }
         }
       },
       { threshold, rootMargin },
