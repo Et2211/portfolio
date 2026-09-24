@@ -339,6 +339,11 @@
   transform: translateY(24px);
 }
 
+/* Stat count-up (StatsBanner): hide the server-rendered value until counting. */
+.js [data-count-up]:not([data-counting]) {
+  visibility: hidden;
+}
+
 /*
  * Hero entrance: CSS keyframes rather than JS so it plays on first paint,
  * before hydration, and still ends visible without JavaScript. Stagger with

@@ -1,11 +1,14 @@
 "use client";
 
 import { animate, motion } from "motion/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useInView } from "@/hooks/useInView";
 import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { StatsBannerBlock } from "@/types/blocks";
+
+const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 function parseStatValue(raw: string): { num: number; suffix: string } | null {
   const match = raw.match(/^([\d.,]+)(.*)$/);
@@ -19,35 +22,51 @@ function parseStatValue(raw: string): { num: number; suffix: string } | null {
   return { num, suffix: match[2] ?? "" };
 }
 
+const formatCount = (current: number, target: number, suffix: string) => {
+  const rounded = Number.isInteger(target)
+    ? Math.round(current)
+    : Math.round(current * 10) / 10;
+  return `${rounded}${suffix}`;
+};
+
+// Server-renders the real value (for crawlers, no-JS visitors and screen
+// readers). With JS, CSS hides it until the count-up starts, so the number
+// never flashes before counting from zero.
 const AnimatedStat = ({ value }: { value: string }) => {
   const parsed = useMemo(() => parseStatValue(value), [value]);
-  const [displayed, setDisplayed] = useState(
-    parsed ? `0${parsed.suffix}` : value,
-  );
-  const { ref, isInView } = useInView({ threshold: 0.5, once: true });
-  const hasAnimated = useRef(false);
+  const reduceMotion = usePrefersReducedMotion();
+  const [displayed, setDisplayed] = useState(value);
+  const [isCounting, setIsCounting] = useState(false);
+  const { ref, isInView } = useInView<HTMLSpanElement>({
+    threshold: 0.5,
+    once: true,
+  });
+
+  const canAnimate = parsed !== null && !reduceMotion;
 
   useEffect(() => {
-    if (!isInView || hasAnimated.current || !parsed) {
+    if (!isInView || !parsed || reduceMotion) {
       return;
     }
-    hasAnimated.current = true;
     const controls = animate(0, parsed.num, {
       duration: 2,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-      onUpdate: (val) => {
-        const rounded = Number.isInteger(parsed.num)
-          ? Math.round(val)
-          : Math.round(val * 10) / 10;
-        setDisplayed(`${rounded}${parsed.suffix}`);
+      ease: EASE_OUT_EXPO,
+      onUpdate: (current) => {
+        setIsCounting(true);
+        setDisplayed(formatCount(current, parsed.num, parsed.suffix));
       },
+      // Land on the source string exactly — rounding the tween would turn
+      // "4.75" into "4.8" and drop the separator from "1,200+".
+      onComplete: () => setDisplayed(value),
     });
     return () => controls.stop();
-  }, [isInView, parsed]);
+  }, [isInView, parsed, reduceMotion, value]);
 
   return (
     <span
       ref={ref}
+      data-count-up={canAnimate || undefined}
+      data-counting={isCounting || undefined}
       className="text-3xl font-bold tabular-nums sm:text-4xl"
       style={{
         background:
