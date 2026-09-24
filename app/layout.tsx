@@ -7,7 +7,6 @@ import { Suspense } from "react";
 
 import "./globals.css";
 
-import { CustomCursor } from "@/components/CustomCursor";
 import { Footer } from "@/components/Footer";
 import Navbar from "@/components/nav/Navbar";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
@@ -50,7 +49,6 @@ const RootLayout = ({
       >{`(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})()`}</Script>
     </head>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <CustomCursor />
       <ScrollProgressBar />
       <Suspense>
         <Navbar />

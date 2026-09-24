@@ -248,12 +248,6 @@
 }
 .nav-underline:hover::after { transform: scaleX(1); }
 
-/* ── Custom cursor ─────────────────────────────────── */
-@media (pointer: fine) {
-  body { cursor: none; }
-  a, button, [role="button"] { cursor: none; }
-}
-
 /* ── Reduced motion ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
