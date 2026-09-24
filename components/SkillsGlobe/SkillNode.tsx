@@ -16,17 +16,24 @@ interface SkillNodeProps {
   onSelect: (skill: SkillGlobeItem) => void;
 }
 
-export const SkillNode = ({ skill, position, radius = 1.7, onSelect }: SkillNodeProps) => {
+export const SkillNode = ({
+  skill,
+  position,
+  radius = 1.7,
+  onSelect,
+}: SkillNodeProps) => {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
-  const divRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const hoveredRef = useRef(false);
   const worldPos = useRef(new THREE.Vector3());
 
   const simpleIcon = skill.icon ? getSimpleIcon(skill.icon) : null;
 
   useFrame(({ camera }) => {
-    if (!groupRef.current || !divRef.current) return;
+    if (!groupRef.current || !buttonRef.current) {
+      return;
+    }
     groupRef.current.getWorldPosition(worldPos.current);
 
     // Project world position onto camera's view direction so depth stays correct
@@ -48,9 +55,12 @@ export const SkillNode = ({ skill, position, radius = 1.7, onSelect }: SkillNode
     const scale = 0.7 + depth * 0.4;
     const finalScale = hoveredRef.current ? scale * 1.2 : scale;
 
-    divRef.current.style.opacity = String(opacity);
-    divRef.current.style.transform = `scale(${finalScale})`;
-    divRef.current.style.pointerEvents = isFront ? "auto" : "none";
+    buttonRef.current.style.opacity = String(opacity);
+    buttonRef.current.style.transform = `scale(${finalScale})`;
+    buttonRef.current.style.pointerEvents = isFront ? "auto" : "none";
+    // Icons on the far side of the globe can't be clicked, so keep them out
+    // of the tab order too.
+    buttonRef.current.tabIndex = isFront ? 0 : -1;
   });
 
   const handlePointerOver = useCallback(() => {
@@ -69,17 +79,16 @@ export const SkillNode = ({ skill, position, radius = 1.7, onSelect }: SkillNode
 
   return (
     <group ref={groupRef} position={position}>
-      <Html
-        center
-        distanceFactor={8}
-        zIndexRange={[100, 0]}
-        occlude={false}
-      >
-        <div
-          ref={divRef}
+      <Html center distanceFactor={8} zIndexRange={[100, 0]} occlude={false}>
+        <button
+          ref={buttonRef}
+          type="button"
+          aria-label={skill.name}
           onClick={handleClick}
           onMouseEnter={handlePointerOver}
           onMouseLeave={handlePointerOut}
+          onFocus={handlePointerOver}
+          onBlur={handlePointerOut}
           style={{
             cursor: "pointer",
             display: "flex",
@@ -87,14 +96,14 @@ export const SkillNode = ({ skill, position, radius = 1.7, onSelect }: SkillNode
             alignItems: "center",
             padding: 4,
           }}
-          className="select-none"
+          className="rounded-md border-0 bg-transparent select-none focus-visible:outline-2 focus-visible:outline-ring"
         >
           {simpleIcon && (
             <svg
               width={32}
               height={32}
               viewBox="0 0 24 24"
-              aria-label={simpleIcon.title}
+              aria-hidden="true"
               style={{
                 display: "block",
                 fill: hovered ? "white" : `#${simpleIcon.hex}`,
@@ -109,13 +118,13 @@ export const SkillNode = ({ skill, position, radius = 1.7, onSelect }: SkillNode
           )}
           {hovered && (
             <span
-              className="rounded bg-black/80 px-2 py-1 text-xs text-white shadow-lg mt-1"
+              className="mt-1 rounded bg-black/80 px-2 py-1 text-xs text-white shadow-lg"
               style={{ pointerEvents: "none", whiteSpace: "nowrap" }}
             >
               {skill.name}
             </span>
           )}
-        </div>
+        </button>
       </Html>
     </group>
   );
