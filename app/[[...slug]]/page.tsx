@@ -75,9 +75,11 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <main className="container mx-auto py-4">
-        <h1 className="mb-8 text-3xl font-bold text-black sm:text-4xl dark:text-white">
-          {pageWithBuiltUrls.heading}
-        </h1>
+        {pageWithBuiltUrls.heading && (
+          <h1 className="mb-8 text-3xl font-bold text-black sm:text-4xl dark:text-white">
+            {pageWithBuiltUrls.heading}
+          </h1>
+        )}
 
         {/* Render dynamic components from Sanity */}
         {pageWithBuiltUrls.pageComponents &&
