@@ -1,12 +1,7 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import {
-  motion,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { motion, useSpring, useTransform } from "motion/react";
 import Image from "next/image";
 import type { MouseEvent } from "react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -15,6 +10,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { RichText } from "@/components/atoms/RichText";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
 import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { FeaturedProject } from "@/types/blocks";
 
 interface ProjectCardProps {
@@ -24,7 +20,7 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = usePrefersReducedMotion();
   const isPointer = useIsPointerDevice();
   const interactive = isPointer && !shouldReduceMotion;
 
