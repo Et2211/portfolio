@@ -324,24 +324,26 @@
 
 /* ── Entrance animations ───────────────────────────── */
 /*
- * Progressive enhancement: content is visible by default. The theme script
- * in app/layout.tsx adds `js` to <html> before first paint, so blocks only
- * start hidden when JavaScript is running to reveal them. No-JS visitors,
- * crawlers and link unfurlers always get the content.
+ * Progressive enhancement: content is visible by default and only starts
+ * hidden when scripting is enabled (known at first paint, no script needed),
+ * so no-JS visitors, crawlers and link unfurlers always get the content.
+ * Browsers without `scripting` support simply skip the effect.
  */
 .scroll-reveal {
   transition:
     opacity 600ms var(--ease-out-expo),
     transform 600ms var(--ease-out-expo);
 }
-.js .scroll-reveal:not([data-revealed]) {
-  opacity: 0;
-  transform: translateY(24px);
-}
+@media (scripting: enabled) {
+  .scroll-reveal:not([data-revealed]) {
+    opacity: 0;
+    transform: translateY(24px);
+  }
 
-/* Stat count-up (StatsBanner): hide the server-rendered value until counting. */
-.js [data-count-up]:not([data-counting]) {
-  visibility: hidden;
+  /* Stat count-up (StatsBanner): hide the real value until counting starts. */
+  [data-count-up]:not([data-counting]) {
+    visibility: hidden;
+  }
 }
 
 /*
