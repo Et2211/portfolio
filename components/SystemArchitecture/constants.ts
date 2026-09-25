@@ -8,6 +8,9 @@ export const TIER_ORDER: Record<string, number> = {
   content: 0, // same row as frontend, positioned to the right
 };
 
+/** Row index for a tier; unknown tiers sort (and are coloured) like infra. */
+export const tierOrder = (tier: string) => TIER_ORDER[tier] ?? TIER_ORDER.infra;
+
 export const TIER_COLORS: Record<
   string,
   { bg: string; border: string; text: string }
@@ -24,6 +27,8 @@ export const TIER_COLORS: Record<
 export const NODE_WIDTH = 175;
 export const NODE_HEIGHT = 50;
 export const TIER_Y_GAP = 190;
+/** Space above the first tier row. */
+export const TOP_PADDING = 40;
 export const NODE_X_GAP = 420;
 
 export const TIER_LABELS: Record<string, string> = {

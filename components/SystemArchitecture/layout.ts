@@ -7,8 +7,9 @@ import {
   NODE_WIDTH,
   NODE_X_GAP,
   TIER_COLORS,
-  TIER_ORDER,
   TIER_Y_GAP,
+  TOP_PADDING,
+  tierOrder,
 } from "./constants";
 
 export function buildFlowNodes(
@@ -55,7 +56,7 @@ export function buildFlowNodes(
     if (tier === "content") {
       continue;
     }
-    const posY = (TIER_ORDER[tier] ?? 5) * TIER_Y_GAP + 40;
+    const posY = tierOrder(tier) * TIER_Y_GAP + TOP_PADDING;
     const totalWidth = nodes.length * NODE_X_GAP;
     const startX = -totalWidth / 2 + NODE_X_GAP / 2;
     nodes.forEach((node, idx) => {
@@ -97,7 +98,7 @@ export function buildFlowNodes(
     const maxRightEdge =
       allRightEdges.length > 0 ? Math.max(...allRightEdges) : 0;
     const contentStartX = maxRightEdge + NODE_X_GAP;
-    const frontendY = (TIER_ORDER["frontend"] ?? 0) * TIER_Y_GAP + 40;
+    const frontendY = tierOrder("frontend") * TIER_Y_GAP + TOP_PADDING;
     contentNodes.forEach((node, idx) => {
       const nodeId = node.nodeId ?? `content-${idx}`;
       flowNodes.push({
@@ -151,7 +152,8 @@ export function buildFlowEdges(sanityEdges: ArchEdgeData[]): Edge[] {
       },
       labelStyle: {
         fontSize: 11,
-        fill: isError ? "#b91c1c" : isPrimary ? "#1d4ed8" : "#334155",
+        // Rendered as an HTML label (EdgeLabelRenderer), so `color`, not `fill`.
+        color: isError ? "#b91c1c" : isPrimary ? "#1d4ed8" : "#334155",
         fontWeight: 500,
       },
       type: "sourceLabel",

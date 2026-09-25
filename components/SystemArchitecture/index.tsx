@@ -2,17 +2,33 @@
 
 import "@xyflow/react/dist/style.css";
 
-import { Background, Controls, type Node, ReactFlow } from "@xyflow/react";
-import { useState } from "react";
+import {
+  Background,
+  Controls,
+  type Node,
+  type OnSelectionChangeParams,
+  ReactFlow,
+  useNodesState,
+} from "@xyflow/react";
+import { useCallback, useMemo, useState } from "react";
 
 import type { ArchNodeData, SystemArchitectureBlock } from "@/types/blocks";
 
-import { TIER_COLORS, TIER_LABELS, TIER_ORDER } from "./constants";
+import { TIER_COLORS, TIER_LABELS, tierOrder } from "./constants";
 import { buildFlowEdges, buildFlowNodes } from "./layout";
 import { NodeDetailPanel } from "./NodeDetailPanel";
 import { SourceLabelEdge } from "./SourceLabelEdge";
 
 const edgeTypes = { sourceLabel: SourceLabelEdge };
+
+// Nodes can't be moved or deleted here, so replace React Flow's default
+// screen-reader instructions (which describe both).
+const ARIA_LABELS = {
+  "node.a11yDescription.default":
+    "Press enter or space to show details about this component.",
+  "node.a11yDescription.keyboardDisabled":
+    "Press enter or space to show details about this component.",
+};
 
 export const SystemArchitecture = ({
   nodes,
@@ -21,23 +37,36 @@ export const SystemArchitecture = ({
 }: SystemArchitectureBlock) => {
   const [selectedNode, setSelectedNode] = useState<ArchNodeData | null>(null);
 
-  const sanityNodes = nodes ?? [];
-  const sanityEdges = edges ?? [];
+  const { flowNodes, flowEdges, nodesById, tiersPresent } = useMemo(() => {
+    const sanityNodes = nodes ?? [];
+    const sanityEdges = edges ?? [];
+    return {
+      flowNodes: buildFlowNodes(sanityNodes, sanityEdges),
+      flowEdges: buildFlowEdges(sanityEdges),
+      nodesById: new Map(sanityNodes.map((node) => [node.nodeId, node])),
+      // Tiers present, in row order, for the legend
+      tiersPresent: [
+        ...new Set(sanityNodes.map((node) => node.tier ?? "infra")),
+      ].sort((ta, tb) => tierOrder(ta) - tierOrder(tb)),
+    };
+  }, [nodes, edges]);
 
-  const flowNodes = buildFlowNodes(sanityNodes, sanityEdges);
-  const flowEdges = buildFlowEdges(sanityEdges);
+  // React Flow owns node state so keyboard selection (enter/space) works;
+  // the detail panel follows the selection.
+  const [flowNodeState, , onNodesChange] = useNodesState(flowNodes);
 
-  const nodeMap = Object.fromEntries(sanityNodes.map((sn) => [sn.nodeId, sn]));
-
-  const handleNodeClick = (_evt: React.MouseEvent, node: Node) => {
-    const sanityNode = nodeMap[node.id];
-    setSelectedNode(sanityNode ?? null);
-  };
-
-  // Derive unique tiers present for the legend
-  const tiersPresent = [
-    ...new Set(sanityNodes.map((sn) => sn.tier ?? "infra")),
-  ].sort((ta, tb) => (TIER_ORDER[ta] ?? 3) - (TIER_ORDER[tb] ?? 3));
+  const showNode = useCallback(
+    (id: string | undefined) =>
+      setSelectedNode((id && nodesById.get(id)) || null),
+    [nodesById],
+  );
+  const handleSelectionChange = useCallback(
+    ({ nodes: selected }: OnSelectionChangeParams) => showNode(selected[0]?.id),
+    [showNode],
+  );
+  // Also on click, so re-clicking a node after closing the panel reopens it.
+  const handleNodeClick = (_evt: React.MouseEvent, node: Node) =>
+    showNode(node.id);
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -90,10 +119,15 @@ export const SystemArchitecture = ({
           style={{ height: 1050, flexGrow: 1, minWidth: 0 }}
         >
           <ReactFlow
-            nodes={flowNodes}
+            nodes={flowNodeState}
             edges={flowEdges}
             edgeTypes={edgeTypes}
+            onNodesChange={onNodesChange}
             onNodeClick={handleNodeClick}
+            onSelectionChange={handleSelectionChange}
+            ariaLabelConfig={ARIA_LABELS}
+            edgesFocusable={false}
+            deleteKeyCode={null}
             fitView
             fitViewOptions={{ padding: 0.3 }}
             nodesDraggable={false}
