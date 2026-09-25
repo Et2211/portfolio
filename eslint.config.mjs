@@ -118,13 +118,9 @@ const eslintConfig = defineConfig([
     },
   },
 
-  // Async server components are declared as functions
+  // Next.js pages and layouts are async functions
   {
-    files: [
-      "app/**/page.tsx",
-      "app/**/layout.tsx",
-      "components/nav/Navbar.tsx",
-    ],
+    files: ["app/**/page.tsx", "app/**/layout.tsx"],
     rules: { "react/function-component-definition": "off" },
   },
 

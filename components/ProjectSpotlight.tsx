@@ -1,13 +1,9 @@
 "use client";
 
-import { PortableText } from "@portabletext/react";
-import Image from "next/image";
 import { useState } from "react";
 
-import { Badge } from "@/components/atoms/Badge";
-import { RichText } from "@/components/atoms/RichText";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
-import { ProjectLinks } from "@/components/molecules/ProjectLinks";
+import { ProjectFeature } from "@/components/molecules/ProjectFeature";
 import type { ProjectSpotlightBlock } from "@/types/blocks";
 
 export const ProjectSpotlight = ({
@@ -27,46 +23,7 @@ export const ProjectSpotlight = ({
     <section className="py-4">
       {heading && <SectionHeading>{heading}</SectionHeading>}
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="flex flex-col lg:flex-row">
-          {project.image && (
-            <div className="relative aspect-video w-full lg:aspect-auto lg:min-h-[300px] lg:w-1/2">
-              <Image
-                src={project.image}
-                alt={project.title ?? "Project screenshot"}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </div>
-          )}
-          <div className="flex flex-1 flex-col gap-4 p-6 lg:p-8">
-            {project.title && (
-              <h3 className="text-xl font-semibold text-black dark:text-white">
-                {project.title}
-              </h3>
-            )}
-            {project.tags && project.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {project.tags.map((tag, idx) => (
-                  <Badge key={idx} variant="tag">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
-            {project.description && project.description.length > 0 && (
-              <RichText>
-                <PortableText value={project.description} />
-              </RichText>
-            )}
-            <ProjectLinks
-              liveUrl={project.liveUrl}
-              githubUrl={project.githubUrl}
-              moreInfoUrl={project.moreInfoUrl}
-              className="mt-auto"
-            />
-          </div>
-        </div>
+        <ProjectFeature project={project} layout="spacious" />
 
         {total > 1 && (
           <div className="flex items-center justify-between border-t border-zinc-200 px-6 py-3 dark:border-zinc-800">

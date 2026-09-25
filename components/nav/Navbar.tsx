@@ -20,7 +20,7 @@ const loadNavigation = async (): Promise<NavSection[]> => {
   }
 };
 
-const Navbar = async (): Promise<React.ReactElement> => {
+export const Navbar = async (): Promise<React.ReactElement> => {
   const sections = await loadNavigation();
   return (
     <nav className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
@@ -56,4 +56,3 @@ const Navbar = async (): Promise<React.ReactElement> => {
     </nav>
   );
 };
-export default Navbar;

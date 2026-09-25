@@ -1,4 +1,4 @@
-﻿import {
+import {
   EdgeLabelRenderer,
   type EdgeProps,
   getSmoothStepPath,

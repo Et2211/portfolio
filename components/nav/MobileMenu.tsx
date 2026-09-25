@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { Eyebrow } from "@/components/atoms/Eyebrow";
 import type { NavSection } from "@/lib/content";
 
 interface MobileMenuProps {
@@ -79,9 +80,7 @@ export const MobileMenu = ({ sections }: MobileMenuProps) => {
         <nav className="h-[calc(100%-4rem)] space-y-6 overflow-y-auto p-4">
           {sections.map((group) => (
             <div key={group.heading}>
-              <p className="mb-2 px-2 text-xs font-semibold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-                {group.heading}
-              </p>
+              <Eyebrow className="mb-2 px-2">{group.heading}</Eyebrow>
               <ul className="space-y-1">
                 {group.links.map((item) => (
                   <li key={item.href}>

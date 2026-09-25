@@ -1,4 +1,6 @@
-﻿import type { ArchNodeData } from "@/types/blocks";
+import { Eyebrow } from "@/components/atoms/Eyebrow";
+import { TagList } from "@/components/molecules/TagList";
+import type { ArchNodeData } from "@/types/blocks";
 
 import { TIER_COLORS, TIER_LABELS } from "./constants";
 
@@ -53,19 +55,8 @@ export const NodeDetailPanel = ({
 
       {selectedNode.techUsed && selectedNode.techUsed.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-            Tech Used
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {selectedNode.techUsed.map((tech, techIdx) => (
-              <span
-                key={`${techIdx}-${tech}`}
-                className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
+          <Eyebrow>Tech Used</Eyebrow>
+          <TagList tags={selectedNode.techUsed} />
         </div>
       )}
     </div>

@@ -6,9 +6,9 @@ import Image from "next/image";
 import type { MouseEvent } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 
-import { Badge } from "@/components/atoms/Badge";
 import { RichText } from "@/components/atoms/RichText";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
+import { TagList } from "@/components/molecules/TagList";
 import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { FeaturedProject } from "@/types/blocks";
@@ -209,15 +209,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
             {project.title}
           </h3>
         )}
-        {project.tags && project.tags.length > 0 && (
-          <div className={`flex flex-wrap ${compact ? "gap-1" : "gap-1.5"}`}>
-            {project.tags.map((tag, tagIdx) => (
-              <Badge key={tagIdx} variant="tag">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <TagList tags={project.tags} compact={compact} />
         {!compact && project.description && project.description.length > 0 && (
           <RichText>
             <PortableText value={project.description} />

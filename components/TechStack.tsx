@@ -1,4 +1,5 @@
 import { Badge } from "@/components/atoms/Badge";
+import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
 import type { TechStackBlock } from "@/types/blocks";
 
@@ -21,9 +22,7 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
           >
             <div className="mb-2">
               {group.groupName && (
-                <p className="text-sm font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
-                  {group.groupName}
-                </p>
+                <Eyebrow className="text-sm">{group.groupName}</Eyebrow>
               )}
               {group.description && (
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">

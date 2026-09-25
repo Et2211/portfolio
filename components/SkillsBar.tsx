@@ -1,4 +1,5 @@
 import { Badge } from "@/components/atoms/Badge";
+import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
 import { groupBy } from "@/lib/utils";
 import type { SkillItem, SkillsBarBlock } from "@/types/blocks";
@@ -27,9 +28,7 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
               key={category}
               className="-mx-4 rounded-xl border border-transparent p-4 transition-[border-color,box-shadow] duration-300 hover:border-accent-vivid/30 hover:shadow-glow-sm"
             >
-              <p className="mb-2 text-xs font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
-                {category}
-              </p>
+              <Eyebrow className="mb-2">{category}</Eyebrow>
               <div className="flex flex-wrap gap-2">
                 {items.map((skill, idx) => (
                   <Badge key={skill._key ?? idx} variant="skill">
