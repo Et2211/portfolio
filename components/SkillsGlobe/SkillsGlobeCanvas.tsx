@@ -18,6 +18,8 @@ interface SkillsGlobeCanvasProps {
   heading?: string;
   rotationSpeed?: number;
   skills: GlobeSkill[];
+  /** Server-rendered skill list, shown instead of the globe without JS. */
+  fallback?: React.ReactNode;
 }
 
 // Wraps a panel so it transitions in on mount and out when isClosing flips true.
@@ -118,6 +120,7 @@ export const SkillsGlobeCanvas = ({
   heading,
   skills,
   rotationSpeed = 0.3,
+  fallback,
 }: SkillsGlobeCanvasProps) => {
   const [displayedSkill, setDisplayedSkill] = useState<GlobeSkill | null>(null);
   const [isClosing, setIsClosing] = useState(false);
@@ -174,7 +177,10 @@ export const SkillsGlobeCanvas = ({
         </SectionHeading>
       )}
 
-      <div className="flex w-full flex-col items-start gap-6 lg:flex-row lg:items-center">
+      {fallback}
+
+      {/* The globe only renders client-side, so hide its empty space without JS */}
+      <div className="flex w-full flex-col items-start gap-6 lg:flex-row lg:items-center noscript:hidden">
         {/* Globe */}
         <div
           className="flex flex-shrink-0 justify-center"

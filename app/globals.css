@@ -35,6 +35,10 @@
 }
 
 @custom-variant dark (&:is(.dark *));
+/* Progressive enhancement: `scripting:` applies when JavaScript runs,
+   `noscript:` when it doesn't (unsupported browsers match neither). */
+@custom-variant scripting (@media (scripting: enabled));
+@custom-variant noscript (@media (scripting: none));
 
 @theme {
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
