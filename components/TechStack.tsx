@@ -1,15 +1,8 @@
-"use client";
-
-import { motion } from "motion/react";
-
 import { Badge } from "@/components/atoms/Badge";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
-import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import type { TechStackBlock } from "@/types/blocks";
 
 export const TechStack = ({ heading, groups }: TechStackBlock) => {
-  const isPointer = useIsPointerDevice();
-
   if (!groups || groups.length === 0) {
     return null;
   }
@@ -22,19 +15,9 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
       {heading && <SectionHeading>{heading}</SectionHeading>}
       <div className="flex flex-col gap-8">
         {groups.map((group, idx) => (
-          <motion.div
+          <div
             key={group._key ?? idx}
-            className="-mx-4 rounded-xl border border-transparent p-4 transition-colors duration-300"
-            whileHover={
-              isPointer
-                ? {
-                    boxShadow:
-                      "0 0 24px oklch(0.56 0.28 280 / 0.14), 0 4px 16px oklch(0 0 0 / 0.06)",
-                    borderColor: "oklch(0.56 0.28 280 / 0.3)",
-                  }
-                : undefined
-            }
-            transition={{ duration: 0.25 }}
+            className="-mx-4 rounded-xl border border-transparent p-4 transition-[border-color,box-shadow] duration-300 hover:border-accent-vivid/30 hover:shadow-glow-sm"
           >
             <div className="mb-2">
               {group.groupName && (
@@ -57,7 +40,7 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
                 ))}
               </div>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
 

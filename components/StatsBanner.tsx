@@ -1,10 +1,9 @@
 "use client";
 
-import { animate, motion } from "motion/react";
+import { animate } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { useInView } from "@/hooks/useInView";
-import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { StatsBannerBlock } from "@/types/blocks";
 
@@ -67,14 +66,7 @@ const AnimatedStat = ({ value }: { value: string }) => {
       ref={ref}
       data-count-up={canAnimate || undefined}
       data-counting={isCounting || undefined}
-      className="text-3xl font-bold tabular-nums sm:text-4xl"
-      style={{
-        background:
-          "linear-gradient(135deg, var(--accent-vivid) 0%, var(--accent-vivid-2) 100%)",
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        backgroundClip: "text",
-      }}
+      className="bg-linear-135 from-accent-vivid to-accent-vivid-2 text-gradient text-3xl font-bold tabular-nums sm:text-4xl"
     >
       {displayed}
     </span>
@@ -83,47 +75,21 @@ const AnimatedStat = ({ value }: { value: string }) => {
 
 const StatCard = ({
   stat,
-  idx,
-  isPointer,
 }: {
   stat: NonNullable<StatsBannerBlock["stats"]>[number];
-  idx: number;
-  isPointer: boolean;
 }) => (
-  <motion.div
-    key={stat._key ?? idx}
-    className="flex flex-col items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-8 text-center transition-colors duration-300 hover:border-[var(--accent-vivid)]/40 dark:border-zinc-800 dark:bg-zinc-900"
-    whileHover={
-      isPointer
-        ? {
-            y: -4,
-            scale: 1.02,
-            boxShadow:
-              "0 0 30px oklch(0.56 0.28 280 / 0.22), 0 8px 24px oklch(0 0 0 / 0.1)",
-          }
-        : undefined
-    }
-    transition={{ type: "spring", stiffness: 260, damping: 26 }}
-  >
+  <div className="flex flex-col items-center gap-1 surface-muted px-4 py-8 text-center transition-[border-color,box-shadow,translate,scale] duration-300 ease-out-back hover:-translate-y-1 hover:scale-102 hover:border-accent-vivid/40 hover:shadow-glow-md">
     {stat.value && <AnimatedStat value={stat.value} />}
     {stat.label && (
       <span className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
         {stat.label}
       </span>
     )}
-    <div
-      className="mt-3 h-0.5 w-10 rounded-full"
-      style={{
-        background:
-          "linear-gradient(90deg, var(--accent-vivid), var(--accent-vivid-2))",
-      }}
-    />
-  </motion.div>
+    <div className="mt-3 accent-rule w-10" />
+  </div>
 );
 
 export const StatsBanner = ({ stats }: StatsBannerBlock) => {
-  const isPointer = useIsPointerDevice();
-
   if (!stats || stats.length === 0) {
     return null;
   }
@@ -132,12 +98,7 @@ export const StatsBanner = ({ stats }: StatsBannerBlock) => {
     <section className="py-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {stats.map((stat, idx) => (
-          <StatCard
-            key={stat._key ?? idx}
-            stat={stat}
-            idx={idx}
-            isPointer={isPointer}
-          />
+          <StatCard key={stat._key ?? idx} stat={stat} />
         ))}
       </div>
     </section>

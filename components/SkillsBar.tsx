@@ -1,16 +1,9 @@
-"use client";
-
-import { motion } from "motion/react";
-
 import { Badge } from "@/components/atoms/Badge";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
-import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import { groupBy } from "@/lib/utils";
 import type { SkillItem, SkillsBarBlock } from "@/types/blocks";
 
 export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
-  const isPointer = useIsPointerDevice();
-
   if (!skills || skills.length === 0) {
     return null;
   }
@@ -30,19 +23,9 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
       {hasCategories ? (
         <div className="flex flex-col gap-6">
           {Object.entries(grouped).map(([category, items]) => (
-            <motion.div
+            <div
               key={category}
-              className="-mx-4 rounded-xl border border-transparent p-4 transition-colors duration-300"
-              whileHover={
-                isPointer
-                  ? {
-                      boxShadow:
-                        "0 0 24px oklch(0.56 0.28 280 / 0.14), 0 4px 16px oklch(0 0 0 / 0.06)",
-                      borderColor: "oklch(0.56 0.28 280 / 0.3)",
-                    }
-                  : undefined
-              }
-              transition={{ duration: 0.25 }}
+              className="-mx-4 rounded-xl border border-transparent p-4 transition-[border-color,box-shadow] duration-300 hover:border-accent-vivid/30 hover:shadow-glow-sm"
             >
               <p className="mb-2 text-xs font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
                 {category}
@@ -54,7 +37,7 @@ export const SkillsBar = ({ heading, skills }: SkillsBarBlock) => {
                   </Badge>
                 ))}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       ) : (

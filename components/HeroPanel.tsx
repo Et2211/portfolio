@@ -54,11 +54,17 @@ export const HeroPanel = ({
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
           className={`absolute -top-32 md:-top-48 ${isRight ? "-left-32 md:-left-48" : "-right-32 md:-right-48"} hero-blob h-[360px] w-[360px] rounded-full blur-[60px] md:h-[640px] md:w-[640px] md:blur-[110px]`}
-          style={{ background: "oklch(0.56 0.28 280 / 0.35)" }}
+          style={{
+            background:
+              "color-mix(in oklch, var(--accent-vivid) 35%, transparent)",
+          }}
         />
         <div
           className={`absolute -bottom-16 ${isRight ? "-right-16" : "-left-16"} hero-blob-reverse h-[260px] w-[260px] rounded-full blur-[50px] md:h-[480px] md:w-[480px] md:blur-[90px]`}
-          style={{ background: "oklch(0.72 0.18 196 / 0.28)" }}
+          style={{
+            background:
+              "color-mix(in oklch, var(--accent-vivid-2) 28%, transparent)",
+          }}
         />
       </div>
 
@@ -79,8 +85,14 @@ export const HeroPanel = ({
                   x2="100%"
                   y2="100%"
                 >
-                  <stop offset="0%" stopColor="oklch(0.56 0.28 280)" />
-                  <stop offset="100%" stopColor="oklch(0.72 0.18 196)" />
+                  <stop
+                    offset="0%"
+                    style={{ stopColor: "var(--accent-vivid)" }}
+                  />
+                  <stop
+                    offset="100%"
+                    style={{ stopColor: "var(--accent-vivid-2)" }}
+                  />
                 </linearGradient>
               </defs>
               <circle
@@ -102,7 +114,10 @@ export const HeroPanel = ({
                 cy="50"
                 r="47"
                 fill="none"
-                stroke="oklch(0.72 0.18 196 / 0.55)"
+                style={{
+                  stroke:
+                    "color-mix(in oklch, var(--accent-vivid-2) 55%, transparent)",
+                }}
                 strokeWidth="0.8"
                 strokeDasharray="3 14"
                 strokeLinecap="round"
@@ -113,7 +128,8 @@ export const HeroPanel = ({
           <div
             className="absolute inset-0 -z-10 rounded-full"
             style={{
-              background: "oklch(0.56 0.28 280 / 0.35)",
+              background:
+                "color-mix(in oklch, var(--accent-vivid) 35%, transparent)",
               filter: "blur(24px)",
               transform: "scale(1.2)",
             }}
@@ -134,24 +150,12 @@ export const HeroPanel = ({
         className={`flex flex-1 flex-col gap-4 text-center ${isRight ? "sm:text-right" : "sm:text-left"}`}
       >
         {name && (
-          <h1
-            className="text-3xl leading-tight font-bold sm:text-4xl md:text-5xl"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--foreground) 50%, var(--accent-vivid) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
+          <h1 className="bg-linear-135 from-foreground from-50% to-accent-vivid text-gradient text-3xl leading-tight font-bold sm:text-4xl md:text-5xl">
             <SplitWords text={name} startMs={nameMs} />
           </h1>
         )}
         {role && (
-          <p
-            className="text-lg font-medium sm:text-xl"
-            style={{ color: "var(--accent-vivid)" }}
-          >
+          <p className="text-lg font-medium text-accent-vivid sm:text-xl">
             <SplitWords text={role} startMs={roleMs} />
           </p>
         )}

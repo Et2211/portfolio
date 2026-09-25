@@ -93,17 +93,13 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      animate={
+      className={`relative flex flex-col overflow-hidden surface-card transition-shadow duration-300 ${
         interactive
-          ? {
-              boxShadow: isHovered
-                ? "0 0 40px oklch(0.56 0.28 280 / 0.3), 0 20px 48px oklch(0 0 0 / 0.18)"
-                : "0 2px 12px oklch(0 0 0 / 0.06)",
-            }
-          : undefined
-      }
-      transition={{ boxShadow: { duration: 0.3 } }}
-      className="relative flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+          ? isHovered
+            ? "shadow-glow-lg"
+            : "shadow-[0_2px_12px_oklch(0_0_0/0.06)]"
+          : ""
+      }`}
     >
       {/* SVG border tracer — pointer devices only */}
       {cardDims.width > 0 && interactive && (
@@ -121,9 +117,15 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
               x2="100%"
               y2="100%"
             >
-              <stop offset="0%" stopColor="oklch(0.56 0.28 280)" />
-              <stop offset="50%" stopColor="oklch(0.72 0.18 196)" />
-              <stop offset="100%" stopColor="oklch(0.56 0.28 280)" />
+              <stop offset="0%" style={{ stopColor: "var(--accent-vivid)" }} />
+              <stop
+                offset="50%"
+                style={{ stopColor: "var(--accent-vivid-2)" }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: "var(--accent-vivid)" }}
+              />
             </linearGradient>
           </defs>
           <motion.rect
@@ -155,7 +157,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
           style={{
             opacity: isHovered ? 1 : 0,
             background:
-              "radial-gradient(300px circle at var(--spot-x, 50%) var(--spot-y, 50%), oklch(0.56 0.28 280 / 0.16), oklch(0.72 0.18 196 / 0.07) 55%, transparent 70%)",
+              "radial-gradient(300px circle at var(--spot-x, 50%) var(--spot-y, 50%), color-mix(in oklch, var(--accent-vivid) 16%, transparent), color-mix(in oklch, var(--accent-vivid-2) 7%, transparent) 55%, transparent 70%)",
           }}
         />
       )}
@@ -188,7 +190,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
               style={{
                 opacity: isHovered ? 1 : 0,
                 background:
-                  "linear-gradient(135deg, oklch(0.56 0.28 280 / 0.22) 0%, oklch(0.72 0.18 196 / 0.1) 100%)",
+                  "linear-gradient(135deg, color-mix(in oklch, var(--accent-vivid) 22%, transparent) 0%, color-mix(in oklch, var(--accent-vivid-2) 10%, transparent) 100%)",
               }}
             />
           )}
@@ -200,13 +202,9 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
       >
         {project.title && (
           <h3
-            className={`font-semibold transition-colors duration-300 ${compact ? "" : "text-lg"}`}
-            style={{
-              color:
-                isHovered && interactive
-                  ? "var(--accent-vivid)"
-                  : "var(--foreground)",
-            }}
+            className={`font-semibold transition-colors duration-300 ${compact ? "" : "text-lg"} ${
+              isHovered && interactive ? "text-accent-vivid" : "text-foreground"
+            }`}
           >
             {project.title}
           </h3>

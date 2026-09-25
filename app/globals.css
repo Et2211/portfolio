@@ -74,6 +74,18 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-accent-vivid: var(--accent-vivid);
+  --color-accent-vivid-2: var(--accent-vivid-2);
+  /* Accent glows — follow the theme because they're built on --accent-vivid. */
+  --shadow-glow-sm:
+    0 0 24px color-mix(in oklch, var(--accent-vivid) 14%, transparent),
+    0 4px 16px oklch(0 0 0 / 0.06);
+  --shadow-glow-md:
+    0 0 28px color-mix(in oklch, var(--accent-vivid) 20%, transparent),
+    0 6px 20px oklch(0 0 0 / 0.08);
+  --shadow-glow-lg:
+    0 0 40px color-mix(in oklch, var(--accent-vivid) 30%, transparent),
+    0 20px 48px oklch(0 0 0 / 0.18);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -161,6 +173,30 @@
   }
 }
 
+/* ── Shared utilities ──────────────────────────────── */
+/* Clip a background (e.g. bg-linear-135 from-… to-…) to the text. */
+@utility text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Short accent underline used under headings and stats. */
+@utility accent-rule {
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-vivid),
+    var(--accent-vivid-2)
+  );
+}
+@utility surface-card {
+  @apply rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900;
+}
+@utility surface-muted {
+  @apply rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900;
+}
+
 /* ── Accent color tokens ───────────────────────────── */
 :root {
   --accent-vivid: oklch(0.56 0.28 280);
@@ -181,13 +217,8 @@
 }
 .btn-primary-gradient:hover {
   box-shadow:
-    0 0 28px oklch(0.56 0.28 280 / 0.45),
-    0 4px 16px oklch(0 0 0 / 0.25);
-}
-.dark .btn-primary-gradient:hover {
-  box-shadow:
-    0 0 28px oklch(0.72 0.28 280 / 0.55),
-    0 4px 16px oklch(0 0 0 / 0.4);
+    0 0 28px color-mix(in oklch, var(--accent-vivid) 50%, transparent),
+    0 4px 16px oklch(0 0 0 / 0.3);
 }
 
 /* ── Hero blob animations ──────────────────────────── */

@@ -12,7 +12,7 @@ export const ScrollProgressBar = () => {
       style={{
         scaleX: scrollYProgress,
         background:
-          "linear-gradient(90deg, oklch(0.56 0.28 280) 0%, oklch(0.72 0.18 196) 60%, oklch(0.75 0.18 150) 100%)",
+          "linear-gradient(90deg, var(--accent-vivid) 0%, var(--accent-vivid-2) 60%, oklch(0.75 0.18 150) 100%)",
       }}
     />
   );

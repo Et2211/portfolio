@@ -1,7 +1,6 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -64,7 +63,9 @@ export const TimelineItem = ({
 
   const dotGlowStyle =
     isFilled && cardHovered && isPointer
-      ? { boxShadow: "0 0 10px 3px oklch(0.56 0.28 280 / 0.5)" }
+      ? {
+          boxShadow: `0 0 10px 3px color-mix(in oklch, var(--accent-vivid) 50%, transparent)`,
+        }
       : undefined;
 
   // Mobile dot — no ref needed, threshold is measured from the desktop dot
@@ -90,26 +91,13 @@ export const TimelineItem = ({
             : "opacity-0 md:translate-x-8"
       }`}
     >
-      <motion.div
-        className={`rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900 ${isLeft ? "md:text-right" : "md:text-left"}`}
-        whileHover={
-          isPointer
-            ? {
-                boxShadow:
-                  "0 0 28px oklch(0.56 0.28 280 / 0.18), 0 4px 16px oklch(0 0 0 / 0.08)",
-              }
-            : undefined
-        }
-        transition={{ boxShadow: { duration: 0.25 } }}
-        onHoverStart={() => isPointer && setCardHovered(true)}
-        onHoverEnd={() => isPointer && setCardHovered(false)}
+      {/* Hover state is also tracked in JS because it lights up the timeline dot. */}
+      <div
+        className={`group surface-card p-6 transition-shadow duration-300 hover:shadow-glow-md ${isLeft ? "md:text-right" : "md:text-left"}`}
+        onMouseEnter={() => isPointer && setCardHovered(true)}
+        onMouseLeave={() => isPointer && setCardHovered(false)}
       >
-        <h3
-          className="mb-1 text-lg font-semibold transition-colors duration-300"
-          style={{
-            color: cardHovered && isPointer ? "var(--accent-vivid)" : undefined,
-          }}
-        >
+        <h3 className="mb-1 text-lg font-semibold transition-colors duration-300 group-hover:text-accent-vivid">
           {item.title}
         </h3>
         {dateRange && (
@@ -133,7 +121,7 @@ export const TimelineItem = ({
             <PortableText value={item.description} />
           </RichText>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 
