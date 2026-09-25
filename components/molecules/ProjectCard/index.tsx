@@ -1,10 +1,8 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import { motion, useSpring, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import Image from "next/image";
-import type { MouseEvent } from "react";
-import { useEffect, useId, useRef, useState } from "react";
 
 import { RichText } from "@/components/atoms/RichText";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
@@ -12,6 +10,9 @@ import { TagList } from "@/components/molecules/TagList";
 import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { FeaturedProject } from "@/types/blocks";
+
+import { BorderTracer } from "./BorderTracer";
+import { useCardTilt } from "./useCardTilt";
 
 interface ProjectCardProps {
   project: FeaturedProject;
@@ -24,75 +25,13 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
   const isPointer = useIsPointerDevice();
   const interactive = isPointer && !shouldReduceMotion;
 
-  const uid = useId();
-  const safeId = uid.replace(/:/g, "-");
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [cardDims, setCardDims] = useState({ width: 0, height: 0 });
-
-  // Critically-damped springs (ratio > 1) — cannot oscillate
-  const rotateX = useSpring(0, { stiffness: 180, damping: 30 });
-  const rotateY = useSpring(0, { stiffness: 180, damping: 30 });
-  const transform = useTransform(
-    [rotateX, rotateY],
-    ([rx, ry]: number[]) =>
-      `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`,
-  );
-
-  // Image shifts opposite to tilt — creates glass-depth illusion
-  const imageX = useTransform(rotateY, (ry: number) => -ry * 0.7);
-  const imageY = useTransform(rotateX, (rx: number) => rx * 0.7);
-
-  // ResizeObserver only needed for the SVG tracer on pointer devices
-  useEffect(() => {
-    if (!interactive) {
-      return;
-    }
-    const el = cardRef.current;
-    if (!el) {
-      return;
-    }
-    const ro = new ResizeObserver(([e]) =>
-      setCardDims({ width: e.contentRect.width, height: e.contentRect.height }),
-    );
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [interactive]);
-
-  const onMouseEnter = () => {
-    if (interactive) {
-      setIsHovered(true);
-    }
-  };
-  const onMouseLeave = () => {
-    if (!interactive) {
-      return;
-    }
-    setIsHovered(false);
-    rotateX.set(0);
-    rotateY.set(0);
-  };
-  const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!interactive) {
-      return;
-    }
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    rotateY.set(px * 14);
-    rotateX.set(-py * 10);
-    // CSS vars avoid re-rendering the whole card on every mousemove
-    e.currentTarget.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
-    e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
-  };
+  const { isHovered, transform, imageX, imageY, handlers } =
+    useCardTilt(interactive);
 
   return (
     <motion.div
-      ref={cardRef}
       style={interactive ? { transform } : undefined}
-      onMouseEnter={onMouseEnter}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
+      {...handlers}
       className={`relative flex flex-col overflow-hidden surface-card transition-shadow duration-300 ${
         interactive
           ? isHovered
@@ -101,54 +40,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
           : ""
       }`}
     >
-      {/* SVG border tracer — pointer devices only */}
-      {cardDims.width > 0 && interactive && (
-        <svg
-          className="pointer-events-none absolute inset-0 z-20"
-          width={cardDims.width}
-          height={cardDims.height}
-          style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
-        >
-          <defs>
-            <linearGradient
-              id={`tg-${safeId}`}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              <stop offset="0%" style={{ stopColor: "var(--accent-vivid)" }} />
-              <stop
-                offset="50%"
-                style={{ stopColor: "var(--accent-vivid-2)" }}
-              />
-              <stop
-                offset="100%"
-                style={{ stopColor: "var(--accent-vivid)" }}
-              />
-            </linearGradient>
-          </defs>
-          <motion.rect
-            x="1"
-            y="1"
-            width={cardDims.width - 2}
-            height={cardDims.height - 2}
-            rx="10.5"
-            fill="none"
-            stroke={`url(#tg-${safeId})`}
-            strokeWidth="2"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{
-              pathLength: isHovered ? 1 : 0,
-              opacity: isHovered ? 1 : 0,
-            }}
-            transition={{
-              pathLength: { duration: 0.55, ease: [0.4, 0, 0.2, 1] },
-              opacity: { duration: 0.15 },
-            }}
-          />
-        </svg>
-      )}
+      {interactive && <BorderTracer active={isHovered} />}
 
       {/* Spotlight — CSS-var position, pointer devices only */}
       {interactive && (
@@ -203,7 +95,7 @@ export const ProjectCard = ({ project, compact = false }: ProjectCardProps) => {
         {project.title && (
           <h3
             className={`font-semibold transition-colors duration-300 ${compact ? "" : "text-lg"} ${
-              isHovered && interactive ? "text-accent-vivid" : "text-foreground"
+              isHovered ? "text-accent-vivid" : "text-foreground"
             }`}
           >
             {project.title}
