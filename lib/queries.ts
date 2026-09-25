@@ -2,19 +2,33 @@
 // blocks identically.
 
 /**
+ * Fields for one page-builder block: resolves file downloads to a URL and
+ * expands nested `items` (e.g. carousel → timeline → timeline items). The
+ * `defined()` guards stop GROQ adding `items: null` to every object.
+ */
+const BLOCK_FIELDS = /* groq */ `
+  ...,
+  _type == "cvDownload" => { "fileUrl": file.asset->url },
+  defined(items) => {
+    items[]{
+      ...,
+      defined(items) => { items[]{ ... } }
+    }
+  }`;
+
+/**
  * Projection for an array of page-builder sections (`dynamicComponent`).
- * Expands two levels of nested `items` (carousel → timeline, grid →
- * sections) and resolves file downloads to a URL.
+ * A grid's cells are sections too, so their blocks get the same fields.
  */
 const SECTIONS_PROJECTION = /* groq */ `{
   ...,
   component[]{
-    ...,
-    "fileUrl": file.asset->url,
-    items[]{
-      ...,
+    ${BLOCK_FIELDS},
+    _type == "gridLayout" => {
       items[]{
-        ...
+        ...,
+        component[]{${BLOCK_FIELDS}
+        }
       }
     }
   }
