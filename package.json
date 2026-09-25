@@ -10,7 +10,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "codegen:sanity": "npx sanity-codegen",
+    "codegen:sanity": "node scripts/codegen-sanity.mjs",
     "codegen:full": "npm --prefix ../studio-portfolio run rebuild:schemas && npm run codegen:sanity",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
