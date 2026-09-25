@@ -77,29 +77,27 @@ export const TimelineItem = ({
   // One card, placed by the grid: [dot | card] on mobile,
   // [card | dot | empty] or [empty | dot | card] alternating on desktop.
   return (
+    // Hidden-until-in-view styles live in globals.css (.timeline-item) behind
+    // `scripting: enabled`, so the cards are visible without JavaScript.
     <div
       ref={ref}
-      className="grid grid-cols-[2rem_1fr] items-start py-8 md:grid-cols-[1fr_4rem_1fr]"
+      data-in-view={isInView || undefined}
+      className="timeline-item grid grid-cols-[2rem_1fr] items-start py-8 md:grid-cols-[1fr_4rem_1fr]"
     >
       <div className="col-start-1 row-start-1 flex justify-center md:col-start-2">
         <div
           ref={dotRef}
-          className={`h-4 w-4 rounded-full border-2 border-zinc-900 transition-all duration-300 dark:border-white ${
-            isInView ? "scale-100" : "scale-0"
-          } ${isFilled ? "bg-zinc-900 dark:bg-white" : "bg-white dark:bg-zinc-900"}`}
+          className={`timeline-dot h-4 w-4 rounded-full border-2 border-zinc-900 transition-all duration-300 dark:border-white ${
+            isFilled ? "bg-zinc-900 dark:bg-white" : "bg-white dark:bg-zinc-900"
+          }`}
           style={dotGlowStyle}
         />
       </div>
 
       <div
-        className={`col-start-2 row-start-1 w-full transition-all duration-700 ease-out ${
+        data-side={isLeft ? "left" : "right"}
+        className={`timeline-card col-start-2 row-start-1 w-full transition-all duration-700 ease-out ${
           isLeft ? "md:col-start-1" : "md:col-start-3"
-        } ${
-          isInView
-            ? "translate-x-0 opacity-100"
-            : isLeft
-              ? "opacity-0 md:-translate-x-8"
-              : "opacity-0 md:translate-x-8"
         }`}
       >
         {/* Hover is also tracked in JS because it lights up the dot. */}

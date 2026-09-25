@@ -339,6 +339,24 @@
   }
 }
 
+/* Timeline items (TimelineItem): dot pops in, card slides in from its side. */
+@media (scripting: enabled) {
+  .timeline-item:not([data-in-view]) .timeline-dot {
+    scale: 0;
+  }
+  .timeline-item:not([data-in-view]) .timeline-card {
+    opacity: 0;
+  }
+}
+@media (scripting: enabled) and (width >= 48rem) {
+  .timeline-item:not([data-in-view]) .timeline-card[data-side="left"] {
+    translate: -2rem 0;
+  }
+  .timeline-item:not([data-in-view]) .timeline-card[data-side="right"] {
+    translate: 2rem 0;
+  }
+}
+
 /*
  * Hero entrance: CSS keyframes rather than JS so it plays on first paint,
  * before hydration, and still ends visible without JavaScript. Stagger with
