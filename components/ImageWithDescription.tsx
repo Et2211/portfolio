@@ -3,15 +3,15 @@ import Image from "next/image";
 
 import { RichText } from "@/components/atoms/RichText";
 import { getSimpleIcon } from "@/lib/simpleIcons";
-import type { SanityBlock, SanityKeyed } from "@/types/generated/sanity";
+import type { ImageWithDescriptionBlock } from "@/types/blocks";
 
-interface ImageWithDescriptionProps {
-  icon?: string | null;
-  image?: string | null;
-  description?: SanityKeyed<SanityBlock>[];
-  textPosition?: "above" | "below" | "before" | "after";
+type ImageWithDescriptionProps = Pick<
+  ImageWithDescriptionBlock,
+  "icon" | "image" | "description" | "textPosition"
+> & {
+  /** Fixed square size in px (used inside the carousel). */
   imageSize?: number;
-}
+};
 
 export const ImageWithDescription = ({
   icon,

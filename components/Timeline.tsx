@@ -2,15 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import type { TimelineItemData } from "@/types/blocks";
+import type { TimelineBlock } from "@/types/blocks";
 
 import { TimelineItem } from "./TimelineItem";
 
-interface TimelineProps {
-  items: TimelineItemData[];
-}
+type TimelineProps = Pick<TimelineBlock, "items">;
 
-export const Timeline = ({ items }: TimelineProps) => {
+export const Timeline = ({ items = [] }: TimelineProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [fillPercent, setFillPercent] = useState(0);
 
@@ -34,7 +32,7 @@ export const Timeline = ({ items }: TimelineProps) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (!items || items.length === 0) {
+  if (!items.length) {
     return null;
   }
 

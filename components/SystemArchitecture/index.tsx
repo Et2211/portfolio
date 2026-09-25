@@ -12,17 +12,17 @@ import { buildFlowEdges, buildFlowNodes } from "./layout";
 import { NodeDetailPanel } from "./NodeDetailPanel";
 import { SourceLabelEdge } from "./SourceLabelEdge";
 
-interface SystemArchitectureProps {
-  block: SystemArchitectureBlock;
-}
-
 const edgeTypes = { sourceLabel: SourceLabelEdge };
 
-export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
+export const SystemArchitecture = ({
+  nodes,
+  edges,
+  primaryFlowLabel,
+}: SystemArchitectureBlock) => {
   const [selectedNode, setSelectedNode] = useState<ArchNodeData | null>(null);
 
-  const sanityNodes = block.nodes ?? [];
-  const sanityEdges = block.edges ?? [];
+  const sanityNodes = nodes ?? [];
+  const sanityEdges = edges ?? [];
 
   const flowNodes = buildFlowNodes(sanityNodes, sanityEdges);
   const flowEdges = buildFlowEdges(sanityEdges);
@@ -59,7 +59,7 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
             </span>
           );
         })}
-        {block.primaryFlowLabel && (
+        {primaryFlowLabel && (
           <span
             className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium"
             style={{
@@ -78,7 +78,7 @@ export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
                 strokeWidth="2.5"
               />
             </svg>
-            {block.primaryFlowLabel}
+            {primaryFlowLabel}
           </span>
         )}
       </div>
