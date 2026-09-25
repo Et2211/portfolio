@@ -2,6 +2,7 @@
 
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
+import { Pause, Play } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -41,12 +42,23 @@ export const CarouselViewport = ({
     return () => resizeObserver.disconnect();
   }, []);
 
+  // Autoplaying content needs a way to stop it (WCAG 2.2.2): a pause button,
+  // plus pausing while the slides are hovered or focused.
+  const canAutoplay = autoplay && !reduceMotion;
+  const [isPaused, setIsPaused] = useState(false);
   const plugins = useMemo(
     () =>
-      autoplay && !reduceMotion
-        ? [Autoplay({ delay: interval, stopOnInteraction: false })]
+      canAutoplay && !isPaused
+        ? [
+            Autoplay({
+              delay: interval,
+              stopOnInteraction: false,
+              stopOnMouseEnter: true,
+              stopOnFocusIn: true,
+            }),
+          ]
         : [],
-    [autoplay, interval, reduceMotion],
+    [canAutoplay, isPaused, interval],
   );
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
@@ -107,21 +119,38 @@ export const CarouselViewport = ({
         </div>
       </div>
 
-      {showDots && scrollSnaps.length > 1 && slides.length > slidesToShow && (
-        <div className="mt-4 flex justify-center gap-2">
-          {scrollSnaps.map((_, index) => (
+      {(canAutoplay || showDots) && (
+        <div className="mt-4 flex items-center justify-center gap-2">
+          {canAutoplay && (
             <button
-              key={index}
               type="button"
-              className={`h-3 w-3 rounded-full transition-all ${
-                index === selectedIndex
-                  ? "w-8 bg-black dark:bg-white"
-                  : "bg-gray-600 dark:bg-gray-400"
-              }`}
-              onClick={() => emblaApi?.scrollTo(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+              onClick={() => setIsPaused((paused) => !paused)}
+              aria-label={isPaused ? "Play carousel" : "Pause carousel"}
+              className="mr-2 flex h-7 w-7 items-center justify-center rounded-full text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            >
+              {isPaused ? (
+                <Play aria-hidden="true" size={14} />
+              ) : (
+                <Pause aria-hidden="true" size={14} />
+              )}
+            </button>
+          )}
+          {showDots &&
+            scrollSnaps.length > 1 &&
+            slides.length > slidesToShow &&
+            scrollSnaps.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`h-3 w-3 rounded-full transition-all ${
+                  index === selectedIndex
+                    ? "w-8 bg-black dark:bg-white"
+                    : "bg-gray-600 dark:bg-gray-400"
+                }`}
+                onClick={() => emblaApi?.scrollTo(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
         </div>
       )}
     </div>
