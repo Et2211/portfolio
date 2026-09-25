@@ -1,180 +1,51 @@
-"use client";
-
-import Autoplay from "embla-carousel-autoplay";
-import useEmblaCarousel from "embla-carousel-react";
-import { useCallback, useEffect, useState } from "react";
-
 import type { CarouselBlock } from "@/types/blocks";
 
-import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
-import { Timeline as TimelineComponent } from "./Timeline";
+import { CarouselViewport } from "./CarouselViewport";
+import { ImageWithDescription } from "./ImageWithDescription";
+import { Timeline } from "./Timeline";
 
-interface CarouselProps {
-  carousel: CarouselBlock;
-}
+type CarouselItem = NonNullable<CarouselBlock["items"]>[number];
 
-export const Carousel = ({ carousel }: CarouselProps) => {
-  const showDots = carousel.showDots ?? true;
+const renderSlide = (item: CarouselItem) => {
+  switch (item._type) {
+    case "imageWithDescription":
+      return (
+        <ImageWithDescription
+          icon={item.icon}
+          image={item.image}
+          description={item.description}
+          textPosition={item.textPosition}
+          imageSize={96}
+        />
+      );
+    case "timeline":
+      return <Timeline items={item.items ?? []} />;
+    default:
+      return null;
+  }
+};
 
-  const [isMobile, setIsMobile] = useState(false);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const containerRef = useCallback((node: HTMLDivElement | null) => {
-    if (!node) {
-      return;
-    }
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
-    });
-
-    resizeObserver.observe(node);
-    setContainerWidth(node.offsetWidth);
-
-    return () => resizeObserver.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const autoplayOptions = carousel.autoplay
-    ? [Autoplay({ delay: carousel.interval ?? 5000, stopOnInteraction: false })]
-    : [];
-
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
-      loop: true,
-      slidesToScroll: 1,
-      align: "start",
-      containScroll: "trimSnaps",
-    },
-    autoplayOptions,
-  );
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-
-  const scrollTo = useCallback(
-    (index: number) => emblaApi && emblaApi.scrollTo(index),
-    [emblaApi],
-  );
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) {
-      return;
-    }
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) {
-      return;
-    }
-    onSelect();
-    setScrollSnaps(emblaApi.scrollSnapList());
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-  }, [emblaApi, onSelect]);
-
-  if (!carousel.items || carousel.items.length === 0) {
+// Server component: slides are rendered here (so their icons/images resolve
+// on the server) and handed to the client viewport for layout and swiping.
+export const Carousel = ({
+  items,
+  autoplay,
+  interval,
+  showDots,
+}: CarouselBlock) => {
+  if (!items?.length) {
     return null;
   }
 
-  // Calculate how many 300px slides can fit in the container
-  // Each slide has 300px width + 16px padding (8px on each side)
-  const slideWidthWithPadding = 316; // 300px + 16px padding
-  const calculatedSlidesToShow = Math.max(
-    1,
-    Math.floor(containerWidth / slideWidthWithPadding),
-  );
-
-  const effectiveSlidesToShow = isMobile ? 1 : calculatedSlidesToShow || 1;
-  const slideWidth = `${100 / effectiveSlidesToShow}%`;
-  const shouldCenter = carousel.items.length < effectiveSlidesToShow;
-
   return (
-    <div className="relative" ref={containerRef}>
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div
-          className="flex"
-          style={{
-            alignItems: "flex-start",
-            justifyContent: shouldCenter ? "center" : "flex-start",
-          }}
-        >
-          {carousel.items.map((item, idx) => {
-            if (item._type === "imageWithDescription") {
-              return (
-                <div
-                  key={item._key || idx}
-                  className="min-w-0 flex-shrink-0 px-2"
-                  style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
-                >
-                  <div className="mx-auto flex h-[300px] w-[300px] flex-col overflow-auto">
-                    <ImageWithDescriptionComponent
-                      icon={item.icon}
-                      image={item.image}
-                      description={item.description}
-                      textPosition={item.textPosition}
-                      imageSize={96}
-                    />
-                  </div>
-                </div>
-              );
-            }
-            if (item._type === "timeline") {
-              return (
-                <div
-                  key={item._key || idx}
-                  className="min-w-0 flex-shrink-0 px-2"
-                  style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
-                >
-                  <div className="mx-auto flex h-[300px] w-[300px] flex-col overflow-auto">
-                    <TimelineComponent items={item.items || []} />
-                  </div>
-                </div>
-              );
-            }
-            return (
-              <div
-                key={idx}
-                className="min-w-0 flex-shrink-0 px-2"
-                style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
-              >
-                <div className="mx-auto h-[300px] w-[300px]" />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {showDots &&
-        scrollSnaps.length > 1 &&
-        carousel.items.length > effectiveSlidesToShow && (
-          <div className="mt-4 flex justify-center gap-2">
-            {scrollSnaps.map((snap, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`h-3 w-3 rounded-full transition-all ${
-                  index === selectedIndex
-                    ? "w-8 bg-black dark:bg-white"
-                    : "bg-gray-600 dark:bg-gray-400"
-                }`}
-                onClick={() => scrollTo(index)}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
-    </div>
+    <CarouselViewport
+      autoplay={autoplay}
+      interval={interval}
+      showDots={showDots}
+      slides={items.map((item, idx) => ({
+        key: item._key ?? String(idx),
+        content: renderSlide(item),
+      }))}
+    />
   );
 };

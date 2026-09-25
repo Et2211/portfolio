@@ -68,7 +68,7 @@ export const DynamicComponentRenderer = ({
             );
             break;
           case "carousel":
-            content = <CarouselComponent carousel={block} />;
+            content = <CarouselComponent {...block} />;
             break;
           case "systemArchitecture":
             content = <SystemArchitectureComponent block={block} />;

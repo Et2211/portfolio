@@ -5,15 +5,13 @@ import { useFrame } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
 import * as THREE from "three";
 
-import type { SkillGlobeItem } from "@/types/blocks";
-
-import { getSimpleIcon } from "./simpleIconsRegistry";
+import type { GlobeSkill } from "./types";
 
 interface SkillNodeProps {
-  skill: SkillGlobeItem;
+  skill: GlobeSkill;
   position: [number, number, number];
-  radius?: number;
-  onSelect: (skill: SkillGlobeItem) => void;
+  radius: number;
+  onSelect: (skill: GlobeSkill) => void;
 }
 
 export const SkillNode = ({
@@ -27,8 +25,9 @@ export const SkillNode = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const hoveredRef = useRef(false);
   const worldPos = useRef(new THREE.Vector3());
+  const cameraDir = useRef(new THREE.Vector3());
 
-  const simpleIcon = skill.icon ? getSimpleIcon(skill.icon) : null;
+  const simpleIcon = skill.iconData;
 
   useFrame(({ camera }) => {
     if (!groupRef.current || !buttonRef.current) {
@@ -38,8 +37,9 @@ export const SkillNode = ({
 
     // Project world position onto camera's view direction so depth stays correct
     // whether the globe is auto-rotating OR the user is orbiting with the mouse.
-    const cameraDir = camera.position.clone().normalize();
-    const dot = worldPos.current.dot(cameraDir); // -radius → +radius
+    // Reuse a vector rather than allocating one per node per frame.
+    cameraDir.current.copy(camera.position).normalize();
+    const dot = worldPos.current.dot(cameraDir.current); // -radius → +radius
     const depth = (dot + radius) / (2 * radius); // 0 = back, 1 = front
     const isFront = depth >= 0.5;
 

@@ -7,14 +7,14 @@ import type { Mesh } from "three";
 interface GlobeProps {
   rotationSpeed?: number;
   paused?: boolean;
-  radius?: number;
+  radius: number;
   children?: ReactNode;
 }
 
 export const Globe = ({
   rotationSpeed = 0.3,
   paused = false,
-  radius = 2.5,
+  radius,
   children,
 }: GlobeProps) => {
   const meshRef = useRef<Mesh>(null);

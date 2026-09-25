@@ -2,7 +2,7 @@ import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 
 import { RichText } from "@/components/atoms/RichText";
-import { getSimpleIcon } from "@/components/SkillsGlobe/simpleIconsRegistry";
+import { getSimpleIcon } from "@/lib/simpleIcons";
 import type { SanityBlock, SanityKeyed } from "@/types/generated/sanity";
 
 interface ImageWithDescriptionProps {

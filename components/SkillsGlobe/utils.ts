@@ -5,7 +5,7 @@
  */
 export function generateFibonacciSpherePositions(
   count: number,
-  radius = 2.5,
+  radius: number,
 ): [number, number, number][] {
   const positions: [number, number, number][] = [];
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
