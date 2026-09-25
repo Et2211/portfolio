@@ -1,6 +1,7 @@
 import { PortableText } from "@portabletext/react";
 import { Github, Linkedin, Mail } from "lucide-react";
 
+import { SectionHeading } from "@/components/atoms/SectionHeading";
 import type { ContactSectionBlock } from "@/types/blocks";
 
 const iconMap = {
@@ -49,13 +50,15 @@ export const ContactSection = ({
   return (
     <section className="flex flex-col items-center gap-6 py-8 text-center">
       {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white">
+        <SectionHeading align="center" className="mb-0">
           {heading}
-        </h2>
+        </SectionHeading>
       )}
       {intro && intro.length > 0 && (
-        <div className="prose prose-sm dark:prose-invert max-w-lg dark:[&_a]:text-zinc-300 dark:[&_p]:text-zinc-300">
-          <PortableText value={intro} />
+        <div className="max-w-lg">
+          <div className="prose prose-sm max-w-none dark:prose-invert dark:[&_a]:text-zinc-300 dark:[&_p]:text-zinc-300">
+            <PortableText value={intro} />
+          </div>
         </div>
       )}
       <div className="flex flex-wrap justify-center gap-4">

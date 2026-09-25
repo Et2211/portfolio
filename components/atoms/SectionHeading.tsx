@@ -1,15 +1,25 @@
 import type { ReactNode } from "react";
 
+import { cn } from "@/lib/utils";
+
 interface SectionHeadingProps {
   children: ReactNode;
+  align?: "start" | "center";
   className?: string;
 }
 
 export const SectionHeading = ({
   children,
-  className = "",
+  align = "start",
+  className,
 }: SectionHeadingProps) => (
-  <div className={`mb-6 ${className}`}>
+  <div
+    className={cn(
+      "mb-6",
+      align === "center" && "flex flex-col items-center text-center",
+      className,
+    )}
+  >
     <h2 className="bg-linear-135 from-foreground from-30% to-accent-vivid text-gradient text-2xl font-bold">
       {children}
     </h2>

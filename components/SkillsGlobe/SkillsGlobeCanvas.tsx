@@ -4,6 +4,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { SectionHeading } from "@/components/atoms/SectionHeading";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 import { Globe } from "./Globe";
@@ -168,9 +169,9 @@ export const SkillsGlobeCanvas = ({
   return (
     <div className="relative flex w-full flex-col items-center justify-center py-10">
       {heading && (
-        <h2 className="mb-4 text-2xl font-bold text-black dark:text-white">
+        <SectionHeading align="center" className="mb-4">
           {heading}
-        </h2>
+        </SectionHeading>
       )}
 
       <div className="flex w-full flex-col items-start gap-6 lg:flex-row lg:items-center">
