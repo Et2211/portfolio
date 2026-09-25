@@ -1,9 +1,10 @@
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
-import { buildImageUrlsForComponents, fetchSanity } from "@/lib/sanity";
-import type { SanityValue } from "@/lib/sanity";
+import { buildImageUrls, fetchSanity } from "@/lib/sanity";
+import type { Page } from "@/types/generated/sanity";
 
+// The footer document holds the same dynamic components as a page.
 type FooterDocument = {
-  components?: Record<string, SanityValue>[];
+  components?: Page["pageComponents"];
 };
 
 async function getFooter(): Promise<FooterDocument | null> {
@@ -31,18 +32,12 @@ export const Footer = async () => {
     return null;
   }
 
-  const components = buildImageUrlsForComponents(footerDoc.components);
+  const components = buildImageUrls(footerDoc.components);
 
   return (
     <footer className="dark mt-16 bg-zinc-900 dark:bg-zinc-950">
       <div className="container mx-auto py-12">
-        <DynamicComponentRenderer
-          components={
-            components as Parameters<
-              typeof DynamicComponentRenderer
-            >[0]["components"]
-          }
-        />
+        <DynamicComponentRenderer components={components} />
       </div>
     </footer>
   );

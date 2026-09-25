@@ -2,7 +2,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
-import { buildImageUrlsForComponents, fetchSanity } from "@/lib/sanity";
+import { buildImageUrls, fetchSanity } from "@/lib/sanity";
 import type { Page } from "@/types/generated/sanity";
 
 interface PageProps {
@@ -64,13 +64,7 @@ export default async function Page({ params }: PageProps) {
   }
 
   // Build image URLs server-side to prevent hydration mismatch
-  const pageWithBuiltUrls = page.pageComponents
-    ? {
-        ...page,
-
-        pageComponents: buildImageUrlsForComponents(page.pageComponents),
-      }
-    : page;
+  const pageWithBuiltUrls = buildImageUrls(page);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
