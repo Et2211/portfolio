@@ -10,11 +10,38 @@ interface MobileMenuProps {
   sections: NavSection[];
 }
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// aria-modal promises focus stays inside the drawer: wrap Tab / Shift+Tab
+// at its ends, and pull focus back in if it has somehow left.
+const trapFocus = (e: KeyboardEvent, container: HTMLElement | null) => {
+  if (!container) {
+    return;
+  }
+  const focusable = [...container.querySelectorAll<HTMLElement>(FOCUSABLE)];
+  if (!focusable.length) {
+    return;
+  }
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+  const outside = !container.contains(active);
+  if (e.shiftKey && (active === first || outside)) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && (active === last || outside)) {
+    e.preventDefault();
+    first.focus();
+  }
+};
+
 export const MobileMenu = ({ sections }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const drawerId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(false);
 
   // Any link click closes the menu
@@ -38,6 +65,10 @@ export const MobileMenu = ({ sections }: MobileMenuProps) => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsOpen(false);
+        return;
+      }
+      if (e.key === "Tab") {
+        trapFocus(e, drawerRef.current);
       }
     };
     document.addEventListener("keydown", onKeyDown);
@@ -86,6 +117,7 @@ export const MobileMenu = ({ sections }: MobileMenuProps) => {
 
       {/* Drawer — inert while closed so its links leave the tab order */}
       <div
+        ref={drawerRef}
         id={drawerId}
         role="dialog"
         aria-modal="true"
