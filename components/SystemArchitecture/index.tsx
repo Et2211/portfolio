@@ -5,14 +5,12 @@ import "@xyflow/react/dist/style.css";
 import {
   Background,
   Controls,
-  type Node,
-  type OnSelectionChangeParams,
+  type NodeChange,
   ReactFlow,
-  useNodesState,
 } from "@xyflow/react";
 import { useCallback, useMemo, useState } from "react";
 
-import type { ArchNodeData, SystemArchitectureBlock } from "@/types/blocks";
+import type { SystemArchitectureBlock } from "@/types/blocks";
 
 import { TIER_COLORS, TIER_LABELS, tierOrder } from "./constants";
 import { buildFlowEdges, buildFlowNodes } from "./layout";
@@ -35,7 +33,7 @@ export const SystemArchitecture = ({
   edges,
   primaryFlowLabel,
 }: SystemArchitectureBlock) => {
-  const [selectedNode, setSelectedNode] = useState<ArchNodeData | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const { flowNodes, flowEdges, nodesById, tiersPresent } = useMemo(() => {
     const sanityNodes = nodes ?? [];
@@ -51,22 +49,30 @@ export const SystemArchitecture = ({
     };
   }, [nodes, edges]);
 
-  // React Flow owns node state so keyboard selection (enter/space) works;
-  // the detail panel follows the selection.
-  const [flowNodeState, , onNodesChange] = useNodesState(flowNodes);
+  // Only the selected id is state; the nodes React Flow draws are derived
+  // from props every render, so refreshed CMS data can't leave them stale.
+  const flowNodesWithSelection = useMemo(
+    () =>
+      flowNodes.map((node) => ({ ...node, selected: node.id === selectedId })),
+    [flowNodes, selectedId],
+  );
+  // If the selected node disappears from the data, the panel closes.
+  const selectedNode = (selectedId && nodesById.get(selectedId)) || null;
 
-  const showNode = useCallback(
-    (id: string | undefined) =>
-      setSelectedNode((id && nodesById.get(id)) || null),
-    [nodesById],
-  );
-  const handleSelectionChange = useCallback(
-    ({ nodes: selected }: OnSelectionChangeParams) => showNode(selected[0]?.id),
-    [showNode],
-  );
-  // Also on click, so re-clicking a node after closing the panel reopens it.
-  const handleNodeClick = (_evt: React.MouseEvent, node: Node) =>
-    showNode(node.id);
+  // Clicking a node or pressing enter/space on a focused one selects it;
+  // clicking the background deselects. The detail panel follows.
+  const handleNodesChange = useCallback((changes: NodeChange[]) => {
+    for (const change of changes) {
+      if (change.type !== "select") {
+        continue;
+      }
+      if (change.selected) {
+        setSelectedId(change.id);
+      } else {
+        setSelectedId((current) => (current === change.id ? null : current));
+      }
+    }
+  }, []);
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -119,12 +125,10 @@ export const SystemArchitecture = ({
           style={{ height: 1050, flexGrow: 1, minWidth: 0 }}
         >
           <ReactFlow
-            nodes={flowNodeState}
+            nodes={flowNodesWithSelection}
             edges={flowEdges}
             edgeTypes={edgeTypes}
-            onNodesChange={onNodesChange}
-            onNodeClick={handleNodeClick}
-            onSelectionChange={handleSelectionChange}
+            onNodesChange={handleNodesChange}
             ariaLabelConfig={ARIA_LABELS}
             edgesFocusable={false}
             deleteKeyCode={null}
@@ -143,7 +147,7 @@ export const SystemArchitecture = ({
         {/* Detail panel */}
         <NodeDetailPanel
           selectedNode={selectedNode}
-          onClose={() => setSelectedNode(null)}
+          onClose={() => setSelectedId(null)}
         />
       </div>
     </div>
