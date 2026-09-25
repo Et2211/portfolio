@@ -5,28 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useInView } from "@/hooks/useInView";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { formatCount, parseStatValue } from "@/lib/stats";
 import type { StatsBannerBlock } from "@/types/blocks";
 
 const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
-
-function parseStatValue(raw: string): { num: number; suffix: string } | null {
-  const match = raw.match(/^([\d.,]+)(.*)$/);
-  if (!match) {
-    return null;
-  }
-  const num = parseFloat(match[1].replace(/,/g, ""));
-  if (isNaN(num)) {
-    return null;
-  }
-  return { num, suffix: match[2] ?? "" };
-}
-
-const formatCount = (current: number, target: number, suffix: string) => {
-  const rounded = Number.isInteger(target)
-    ? Math.round(current)
-    : Math.round(current * 10) / 10;
-  return `${rounded}${suffix}`;
-};
 
 // Server-renders the real value (for crawlers, no-JS visitors and screen
 // readers). With JS, CSS hides it until the count-up starts, so the number
