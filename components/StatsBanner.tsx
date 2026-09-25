@@ -50,7 +50,9 @@ const AnimatedStat = ({ value }: { value: string }) => {
       data-counting={isCounting || undefined}
       className="bg-linear-135 from-accent-vivid to-accent-vivid-2 text-gradient text-3xl font-bold tabular-nums sm:text-4xl"
     >
-      {displayed}
+      {/* If animating stops being allowed mid-count (e.g. reduced motion is
+          switched on), show the real value, never a partial one. */}
+      {canAnimate ? displayed : value}
     </span>
   );
 };
