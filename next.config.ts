@@ -3,25 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   images: {
-    // Disable image optimization to avoid issues with Strapi Cloud media subdomain
+    // Images are served straight from the Sanity CDN. Whether to route them
+    // through next/image optimisation (Vercel quota) is still to be decided.
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "1337",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.media.strapiapp.com",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-      },
-    ],
+    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
   },
 };
 

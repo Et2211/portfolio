@@ -1,21 +1,16 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
 import type { FeatureAccordionBlock } from "@/types/blocks";
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
-  <svg
-    className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
+  <ChevronDown
     aria-hidden="true"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
+    className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+  />
 );
 
 export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
