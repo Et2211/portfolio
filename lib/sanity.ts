@@ -1,18 +1,26 @@
 import { createImageUrlBuilder } from "@sanity/image-url";
 import { createClient } from "next-sanity";
 
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable ${name} (see .env.example).`);
+  }
+  return value;
+}
+
+const projectId = requireEnv("SANITY_PROJECT_ID");
+const dataset = requireEnv("SANITY_DATASET");
+
 export const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
+  projectId,
+  dataset,
   apiVersion: "2023-01-01",
   useCdn: false,
   token: process.env.SANITY_API_TOKEN,
 });
 
-const builder = createImageUrlBuilder({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
-});
+const builder = createImageUrlBuilder({ projectId, dataset });
 
 export async function fetchSanity<T>(
   query: string,
