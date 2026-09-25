@@ -41,7 +41,7 @@ export default async function CmsPage({ params }: PageProps) {
         {page.pageComponents?.length ? (
           <DynamicComponentRenderer components={page.pageComponents} />
         ) : (
-          <div className="prose dark:prose-invert max-w-none">
+          <div className="prose max-w-none dark:prose-invert">
             <p className="text-zinc-600 dark:text-zinc-400">
               No content available for this page.
             </p>
