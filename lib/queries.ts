@@ -16,21 +16,29 @@ const BLOCK_FIELDS = /* groq */ `
     }
   }`;
 
+/** How deep grids can nest and still have their blocks fully projected. */
+const MAX_GRID_DEPTH = 2;
+
 /**
- * Projection for an array of page-builder sections (`dynamicComponent`).
- * A grid's cells are sections too, so their blocks get the same fields.
+ * One block's projection. A grid's cells are sections themselves, so their
+ * blocks get the same fields, recursively up to MAX_GRID_DEPTH grids deep.
  */
-const SECTIONS_PROJECTION = /* groq */ `{
-  ...,
-  component[]{
-    ${BLOCK_FIELDS},
-    _type == "gridLayout" => {
-      items[]{
-        ...,
-        component[]{${BLOCK_FIELDS}
-        }
+const blockProjection = (gridDepth: number): string =>
+  gridDepth === 0
+    ? BLOCK_FIELDS
+    : /* groq */ `${BLOCK_FIELDS},
+  _type == "gridLayout" => {
+    items[]{
+      ...,
+      component[]{${blockProjection(gridDepth - 1)}
       }
     }
+  }`;
+
+/** Projection for an array of page-builder sections (`dynamicComponent`). */
+const SECTIONS_PROJECTION = /* groq */ `{
+  ...,
+  component[]{${blockProjection(MAX_GRID_DEPTH)}
   }
 }`;
 

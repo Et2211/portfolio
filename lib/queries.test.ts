@@ -43,6 +43,11 @@ const page = {
       items: [
         section("cell-cv", cvDownload),
         section("cell-timeline", timeline),
+        section("cell-grid", {
+          _key: "inner-grid",
+          _type: "gridLayout",
+          items: [section("inner-cv", cvDownload)],
+        }),
       ],
     }),
   ],
@@ -81,6 +86,13 @@ describe("page-builder projections", () => {
     const cellTimeline =
       result.pageComponents[2].component[0].items[1].component[0];
     expect(cellTimeline.items[0].title).toBe("RAC");
+  });
+
+  it("resolves fileUrl for a CV download in a grid nested in a grid", async () => {
+    const result = await run(PAGE_BY_URL_QUERY, { url: "/" });
+    const innerGrid =
+      result.pageComponents[2].component[0].items[2].component[0];
+    expect(innerGrid.items[0].component[0].fileUrl).toBe(fileAsset.url);
   });
 
   it("only adds fileUrl to CV download blocks", async () => {
