@@ -1,6 +1,7 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
+import { type MotionValue, useMotionValueEvent } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -14,52 +15,57 @@ interface TimelineItemProps {
   item: TimelineItemData;
   index: number;
   containerRef: React.RefObject<HTMLDivElement | null>;
-  fillPercent: number;
+  /** 0–1 fill progress of the timeline line. */
+  fill: MotionValue<number>;
 }
 
 export const TimelineItem = ({
   item,
   index,
   containerRef,
-  fillPercent,
+  fill,
 }: TimelineItemProps) => {
   const isLeft = index % 2 === 0;
   const { ref, isInView } = useInView({ threshold: 0.2 });
   const dotRef = useRef<HTMLDivElement>(null);
-  const [dotThreshold, setDotThreshold] = useState(1);
+  // Where this item's dot sits along the timeline, as a 0–1 fraction.
+  const dotThreshold = useRef(1);
+  const [isFilled, setIsFilled] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
   const isPointer = useIsPointerDevice();
 
+  // Re-measure whenever the timeline's size changes (resize, images loading).
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
     const measure = () => {
       const dot = dotRef.current;
-      const container = containerRef.current;
-      if (!dot || !container) {
+      if (!dot) {
         return;
       }
-      const containerTop = container.getBoundingClientRect().top;
+      const dotRect = dot.getBoundingClientRect();
       const dotMid =
-        dot.getBoundingClientRect().top + dot.offsetHeight / 2 - containerTop;
-      setDotThreshold(dotMid / container.offsetHeight);
+        dotRect.top +
+        dotRect.height / 2 -
+        container.getBoundingClientRect().top;
+      dotThreshold.current = dotMid / container.offsetHeight;
+      setIsFilled(fill.get() >= dotThreshold.current);
     };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [containerRef]);
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [containerRef, fill]);
 
-  const isFilled = fillPercent >= dotThreshold;
+  // Only re-renders when the fill crosses this dot, not on every scroll.
+  useMotionValueEvent(fill, "change", (progress) =>
+    setIsFilled(progress >= dotThreshold.current),
+  );
 
   const startDate = item.startDate ? formatDate(item.startDate) : "";
   const endDate = item.finishDate ? formatDate(item.finishDate) : "Present";
   const dateRange = startDate ? `${startDate} – ${endDate}` : "";
-
-  const dotClasses = `w-4 h-4 rounded-full border-2 transition-all duration-300 ${
-    isInView ? "scale-100" : "scale-0"
-  } ${
-    isFilled
-      ? "border-zinc-900 dark:border-white bg-zinc-900 dark:bg-white"
-      : "border-zinc-900 dark:border-white bg-white dark:bg-zinc-900"
-  }`;
 
   const dotGlowStyle =
     isFilled && cardHovered && isPointer
@@ -68,93 +74,65 @@ export const TimelineItem = ({
         }
       : undefined;
 
-  // Mobile dot — no ref needed, threshold is measured from the desktop dot
-  const mobileDot = (
-    <div className="flex w-8 flex-shrink-0 flex-col items-center">
-      <div className={dotClasses} style={dotGlowStyle} />
-    </div>
-  );
-
-  const desktopDot = (
-    <div className="flex w-16 flex-shrink-0 flex-col items-center">
-      <div className={dotClasses} style={dotGlowStyle} />
-    </div>
-  );
-
-  const card = (
-    <div
-      className={`w-full transition-all duration-700 ease-out md:w-[calc(50%-2rem)] ${
-        isInView
-          ? "translate-x-0 opacity-100"
-          : isLeft
-            ? "opacity-0 md:-translate-x-8"
-            : "opacity-0 md:translate-x-8"
-      }`}
-    >
-      {/* Hover state is also tracked in JS because it lights up the timeline dot. */}
-      <div
-        className={`group surface-card p-6 transition-shadow duration-300 hover:shadow-glow-md ${isLeft ? "md:text-right" : "md:text-left"}`}
-        onMouseEnter={() => isPointer && setCardHovered(true)}
-        onMouseLeave={() => isPointer && setCardHovered(false)}
-      >
-        <h3 className="mb-1 text-lg font-semibold transition-colors duration-300 group-hover:text-accent-vivid">
-          {item.title}
-        </h3>
-        {dateRange && (
-          <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
-            {dateRange}
-          </p>
-        )}
-        {item.image && (
-          <div className={`mb-4 ${isLeft ? "md:flex md:justify-end" : ""}`}>
-            <Image
-              src={item.image}
-              alt={item.title ?? ""}
-              width={400}
-              height={300}
-              className="w-full max-w-sm rounded-lg object-contain"
-            />
-          </div>
-        )}
-        {item.description && item.description.length > 0 && (
-          <RichText className={isLeft ? "md:text-right" : "md:text-left"}>
-            <PortableText value={item.description} />
-          </RichText>
-        )}
-      </div>
-    </div>
-  );
-
+  // One card, placed by the grid: [dot | card] on mobile,
+  // [card | dot | empty] or [empty | dot | card] alternating on desktop.
   return (
-    <div ref={ref} className="relative flex items-start gap-0 py-8">
-      {/* Always-rendered anchor for dot position measurement */}
-      <div
-        ref={dotRef}
-        className="pointer-events-none absolute top-8 left-0 h-4 w-0"
-        aria-hidden
-      />
-
-      {/* Mobile: left-aligned line + dot + card */}
-      <div className="flex w-full items-start md:hidden">
-        {mobileDot}
-        <div className="flex-1">{card}</div>
+    <div
+      ref={ref}
+      className="grid grid-cols-[2rem_1fr] items-start py-8 md:grid-cols-[1fr_4rem_1fr]"
+    >
+      <div className="col-start-1 row-start-1 flex justify-center md:col-start-2">
+        <div
+          ref={dotRef}
+          className={`h-4 w-4 rounded-full border-2 border-zinc-900 transition-all duration-300 dark:border-white ${
+            isInView ? "scale-100" : "scale-0"
+          } ${isFilled ? "bg-zinc-900 dark:bg-white" : "bg-white dark:bg-zinc-900"}`}
+          style={dotGlowStyle}
+        />
       </div>
 
-      {/* Desktop: alternating */}
-      <div className="hidden w-full items-start md:flex">
-        {isLeft ? (
-          <>
-            {card}
-            {desktopDot}
-            <div className="w-[calc(50%-2rem)]" />
-          </>
-        ) : (
-          <>
-            <div className="w-[calc(50%-2rem)]" />
-            {desktopDot}
-            {card}
-          </>
-        )}
+      <div
+        className={`col-start-2 row-start-1 w-full transition-all duration-700 ease-out ${
+          isLeft ? "md:col-start-1" : "md:col-start-3"
+        } ${
+          isInView
+            ? "translate-x-0 opacity-100"
+            : isLeft
+              ? "opacity-0 md:-translate-x-8"
+              : "opacity-0 md:translate-x-8"
+        }`}
+      >
+        {/* Hover is also tracked in JS because it lights up the dot. */}
+        <div
+          className={`group surface-card p-6 transition-shadow duration-300 hover:shadow-glow-md ${isLeft ? "md:text-right" : "md:text-left"}`}
+          onMouseEnter={() => isPointer && setCardHovered(true)}
+          onMouseLeave={() => isPointer && setCardHovered(false)}
+        >
+          <h3 className="mb-1 text-lg font-semibold transition-colors duration-300 group-hover:text-accent-vivid">
+            {item.title}
+          </h3>
+          {dateRange && (
+            <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+              {dateRange}
+            </p>
+          )}
+          {item.image && (
+            <div className={`mb-4 ${isLeft ? "md:flex md:justify-end" : ""}`}>
+              <Image
+                src={item.image}
+                alt={item.title ?? ""}
+                width={400}
+                height={300}
+                className="w-full max-w-sm rounded-lg object-contain"
+              />
+            </div>
+          )}
+          {item.description && item.description.length > 0 && (
+            <RichText className={isLeft ? "md:text-right" : "md:text-left"}>
+              <PortableText value={item.description} />
+            </RichText>
+          )}
+        </div>
       </div>
     </div>
   );
