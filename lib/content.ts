@@ -5,7 +5,7 @@ import { cacheLife, cacheTag } from "next/cache";
 
 import type { Footer, Page } from "@/types/generated/sanity";
 
-import { GLOBAL_TAG, pageTag } from "./cacheTags";
+import { GLOBAL_TAG, PAGES_TAG } from "./cacheTags";
 import {
   FOOTER_QUERY,
   NAVIGATION_QUERY,
@@ -17,7 +17,7 @@ import { buildImageUrls, fetchSanity } from "./sanity";
 export async function getPageByUrl(url: string) {
   "use cache";
   cacheLife("days");
-  cacheTag(pageTag(url));
+  cacheTag(PAGES_TAG);
   const page = await fetchSanity<Page | null>(PAGE_BY_URL_QUERY, { url });
   // Resolve image URLs on the server so client components get plain strings.
   return page ? buildImageUrls(page) : null;

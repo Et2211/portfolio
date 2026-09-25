@@ -47,7 +47,9 @@ types/generated/sanity.d.ts    generated from the Studio schemas (don't edit)
   fetchers, so client components only ever receive strings.
 - **Caching.** Pages, navigation and the footer are cached with `"use cache"`
   and invalidated on publish by a Sanity webhook hitting `/api/revalidate`,
-  which expires `page:<url>` or `sanity:global`. Unknown URLs return a real 404.
+  which expires `sanity:pages` (every page, so renamed or deleted URLs don't
+  linger) and/or `sanity:global` (navigation and footer). Unknown URLs return a
+  real 404.
 - **Progressive enhancement.** Content is visible without JavaScript: reveal
   and count-up animations only hide things under `@media (scripting: enabled)`,
   and the hero entrance is CSS.

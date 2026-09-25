@@ -2,21 +2,17 @@ import { SIGNATURE_HEADER_NAME, isValidSignature } from "@sanity/webhook";
 import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
-import { GLOBAL_TAG, pageTag } from "@/lib/cacheTags";
+import { tagsToRevalidate } from "@/lib/cacheTags";
 
-/** The fields the Sanity webhook projection sends. */
+/** The field of the Sanity webhook payload that decides what to expire. */
 interface WebhookPayload {
   _type?: string;
-  url?: string;
 }
 
 const isWebhookPayload = (value: unknown): value is WebhookPayload =>
   typeof value === "object" &&
   value !== null &&
-  (!("_type" in value) || typeof value._type === "string") &&
-  (!("url" in value) || typeof value.url === "string");
-
-const GLOBAL_TYPES = new Set(["navigation", "footer"]);
+  (!("_type" in value) || typeof value._type === "string");
 
 // Called by a Sanity webhook on publish. `{ expire: 0 }` expires the
 // "use cache" entries immediately rather than serving stale-while-revalidate.
@@ -48,20 +44,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const { _type, url } = payload;
-  let tag: string | null = null;
-  if (_type === "page" && url) {
-    tag = pageTag(url);
-  } else if (_type && GLOBAL_TYPES.has(_type)) {
-    tag = GLOBAL_TAG;
-  }
-
-  if (!tag) {
+  const tags = tagsToRevalidate(payload._type);
+  if (!tags.length) {
     return NextResponse.json({ message: "Nothing to revalidate" });
   }
 
-  revalidateTag(tag, { expire: 0 });
+  for (const tag of tags) {
+    revalidateTag(tag, { expire: 0 });
+  }
   // eslint-disable-next-line no-console
-  console.log(`[webhook] Revalidated ${tag}`);
-  return NextResponse.json({ revalidated: true, tag });
+  console.log(`[webhook] Revalidated ${tags.join(", ")}`);
+  return NextResponse.json({ revalidated: true, tags });
 }
