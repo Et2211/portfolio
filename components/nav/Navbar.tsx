@@ -1,44 +1,27 @@
-import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 import React from "react";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { fetchSanity } from "@/lib/sanity";
-import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
+import { getNavigation } from "@/lib/content";
+import type { NavSection } from "@/lib/content";
 
 import { DropdownMenu } from "./DropdownMenu";
 import { MobileMenu } from "./MobileMenu";
 
-async function getNavigation() {
-  "use cache";
-  cacheLife("days");
-  cacheTag("sanity:global");
+// Outside the cached fetcher, so a failed fetch renders an empty menu for
+// this request only instead of being cached.
+const loadNavigation = async (): Promise<NavSection[]> => {
   try {
-    const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
-    const data: Navigation = await fetchSanity(query);
-    return data?.navGroups || [];
+    return await getNavigation();
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching navigation:", error);
     return [];
   }
-}
-
-// Helper to get URL from either page reference or externalUrl
-function getNavItemUrl(
-  item: NavItem & { page?: { url?: string }; externalUrl?: string },
-): string {
-  if (item.externalUrl) {
-    return item.externalUrl;
-  }
-  if (item.page && item.page.url) {
-    return item.page.url;
-  }
-  return "#";
-}
+};
 
 const Navbar = async (): Promise<React.ReactElement> => {
-  const navGroups: NavGroup[] = await getNavigation();
+  const sections = await loadNavigation();
   return (
     <nav className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
       <div className="container mx-auto px-4">
@@ -53,23 +36,11 @@ const Navbar = async (): Promise<React.ReactElement> => {
 
           {/* Desktop nav */}
           <div className="hidden items-center gap-2 md:flex">
-            {navGroups.map((group, groupIdx) => (
+            {sections.map((section) => (
               <DropdownMenu
-                key={groupIdx}
-                trigger={group.navHeader ?? ""}
-                items={
-                  (group.navList?.map(
-                    (
-                      item: NavItem & {
-                        page?: { url?: string };
-                        externalUrl?: string;
-                      },
-                    ) => ({
-                      label: item.navTitle ?? "",
-                      href: getNavItemUrl(item),
-                    }),
-                  ) || []) as { label: string; href: string }[]
-                }
+                key={section.heading}
+                trigger={section.heading}
+                items={section.links}
               />
             ))}
             <ThemeToggle />
@@ -78,22 +49,7 @@ const Navbar = async (): Promise<React.ReactElement> => {
           {/* Mobile nav */}
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
-            <MobileMenu
-              navGroups={navGroups.map((group) => ({
-                heading: group.navHeader ?? "",
-                items: (group.navList?.map(
-                  (
-                    item: NavItem & {
-                      page?: { url?: string };
-                      externalUrl?: string;
-                    },
-                  ) => ({
-                    label: item.navTitle ?? "",
-                    href: getNavItemUrl(item),
-                  }),
-                ) || []) as { label: string; href: string }[],
-              }))}
-            />
+            <MobileMenu sections={sections} />
           </div>
         </div>
       </div>

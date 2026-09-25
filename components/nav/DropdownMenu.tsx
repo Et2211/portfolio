@@ -4,17 +4,13 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import type { NavLink } from "@/lib/content";
 
 import { DropdownMenuItem } from "./DropdownMenuItem";
 
-interface DropdownItem {
-  label: string;
-  href: string;
-}
-
 interface DropdownMenuProps {
   trigger: string;
-  items: DropdownItem[];
+  items: NavLink[];
 }
 
 // Disclosure pattern (button + list of links) rather than an ARIA menu:

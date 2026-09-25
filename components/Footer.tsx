@@ -1,38 +1,12 @@
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
-import { buildImageUrls, fetchSanity } from "@/lib/sanity";
-import type { Page } from "@/types/generated/sanity";
-
-// The footer document holds the same dynamic components as a page.
-type FooterDocument = {
-  components?: Page["pageComponents"];
-};
-
-async function getFooter(): Promise<FooterDocument | null> {
-  const query = `*[_type == "footer"][0]{
-    components[]{
-      ...,
-      component[]{
-        ...,
-        "fileUrl": file.asset->url,
-        items[]{
-          ...,
-          items[]{
-            ...
-          }
-        }
-      }
-    }
-  }`;
-  return await fetchSanity<FooterDocument | null>(query);
-}
+import { getFooter } from "@/lib/content";
 
 export const Footer = async () => {
-  const footerDoc = await getFooter();
-  if (!footerDoc?.components?.length) {
+  const footer = await getFooter();
+  const components = footer?.components;
+  if (!components?.length) {
     return null;
   }
-
-  const components = buildImageUrls(footerDoc.components);
 
   return (
     <footer className="dark mt-16 bg-zinc-900 dark:bg-zinc-950">

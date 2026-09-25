@@ -3,21 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-interface NavItem {
-  label: string;
-  href: string;
-}
-
-interface NavGroup {
-  heading: string;
-  items: NavItem[];
-}
+import type { NavSection } from "@/lib/content";
 
 interface MobileMenuProps {
-  navGroups: NavGroup[];
+  sections: NavSection[];
 }
 
-export const MobileMenu = ({ navGroups }: MobileMenuProps) => {
+export const MobileMenu = ({ sections }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Close on route change (any link click closes the menu)
@@ -85,13 +77,13 @@ export const MobileMenu = ({ navGroups }: MobileMenuProps) => {
         </div>
 
         <nav className="h-[calc(100%-4rem)] space-y-6 overflow-y-auto p-4">
-          {navGroups.map((group) => (
+          {sections.map((group) => (
             <div key={group.heading}>
               <p className="mb-2 px-2 text-xs font-semibold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
                 {group.heading}
               </p>
               <ul className="space-y-1">
-                {group.items.map((item) => (
+                {group.links.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
