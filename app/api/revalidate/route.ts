@@ -3,16 +3,7 @@ import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { tagsToRevalidate } from "@/lib/cacheTags";
-
-/** The field of the Sanity webhook payload that decides what to expire. */
-interface WebhookPayload {
-  _type?: string;
-}
-
-const isWebhookPayload = (value: unknown): value is WebhookPayload =>
-  typeof value === "object" &&
-  value !== null &&
-  (!("_type" in value) || typeof value._type === "string");
+import { isWebhookPayload } from "@/lib/webhook";
 
 // Called by a Sanity webhook on publish. `{ expire: 0 }` expires the
 // "use cache" entries immediately rather than serving stale-while-revalidate.
