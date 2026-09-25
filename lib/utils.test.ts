@@ -5,7 +5,12 @@ import { formatDate } from "./utils";
 describe("formatDate", () => {
   const originalTz = process.env.TZ;
   afterEach(() => {
-    process.env.TZ = originalTz;
+    // Assigning undefined would store the string "undefined", so delete it.
+    if (originalTz === undefined) {
+      delete process.env.TZ;
+    } else {
+      process.env.TZ = originalTz;
+    }
   });
 
   // Sanity dates are YYYY-MM-DD (parsed as UTC midnight). Formatting them in
