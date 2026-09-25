@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 // Slides are a fixed 300px square plus 8px padding on each side.
 const SLIDE_SIZE = 300;
@@ -26,6 +27,8 @@ export const CarouselViewport = ({
   showDots = true,
 }: CarouselViewportProps) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
+  // JS-driven, so the CSS reduced-motion rule can't stop it.
+  const reduceMotion = usePrefersReducedMotion();
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useCallback((node: HTMLDivElement | null) => {
     if (!node) {
@@ -40,8 +43,10 @@ export const CarouselViewport = ({
 
   const plugins = useMemo(
     () =>
-      autoplay ? [Autoplay({ delay: interval, stopOnInteraction: false })] : [],
-    [autoplay, interval],
+      autoplay && !reduceMotion
+        ? [Autoplay({ delay: interval, stopOnInteraction: false })]
+        : [],
+    [autoplay, interval, reduceMotion],
   );
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {

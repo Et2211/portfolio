@@ -4,6 +4,8 @@ import { useFrame } from "@react-three/fiber";
 import { ReactNode, useRef } from "react";
 import type { Mesh } from "three";
 
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
 interface GlobeProps {
   rotationSpeed?: number;
   paused?: boolean;
@@ -18,8 +20,11 @@ export const Globe = ({
   children,
 }: GlobeProps) => {
   const meshRef = useRef<Mesh>(null);
+  // WebGL isn't affected by the CSS reduced-motion rule, so check it here.
+  // Dragging (OrbitControls) still works; only the auto-rotation stops.
+  const reduceMotion = usePrefersReducedMotion();
   useFrame((_, delta) => {
-    if (!paused && meshRef.current) {
+    if (!paused && !reduceMotion && meshRef.current) {
       meshRef.current.rotation.y += delta * rotationSpeed;
     }
   });
