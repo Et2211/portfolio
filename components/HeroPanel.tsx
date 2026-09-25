@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useId } from "react";
 
 import type { HeroPanelBlock } from "@/types/blocks";
 
@@ -36,6 +37,8 @@ export const HeroPanel = ({
   imagePosition = "left",
 }: HeroPanelBlock) => {
   const isRight = imagePosition === "right";
+  // Unique per instance, so two heroes on a page don't share a gradient.
+  const ringGradientId = `ring-grad-${useId()}`;
 
   // Slots are assigned in render order, skipping anything not rendered.
   let slot = 0;
@@ -79,7 +82,7 @@ export const HeroPanel = ({
             <svg viewBox="0 0 100 100" className="h-full w-full">
               <defs>
                 <linearGradient
-                  id="ring-grad"
+                  id={ringGradientId}
                   x1="0%"
                   y1="0%"
                   x2="100%"
@@ -100,7 +103,7 @@ export const HeroPanel = ({
                 cy="50"
                 r="47"
                 fill="none"
-                stroke="url(#ring-grad)"
+                stroke={`url(#${ringGradientId})`}
                 strokeWidth="1.2"
                 strokeDasharray="8 7"
                 strokeLinecap="round"

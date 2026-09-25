@@ -13,7 +13,7 @@ export const AboutSection = ({ photo, bio, links }: AboutSectionBlock) => {
         <div className="mx-auto flex-shrink-0 sm:mx-0">
           <Image
             src={photo}
-            alt="About photo"
+            alt=""
             width={200}
             height={200}
             className="h-40 w-40 rounded-xl object-cover sm:h-48 sm:w-48 md:h-56 md:w-56"

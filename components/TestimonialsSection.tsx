@@ -30,16 +30,19 @@ const MarqueeRow = ({
   testimonials: TestimonialItem[];
   direction: "left" | "right";
 }) => {
-  // Duplicate cards so the loop is seamless
-  const doubled = [...testimonials, ...testimonials];
+  const cards = testimonials.map((testimonial, idx) => (
+    <TestimonialCard key={testimonial._key ?? idx} testimonial={testimonial} />
+  ));
+  // The second copy only makes the loop seamless, so hide it from assistive tech.
   return (
     <div className="overflow-hidden">
       <div
         className={`flex w-max gap-4 ${direction === "left" ? "marquee-left" : "marquee-right"}`}
       >
-        {doubled.map((testimonial, idx) => (
-          <TestimonialCard key={idx} testimonial={testimonial} />
-        ))}
+        <div className="flex gap-4">{cards}</div>
+        <div className="flex gap-4" aria-hidden="true">
+          {cards}
+        </div>
       </div>
     </div>
   );

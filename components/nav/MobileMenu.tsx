@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import type { NavSection } from "@/lib/content";
@@ -12,14 +12,37 @@ interface MobileMenuProps {
 
 export const MobileMenu = ({ sections }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const drawerId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
-  // Close on route change (any link click closes the menu)
+  // Any link click closes the menu
   const close = () => setIsOpen(false);
 
-  // Prevent body scroll when open
   useEffect(() => {
+    // Prevent body scroll while open
     document.body.style.overflow = isOpen ? "hidden" : "";
+
+    // Move focus into the drawer on open, and back to the toggle on close
+    if (isOpen) {
+      closeRef.current?.focus();
+    } else if (wasOpen.current) {
+      toggleRef.current?.focus();
+    }
+    wasOpen.current = isOpen;
+
+    if (!isOpen) {
+      return;
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
     return () => {
+      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
     };
   }, [isOpen]);
@@ -27,10 +50,12 @@ export const MobileMenu = ({ sections }: MobileMenuProps) => {
   return (
     <>
       <button
+        ref={toggleRef}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-expanded={isOpen}
+        aria-controls={drawerId}
         className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-lg transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
       >
         <span
@@ -59,8 +84,13 @@ export const MobileMenu = ({ sections }: MobileMenuProps) => {
         />
       )}
 
-      {/* Drawer */}
+      {/* Drawer — inert while closed so its links leave the tab order */}
       <div
+        id={drawerId}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        inert={!isOpen}
         className={`fixed top-0 right-0 z-50 h-full w-72 border-l border-zinc-200 bg-white shadow-xl transition-transform duration-300 dark:border-zinc-800 dark:bg-black ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -68,6 +98,7 @@ export const MobileMenu = ({ sections }: MobileMenuProps) => {
         <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
           <span className="font-semibold text-black dark:text-white">Menu</span>
           <button
+            ref={closeRef}
             type="button"
             onClick={close}
             aria-label="Close menu"

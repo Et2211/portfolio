@@ -45,7 +45,11 @@ export const TechStack = ({ heading, groups }: TechStackBlock) => {
 
       {/* Scrolling strip of all technologies */}
       {stripItems.length > 0 && (
-        <div className="tech-strip-wrap -mx-4 mt-10 overflow-hidden">
+        // Decorative repeat of the list above, so hidden from assistive tech
+        <div
+          className="tech-strip-wrap -mx-4 mt-10 overflow-hidden"
+          aria-hidden="true"
+        >
           <div className="tech-strip flex w-max gap-3 py-2">
             {stripItems.map((item, stripIdx) => (
               <Badge key={stripIdx} variant="skill">

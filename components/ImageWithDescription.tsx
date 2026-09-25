@@ -51,7 +51,9 @@ export const ImageWithDescription = ({
       ) : image ? (
         <Image
           src={image}
-          alt="Image with description"
+          // Decorative: the description beside it carries the meaning (the CMS
+          // has no alt text field yet).
+          alt=""
           className={`mx-3 flex-shrink-0 rounded-lg object-contain ${imageSize ? "" : isHorizontal ? "h-auto w-full lg:w-1/3" : "h-auto w-full"}`}
           width={imageSize ?? 600}
           height={imageSize ?? 400}
