@@ -4,20 +4,10 @@ import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useState } from "react";
 
-import type { ImageWithDescriptionBlock, TimelineBlock } from "@/types/blocks";
+import type { CarouselBlock } from "@/types/blocks";
 
 import { ImageWithDescription as ImageWithDescriptionComponent } from "./ImageWithDescription";
 import { Timeline as TimelineComponent } from "./Timeline";
-
-export type CarouselBlock = {
-  _type: "carousel";
-  _key?: string;
-  heading?: string;
-  autoplay?: boolean;
-  interval?: number;
-  showDots?: boolean;
-  items?: (TimelineBlock | ImageWithDescriptionBlock)[];
-};
 
 interface CarouselProps {
   carousel: CarouselBlock;
@@ -148,9 +138,7 @@ export const Carousel = ({ carousel }: CarouselProps) => {
                   style={{ flexBasis: slideWidth, alignSelf: "flex-start" }}
                 >
                   <div className="mx-auto flex h-[300px] w-[300px] flex-col overflow-auto">
-                    <TimelineComponent
-                      items={(item as TimelineBlock).items || []}
-                    />
+                    <TimelineComponent items={item.items || []} />
                   </div>
                 </div>
               );

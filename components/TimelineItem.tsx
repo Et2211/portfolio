@@ -9,17 +9,10 @@ import { RichText } from "@/components/atoms/RichText";
 import { useInView } from "@/hooks/useInView";
 import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
 import { formatDate } from "@/lib/utils";
-import type {
-  SanityBlock,
-  TimelineItem as TimelineItemType,
-} from "@/types/generated/sanity";
-
-type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
-  image?: string | null;
-};
+import type { TimelineItemData } from "@/types/blocks";
 
 interface TimelineItemProps {
-  item: TimelineItemWithBuiltUrl;
+  item: TimelineItemData;
   index: number;
   containerRef: React.RefObject<HTMLDivElement | null>;
   fillPercent: number;
@@ -137,7 +130,7 @@ export const TimelineItem = ({
         )}
         {item.description && item.description.length > 0 && (
           <RichText className={isLeft ? "md:text-right" : "md:text-left"}>
-            <PortableText value={item.description as SanityBlock[]} />
+            <PortableText value={item.description} />
           </RichText>
         )}
       </motion.div>

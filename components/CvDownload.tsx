@@ -1,10 +1,4 @@
-export type CvDownloadBlock = {
-  _type: "cvDownload";
-  _key?: string;
-  heading?: string;
-  label?: string;
-  fileUrl?: string | null;
-};
+import type { CvDownloadBlock } from "@/types/blocks";
 
 export const CvDownload = ({
   label = "Download CV",

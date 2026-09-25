@@ -1,6 +1,6 @@
 ﻿import type { Edge, Node } from "@xyflow/react";
 
-import type { ArchEdge, ArchNode, SanityKeyed } from "@/types/generated/sanity";
+import type { ArchEdgeData, ArchNodeData } from "@/types/blocks";
 
 import {
   NODE_HEIGHT,
@@ -12,11 +12,11 @@ import {
 } from "./constants";
 
 export function buildFlowNodes(
-  sanityNodes: Array<SanityKeyed<ArchNode>>,
-  sanityEdges: Array<SanityKeyed<ArchEdge>>,
+  sanityNodes: ArchNodeData[],
+  sanityEdges: ArchEdgeData[],
 ): Node[] {
   // Group nodes by tier
-  const byTier: Record<string, Array<SanityKeyed<ArchNode>>> = {};
+  const byTier: Record<string, ArchNodeData[]> = {};
   for (const node of sanityNodes) {
     const tier = node.tier ?? "infra";
     if (!byTier[tier]) {
@@ -112,9 +112,7 @@ export function buildFlowNodes(
   return flowNodes;
 }
 
-export function buildFlowEdges(
-  sanityEdges: Array<SanityKeyed<ArchEdge>>,
-): Edge[] {
+export function buildFlowEdges(sanityEdges: ArchEdgeData[]): Edge[] {
   const sourceLabelTotal: Record<string, number> = {};
   for (const edge of sanityEdges) {
     if (!edge.label) {

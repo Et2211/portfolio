@@ -8,14 +8,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { RichText } from "@/components/atoms/RichText";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
-import type { FeaturedProject } from "@/types/blocks";
-
-export type ProjectSpotlightBlock = {
-  _type: "projectSpotlight";
-  _key?: string;
-  heading?: string;
-  projects?: FeaturedProject[];
-};
+import type { ProjectSpotlightBlock } from "@/types/blocks";
 
 export const ProjectSpotlight = ({
   heading,

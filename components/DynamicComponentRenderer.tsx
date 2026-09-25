@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 
-import type { DynamicComponentWithBuiltUrls } from "@/types/dynamicComponent";
+import type { DynamicComponentWithBuiltUrls } from "@/types/blocks";
 
 import { AboutSection as AboutSectionComponent } from "./AboutSection";
 import { Carousel as CarouselComponent } from "./Carousel";

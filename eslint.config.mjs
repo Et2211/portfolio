@@ -99,6 +99,11 @@ const eslintConfig = defineConfig([
         { allowShortCircuit: true, allowTernary: true },
       ],
       "@typescript-eslint/dot-notation": "off",
+      // A leading underscore marks something as intentionally unused.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
 
       "react/jsx-props-no-spreading": "off",
       "react/require-default-props": "off",

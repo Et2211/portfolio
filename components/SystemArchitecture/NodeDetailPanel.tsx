@@ -1,9 +1,9 @@
-﻿import type { ArchNode, SanityKeyed } from "@/types/generated/sanity";
+﻿import type { ArchNodeData } from "@/types/blocks";
 
 import { TIER_COLORS, TIER_LABELS } from "./constants";
 
 interface NodeDetailPanelProps {
-  selectedNode: SanityKeyed<ArchNode> | null;
+  selectedNode: ArchNodeData | null;
   onClose: () => void;
 }
 
@@ -57,16 +57,14 @@ export const NodeDetailPanel = ({
             Tech Used
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {(selectedNode.techUsed as Array<SanityKeyed<string>>).map(
-              (tech, techIdx) => (
-                <span
-                  key={(tech as { _key?: string })._key ?? techIdx}
-                  className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                >
-                  {String(tech)}
-                </span>
-              ),
-            )}
+            {selectedNode.techUsed.map((tech, techIdx) => (
+              <span
+                key={`${techIdx}-${tech}`}
+                className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+              >
+                {tech}
+              </span>
+            ))}
           </div>
         </div>
       )}

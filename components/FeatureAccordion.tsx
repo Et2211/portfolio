@@ -3,20 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-export type FeatureItem = {
-  _key?: string;
-  title?: string;
-  summary?: string;
-  detail?: string;
-  image?: string | null;
-};
-
-export type FeatureAccordionBlock = {
-  _type: "featureAccordion";
-  _key?: string;
-  heading?: string;
-  items?: FeatureItem[];
-};
+import type { FeatureAccordionBlock } from "@/types/blocks";
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
   <svg

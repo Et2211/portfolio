@@ -5,21 +5,12 @@ import "@xyflow/react/dist/style.css";
 import { Background, Controls, type Node, ReactFlow } from "@xyflow/react";
 import { useState } from "react";
 
-import type { ArchEdge, ArchNode, SanityKeyed } from "@/types/generated/sanity";
+import type { ArchNodeData, SystemArchitectureBlock } from "@/types/blocks";
 
 import { TIER_COLORS, TIER_LABELS, TIER_ORDER } from "./constants";
 import { buildFlowEdges, buildFlowNodes } from "./layout";
 import { NodeDetailPanel } from "./NodeDetailPanel";
 import { SourceLabelEdge } from "./SourceLabelEdge";
-
-export type SystemArchitectureBlock = {
-  _type: "systemArchitecture";
-  _key?: string;
-  heading?: string;
-  primaryFlowLabel?: string;
-  nodes?: Array<SanityKeyed<ArchNode>>;
-  edges?: Array<SanityKeyed<ArchEdge>>;
-};
 
 interface SystemArchitectureProps {
   block: SystemArchitectureBlock;
@@ -28,8 +19,7 @@ interface SystemArchitectureProps {
 const edgeTypes = { sourceLabel: SourceLabelEdge };
 
 export const SystemArchitecture = ({ block }: SystemArchitectureProps) => {
-  const [selectedNode, setSelectedNode] =
-    useState<SanityKeyed<ArchNode> | null>(null);
+  const [selectedNode, setSelectedNode] = useState<ArchNodeData | null>(null);
 
   const sanityNodes = block.nodes ?? [];
   const sanityEdges = block.edges ?? [];

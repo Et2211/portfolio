@@ -1,159 +1,93 @@
-import type {
-  SanityBlock,
-  SanityKeyed,
-  TimelineItem,
-} from "@/types/generated/sanity";
+/**
+ * The page-builder block types that components receive.
+ *
+ * Everything is derived from the Sanity schema types in
+ * `types/generated/sanity.d.ts` (regenerate with `npm run codegen:full`), so
+ * the component contract can't drift from the CMS. `Resolved` applies what
+ * the server does before rendering: `buildImageUrls` turns every image field
+ * into its CDN URL string.
+ */
+import type { WithBuiltImages } from "@/lib/sanity";
+import type * as Sanity from "@/types/generated/sanity";
 
-// Runtime types after server-side image URL building
-export type TimelineItemWithBuiltUrl = Omit<TimelineItem, "image"> & {
-  image?: string | null;
+/** A CMS object after server-side image resolution; array items carry `_key`. */
+export type Resolved<T> = WithBuiltImages<T> & { _key?: string };
+
+// ── Nested items ─────────────────────────────────────────────────────────────
+export type TimelineItemData = Resolved<Sanity.TimelineItem>;
+export type SkillItem = Resolved<Sanity.SkillItem>;
+export type SkillGlobeItem = Resolved<Sanity.SkillGlobeItem>;
+export type FeaturedProject = Resolved<Sanity.FeaturedProject>;
+export type StatItem = Resolved<Sanity.StatItem>;
+export type AboutLink = Resolved<Sanity.AboutLink>;
+export type TestimonialItem = Resolved<Sanity.TestimonialItem>;
+export type TechStackGroupItem = Resolved<Sanity.TechStackGroup>;
+export type FeatureItem = Resolved<Sanity.FeatureItem>;
+export type ArchNodeData = Resolved<Sanity.ArchNode>;
+export type ArchEdgeData = Resolved<Sanity.ArchEdge>;
+
+// ── Blocks ───────────────────────────────────────────────────────────────────
+export type TimelineBlock = Resolved<Sanity.Timeline>;
+export type ImageWithDescriptionBlock = Resolved<Sanity.ImageWithDescription>;
+export type CarouselBlock = Resolved<Sanity.Carousel>;
+export type SystemArchitectureBlock = Resolved<Sanity.SystemArchitecture>;
+/** `name` is rendered when present but isn't in the Studio schema yet. */
+export type HeroPanelBlock = Resolved<Sanity.HeroPanel> & { name?: string };
+export type SkillsBarBlock = Resolved<Sanity.SkillsBar>;
+export type SkillsGlobeBlock = Resolved<Sanity.SkillsGlobe>;
+export type FeaturedProjectsBlock = Resolved<Sanity.FeaturedProjects>;
+export type ProjectSpotlightBlock = Resolved<Sanity.ProjectSpotlight>;
+export type ProjectBentoBlock = Resolved<Sanity.ProjectBento>;
+export type StatsBannerBlock = Resolved<Sanity.StatsBanner>;
+export type AboutSectionBlock = Resolved<Sanity.AboutSection>;
+export type TestimonialsSectionBlock = Resolved<Sanity.TestimonialsSection>;
+export type ContactSectionBlock = Resolved<Sanity.ContactSection>;
+export type TechStackBlock = Resolved<Sanity.TechStack>;
+export type FeatureAccordionBlock = Resolved<Sanity.FeatureAccordion>;
+export type CtaButtonBlock = Resolved<Sanity.CtaButton>;
+/** `fileUrl` is projected by the GROQ query (`"fileUrl": file.asset->url`). */
+export type CvDownloadBlock = Resolved<Sanity.CvDownload> & {
+  fileUrl?: string | null;
+};
+export type GridLayoutBlock = Omit<Resolved<Sanity.GridLayout>, "items"> & {
+  items?: DynamicComponentWithBuiltUrls[];
 };
 
-export type TimelineBlock = {
-  _type: "timeline";
-  _key?: string;
-  heading?: string;
-  items?: TimelineItemWithBuiltUrl[];
+export type DynamicComponentBlock =
+  | TimelineBlock
+  | ImageWithDescriptionBlock
+  | CarouselBlock
+  | SystemArchitectureBlock
+  | HeroPanelBlock
+  | SkillsBarBlock
+  | SkillsGlobeBlock
+  | FeaturedProjectsBlock
+  | ProjectSpotlightBlock
+  | ProjectBentoBlock
+  | StatsBannerBlock
+  | AboutSectionBlock
+  | TestimonialsSectionBlock
+  | ContactSectionBlock
+  | TechStackBlock
+  | FeatureAccordionBlock
+  | CtaButtonBlock
+  | CvDownloadBlock
+  | GridLayoutBlock;
+
+/** A page-builder section: one block (enforced by Studio validation). */
+export type DynamicComponentWithBuiltUrls = Omit<
+  Resolved<Sanity.DynamicComponent>,
+  "component"
+> & {
+  component?: DynamicComponentBlock[];
 };
 
-export type ImageWithDescriptionBlock = {
-  _type: "imageWithDescription";
-  _key?: string;
-  heading?: string;
-  icon?: string | null;
-  image?: string | null;
-  description?: SanityKeyed<SanityBlock>[];
-  textPosition?: "above" | "below" | "before" | "after";
-};
-
-export type HeroPanelBlock = {
-  _type: "heroPanel";
-  _key?: string;
-  name?: string;
-  role?: string;
-  tagline?: string;
-  photo?: string | null;
-  ctaLabel?: string;
-  ctaUrl?: string;
-  imagePosition?: "left" | "right";
-};
-
-export type SkillItem = {
-  _key?: string;
-  name?: string;
-  category?: string;
-};
-
-export type SkillsBarBlock = {
-  _type: "skillsBar";
-  _key?: string;
-  heading?: string;
-  skills?: SkillItem[];
-};
-
-export type FeaturedProject = {
-  _key?: string;
-  title?: string;
-  description?: SanityKeyed<SanityBlock>[];
-  image?: string | null;
-  tags?: string[];
-  liveUrl?: string;
-  githubUrl?: string;
-  moreInfoUrl?: string;
-};
-
-export type FeaturedProjectsBlock = {
-  _type: "featuredProjects";
-  _key?: string;
-  heading?: string;
-  projects?: FeaturedProject[];
-};
-
-export type StatItem = {
-  _key?: string;
-  value?: string;
-  label?: string;
-};
-
-export type StatsBannerBlock = {
-  _type: "statsBanner";
-  _key?: string;
-  stats?: StatItem[];
-};
-
-export type AboutLink = {
-  _key?: string;
-  label?: string;
-  url?: string;
-};
-
-export type AboutSectionBlock = {
-  _type: "aboutSection";
-  _key?: string;
-  photo?: string | null;
-  bio?: SanityKeyed<SanityBlock>[];
-  links?: AboutLink[];
-};
-
-export type TestimonialItem = {
-  _key?: string;
-  quote?: string;
-  author?: string;
-  role?: string;
-  company?: string;
-};
-
-export type TestimonialsSectionBlock = {
-  _type: "testimonialsSection";
-  _key?: string;
-  heading?: string;
-  testimonials?: TestimonialItem[];
-};
-
-export type ContactSectionBlock = {
-  _type: "contactSection";
-  _key?: string;
-  heading?: string;
-  intro?: SanityKeyed<SanityBlock>[];
-  email?: string;
-  githubUrl?: string;
-  linkedinUrl?: string;
-};
-
-export type TechStackGroupItem = {
-  _key?: string;
-  groupName?: string;
-  description?: string;
-  items?: string[];
-};
-
-export type TechStackBlock = {
-  _type: "techStack";
-  _key?: string;
-  heading?: string;
-  groups?: TechStackGroupItem[];
-};
-
-export type SkillGlobeItem = {
-  _key?: string;
-  name?: string;
-  icon?: string;
-  url?: string;
-  description?: string;
-};
-
-export type SkillsGlobeBlock = {
-  _type: "skillsGlobe";
-  _key?: string;
-  heading?: string;
-  rotationSpeed?: number;
-  skills?: SkillGlobeItem[];
-};
-
-export type CtaButtonBlock = {
-  _type: "ctaButton";
-  _key?: string;
-  label?: string;
-  url?: string;
-  variant?: "primary" | "secondary";
-};
+// Fails to compile when the schema gains a block type that isn't in the union
+// above, so a new block can't be silently dropped by the renderer.
+type SchemaBlockType = NonNullable<
+  Sanity.DynamicComponent["component"]
+>[number]["_type"];
+type AssertNever<T extends never> = T;
+export type MissingBlockTypes = AssertNever<
+  Exclude<SchemaBlockType, DynamicComponentBlock["_type"]>
+>;

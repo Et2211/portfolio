@@ -1,9 +1,7 @@
 import type {
   DynamicComponentWithBuiltUrls,
   GridLayoutBlock,
-} from "@/types/dynamicComponent";
-
-export type { GridLayoutBlock };
+} from "@/types/blocks";
 
 type GridProps = GridLayoutBlock & {
   renderItem: (

@@ -6,14 +6,7 @@ import { RichText } from "@/components/atoms/RichText";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
 import { ProjectCard } from "@/components/molecules/ProjectCard";
 import { ProjectLinks } from "@/components/molecules/ProjectLinks";
-import type { FeaturedProject } from "@/types/blocks";
-
-export type ProjectBentoBlock = {
-  _type: "projectBento";
-  _key?: string;
-  heading?: string;
-  projects?: FeaturedProject[];
-};
+import type { ProjectBentoBlock } from "@/types/blocks";
 
 export const ProjectBento = ({ heading, projects }: ProjectBentoBlock) => {
   if (!projects || projects.length === 0) {

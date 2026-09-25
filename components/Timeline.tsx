@@ -2,16 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import type { TimelineItem as TimelineItemType } from "@/types/generated/sanity";
+import type { TimelineItemData } from "@/types/blocks";
 
 import { TimelineItem } from "./TimelineItem";
 
-type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
-  image?: string | null;
-};
-
 interface TimelineProps {
-  items: TimelineItemWithBuiltUrl[];
+  items: TimelineItemData[];
 }
 
 export const Timeline = ({ items }: TimelineProps) => {
@@ -59,7 +55,7 @@ export const Timeline = ({ items }: TimelineProps) => {
       <div className="space-y-0">
         {items.map((item, idx) => (
           <TimelineItem
-            key={(item as { _key?: string })._key ?? idx}
+            key={item._key ?? idx}
             item={item}
             index={idx}
             containerRef={containerRef}
