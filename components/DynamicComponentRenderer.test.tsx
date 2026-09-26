@@ -22,6 +22,9 @@ describe("DynamicComponentRenderer", () => {
         components={[
           cta("first", "First"),
           section("mystery", { _key: "mystery", _type: "notARealBlock" }),
+          // Names that exist on Object.prototype must not resolve either.
+          section("ctor", { _key: "ctor", _type: "constructor" }),
+          section("proto", { _key: "proto", _type: "toString" }),
           cta("last", "Last"),
         ]}
       />,

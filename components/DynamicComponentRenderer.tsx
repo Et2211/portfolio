@@ -75,8 +75,13 @@ const BLOCK_COMPONENTS: { [T in BlockType]: ComponentType<BlockOf<T>> } = {
 const renderBlock = (block: DynamicComponentBlock) => {
   // TypeScript can't correlate the union's `_type` with the mapped entry, so
   // widen here; BLOCK_COMPONENTS' type guarantees the pairing is right.
-  const Component = BLOCK_COMPONENTS[block._type] as
-    ComponentType<DynamicComponentBlock> | undefined;
+  // Own-property check: CMS data could name something inherited from
+  // Object.prototype ("constructor", "toString"), which must not resolve.
+  const Component = (
+    Object.hasOwn(BLOCK_COMPONENTS, block._type)
+      ? BLOCK_COMPONENTS[block._type]
+      : undefined
+  ) as ComponentType<DynamicComponentBlock> | undefined;
   // Unknown types can still arrive from the CMS at runtime (e.g. a schema
   // change deployed before the site), so skip rather than crash.
   return Component ? <Component {...block} /> : null;
