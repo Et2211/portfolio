@@ -1,34 +1,16 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-export type FeatureItem = {
-  _key?: string;
-  title?: string;
-  summary?: string;
-  detail?: string;
-  image?: string | null;
-};
-
-export type FeatureAccordionBlock = {
-  _type: "featureAccordion";
-  _key?: string;
-  heading?: string;
-  items?: FeatureItem[];
-};
+import type { FeatureAccordionBlock } from "@/types/blocks";
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
-  <svg
-    className={`shrink-0 w-4 h-4 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
+  <ChevronDown
     aria-hidden="true"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
+    className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+  />
 );
 
 export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
@@ -47,28 +29,28 @@ export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+    <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
       {items.map((item, idx) => {
         const key = item._key ?? String(idx);
         const isOpen = openKeys.has(key);
         return (
           <div
             key={key}
-            className="rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden"
+            className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
           >
             <button
               type="button"
               onClick={() => toggle(key)}
               aria-expanded={isOpen}
               aria-controls={`accordion-content-${key}`}
-              className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="flex w-full cursor-pointer items-center justify-between gap-4 bg-white px-5 py-4 text-left transition-colors hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800"
             >
-              <div className="flex flex-col gap-0.5 min-w-0">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   {item.title}
                 </span>
                 {item.summary && (
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400 leading-snug">
+                  <span className="text-sm leading-snug text-zinc-500 dark:text-zinc-400">
                     {item.summary}
                   </span>
                 )}
@@ -79,19 +61,19 @@ export const FeatureAccordion = ({ items = [] }: FeatureAccordionBlock) => {
               <div
                 id={`accordion-content-${key}`}
                 role="region"
-                className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 animate-in fade-in slide-in-from-top-2 duration-200"
+                className="animate-in border-t border-zinc-100 bg-zinc-50 px-5 py-4 duration-200 fade-in slide-in-from-top-2 dark:border-zinc-800 dark:bg-zinc-800/50"
               >
-                <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
+                <p className="text-sm leading-relaxed whitespace-pre-line text-zinc-600 dark:text-zinc-300">
                   {item.detail}
                 </p>
                 {item.image && (
-                  <div className="mt-4 relative w-full aspect-video rounded-lg overflow-hidden">
+                  <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-lg">
                     <Image
                       src={item.image}
                       alt={item.title ?? "Feature image"}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw rounded"
+                      sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"
                     />
                   </div>
                 )}

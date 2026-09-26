@@ -8,23 +8,27 @@ interface UseInViewOptions {
   once?: boolean;
 }
 
-export function useInView({
+export function useInView<T extends Element = HTMLDivElement>({
   threshold = 0.15,
   rootMargin = "0px",
   once = true,
 }: UseInViewOptions = {}) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<T>(null);
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
     const element = ref.current;
-    if (!element) return;
+    if (!element) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          if (once) observer.disconnect();
+          if (once) {
+            observer.disconnect();
+          }
         }
       },
       { threshold, rootMargin },

@@ -1,11 +1,7 @@
-"use client";
-
 import { PortableText } from "@portabletext/react";
 import { Github, Linkedin, Mail } from "lucide-react";
-import { motion } from "motion/react";
-import { useState } from "react";
 
-import { useIsPointerDevice } from "@/hooks/useIsPointerDevice";
+import { SectionHeading } from "@/components/atoms/SectionHeading";
 import type { ContactSectionBlock } from "@/types/blocks";
 
 const iconMap = {
@@ -16,43 +12,31 @@ const iconMap = {
 
 type ContactType = keyof typeof iconMap;
 
+// Hover lift/glow and icon spin are CSS; Tailwind's `hover:` only applies on
+// devices that can hover, so touch screens don't get stuck in a hover state.
 const ContactLink = ({
   href,
   label,
   type,
-  isPointer,
 }: {
   href: string;
   label: string;
   type: ContactType;
-  isPointer: boolean;
 }) => {
   const Icon = iconMap[type];
-  const [hovered, setHovered] = useState(false);
 
   return (
-    <motion.a
+    <a
       href={href}
       target={type !== "email" ? "_blank" : undefined}
       rel="noopener noreferrer"
-      className="flex items-center gap-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 px-5 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 transition-colors hover:border-[var(--accent-vivid)] hover:text-[var(--accent-vivid)]"
-      onHoverStart={() => isPointer && setHovered(true)}
-      onHoverEnd={() => isPointer && setHovered(false)}
-      whileHover={isPointer ? {
-        y: -3,
-        boxShadow: "0 0 20px oklch(0.56 0.28 280 / 0.2), 0 4px 12px oklch(0 0 0 / 0.08)"
-      } : undefined}
-      transition={{ type: "spring", stiffness: 300, damping: 28 }}
+      className="group flex items-center gap-2.5 rounded-full border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-600 transition-[color,border-color,box-shadow,translate] duration-300 ease-out-back hover:-translate-y-[3px] hover:border-accent-vivid hover:text-accent-vivid hover:shadow-glow-md dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-accent-vivid dark:hover:text-accent-vivid"
     >
-      <motion.span
-        className="inline-flex flex-shrink-0"
-        animate={{ rotate: hovered && isPointer ? 12 : 0, scale: hovered && isPointer ? 1.2 : 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-      >
-        <Icon className="w-4 h-4" />
-      </motion.span>
+      <span className="inline-flex flex-shrink-0 transition-[rotate,scale] duration-300 ease-out-back group-hover:scale-120 group-hover:rotate-12">
+        <Icon className="h-4 w-4" aria-hidden="true" />
+      </span>
       {label}
-    </motion.a>
+    </a>
   );
 };
 
@@ -63,44 +47,29 @@ export const ContactSection = ({
   githubUrl,
   linkedinUrl,
 }: ContactSectionBlock) => {
-  const isPointer = useIsPointerDevice();
-
   return (
-    <section className="py-8 flex flex-col items-center text-center gap-6">
+    <section className="flex flex-col items-center gap-6 py-8 text-center">
       {heading && (
-        <h2 className="text-2xl font-bold text-black dark:text-white">
+        <SectionHeading align="center" className="mb-0">
           {heading}
-        </h2>
+        </SectionHeading>
       )}
       {intro && intro.length > 0 && (
-        <div className="prose prose-sm dark:prose-invert max-w-lg dark:[&_p]:text-zinc-300 dark:[&_a]:text-zinc-300">
-          <PortableText value={intro} />
+        <div className="max-w-lg">
+          <div className="prose prose-sm max-w-none dark:prose-invert dark:[&_a]:text-zinc-300 dark:[&_p]:text-zinc-300">
+            <PortableText value={intro} />
+          </div>
         </div>
       )}
       <div className="flex flex-wrap justify-center gap-4">
         {email && (
-          <ContactLink
-            href={`mailto:${email}`}
-            label="Email"
-            type="email"
-            isPointer={isPointer}
-          />
+          <ContactLink href={`mailto:${email}`} label="Email" type="email" />
         )}
         {githubUrl && (
-          <ContactLink
-            href={githubUrl}
-            label="GitHub"
-            type="github"
-            isPointer={isPointer}
-          />
+          <ContactLink href={githubUrl} label="GitHub" type="github" />
         )}
         {linkedinUrl && (
-          <ContactLink
-            href={linkedinUrl}
-            label="LinkedIn"
-            type="linkedin"
-            isPointer={isPointer}
-          />
+          <ContactLink href={linkedinUrl} label="LinkedIn" type="linkedin" />
         )}
       </div>
     </section>

@@ -1,21 +1,10 @@
 "use client";
 
-import { PortableText } from "@portabletext/react";
-import Image from "next/image";
 import { useState } from "react";
 
-import { Badge } from "@/components/atoms/Badge";
-import { RichText } from "@/components/atoms/RichText";
 import { SectionHeading } from "@/components/atoms/SectionHeading";
-import { ProjectLinks } from "@/components/molecules/ProjectLinks";
-import type { FeaturedProject } from "@/types/blocks";
-
-export type ProjectSpotlightBlock = {
-  _type: "projectSpotlight";
-  _key?: string;
-  heading?: string;
-  projects?: FeaturedProject[];
-};
+import { ProjectFeature } from "@/components/molecules/ProjectFeature";
+import type { ProjectSpotlightBlock } from "@/types/blocks";
 
 export const ProjectSpotlight = ({
   heading,
@@ -23,7 +12,9 @@ export const ProjectSpotlight = ({
 }: ProjectSpotlightBlock) => {
   const [index, setIndex] = useState(0);
 
-  if (!projects || projects.length === 0) return null;
+  if (!projects || projects.length === 0) {
+    return null;
+  }
 
   const project = projects[index];
   const total = projects.length;
@@ -31,58 +22,19 @@ export const ProjectSpotlight = ({
   return (
     <section className="py-4">
       {heading && <SectionHeading>{heading}</SectionHeading>}
-      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900">
-        <div className="flex flex-col lg:flex-row">
-          {project.image && (
-            <div className="relative w-full lg:w-1/2 aspect-video lg:aspect-auto lg:min-h-[300px]">
-              <Image
-                src={project.image}
-                alt={project.title ?? "Project screenshot"}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </div>
-          )}
-          <div className="flex flex-col flex-1 gap-4 p-6 lg:p-8">
-            {project.title && (
-              <h3 className="text-xl font-semibold text-black dark:text-white">
-                {project.title}
-              </h3>
-            )}
-            {project.tags && project.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {project.tags.map((tag, idx) => (
-                  <Badge key={idx} variant="tag">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
-            {project.description && project.description.length > 0 && (
-              <RichText>
-                <PortableText value={project.description} />
-              </RichText>
-            )}
-            <ProjectLinks
-              liveUrl={project.liveUrl}
-              githubUrl={project.githubUrl}
-              moreInfoUrl={project.moreInfoUrl}
-              className="mt-auto"
-            />
-          </div>
-        </div>
+      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <ProjectFeature project={project} layout="spacious" />
 
         {total > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="flex items-center justify-between border-t border-zinc-200 px-6 py-3 dark:border-zinc-800">
             <button
               type="button"
               onClick={() => setIndex((prev) => (prev - 1 + total) % total)}
-              className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+              className="text-sm font-medium text-zinc-600 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white"
             >
               ← Prev
             </button>
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               {projects.map((_, idx) => (
                 <button
                   key={idx}
@@ -90,8 +42,8 @@ export const ProjectSpotlight = ({
                   onClick={() => setIndex(idx)}
                   className={`h-2 rounded-full transition-all ${
                     idx === index
-                      ? "bg-black dark:bg-white w-5"
-                      : "bg-zinc-400 dark:bg-zinc-600 w-2"
+                      ? "w-5 bg-black dark:bg-white"
+                      : "w-2 bg-zinc-400 dark:bg-zinc-600"
                   }`}
                   aria-label={`Go to project ${idx + 1}`}
                 />
@@ -100,7 +52,7 @@ export const ProjectSpotlight = ({
             <button
               type="button"
               onClick={() => setIndex((prev) => (prev + 1) % total)}
-              className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+              className="text-sm font-medium text-zinc-600 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white"
             >
               Next →
             </button>

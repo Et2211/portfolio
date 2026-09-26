@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+
+@plugin "@tailwindcss/typography";
 
 @utility container {
   margin-inline: auto;
@@ -34,25 +35,21 @@
 }
 
 @custom-variant dark (&:is(.dark *));
+/* Progressive enhancement: `scripting:` applies when JavaScript runs,
+   `noscript:` when it doesn't (unsupported browsers match neither). */
+@custom-variant scripting (@media (scripting: enabled));
+@custom-variant noscript (@media (scripting: none));
+
+@theme {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -69,6 +66,18 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-accent-vivid: var(--accent-vivid);
+  --color-accent-vivid-2: var(--accent-vivid-2);
+  /* Accent glows — follow the theme because they're built on --accent-vivid. */
+  --shadow-glow-sm:
+    0 0 24px color-mix(in oklch, var(--accent-vivid) 14%, transparent),
+    0 4px 16px oklch(0 0 0 / 0.06);
+  --shadow-glow-md:
+    0 0 28px color-mix(in oklch, var(--accent-vivid) 20%, transparent),
+    0 6px 20px oklch(0 0 0 / 0.08);
+  --shadow-glow-lg:
+    0 0 40px color-mix(in oklch, var(--accent-vivid) 30%, transparent),
+    0 20px 48px oklch(0 0 0 / 0.18);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -98,19 +107,6 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
@@ -132,19 +128,6 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
@@ -156,103 +139,281 @@
   }
 }
 
+/* ── Shared utilities ──────────────────────────────── */
+/* Clip a background (e.g. bg-linear-135 from-… to-…) to the text. */
+@utility text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Short accent underline used under headings and stats. */
+@utility accent-rule {
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-vivid),
+    var(--accent-vivid-2)
+  );
+}
+@utility surface-card {
+  @apply rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900;
+}
+@utility surface-muted {
+  @apply rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900;
+}
+
 /* ── Accent color tokens ───────────────────────────── */
 :root {
-  --accent-vivid:   oklch(0.56 0.28 280);
+  --accent-vivid: oklch(0.56 0.28 280);
   --accent-vivid-2: oklch(0.72 0.18 196);
 }
 .dark {
-  --accent-vivid:   oklch(0.72 0.28 280);
+  --accent-vivid: oklch(0.72 0.28 280);
   --accent-vivid-2: oklch(0.82 0.18 196);
 }
 
 /* ── Primary button ────────────────────────────────── */
 .btn-primary-gradient {
-  background: linear-gradient(135deg, var(--accent-vivid) 0%, oklch(0.48 0.26 260) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent-vivid) 0%,
+    oklch(0.48 0.26 260) 100%
+  );
 }
 .btn-primary-gradient:hover {
-  box-shadow: 0 0 28px oklch(0.56 0.28 280 / 0.45), 0 4px 16px oklch(0 0 0 / 0.25);
-}
-.dark .btn-primary-gradient:hover {
-  box-shadow: 0 0 28px oklch(0.72 0.28 280 / 0.55), 0 4px 16px oklch(0 0 0 / 0.4);
+  box-shadow:
+    0 0 28px color-mix(in oklch, var(--accent-vivid) 50%, transparent),
+    0 4px 16px oklch(0 0 0 / 0.3);
 }
 
 /* ── Hero blob animations ──────────────────────────── */
 @keyframes hero-blob-drift {
-  0%, 100% { transform: translate(0%, 0%) scale(1); }
-  50%       { transform: translate(8%, 14%) scale(1.15); }
+  0%,
+  100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  50% {
+    transform: translate(8%, 14%) scale(1.15);
+  }
 }
-.hero-blob         { animation: hero-blob-drift 16s ease-in-out infinite; will-change: transform; }
-.hero-blob-reverse { animation: hero-blob-drift 20s ease-in-out infinite reverse; will-change: transform; }
+.hero-blob {
+  animation: hero-blob-drift 16s ease-in-out infinite;
+  will-change: transform;
+}
+.hero-blob-reverse {
+  animation: hero-blob-drift 20s ease-in-out infinite reverse;
+  will-change: transform;
+}
 
 /* ── Hero photo rings ──────────────────────────────── */
 @keyframes ring-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.ring-spin         { animation: ring-spin  9s linear infinite; transform-origin: center; }
-.ring-spin-reverse { animation: ring-spin 14s linear infinite reverse; transform-origin: center; }
+.ring-spin {
+  animation: ring-spin 9s linear infinite;
+  transform-origin: center;
+}
+.ring-spin-reverse {
+  animation: ring-spin 14s linear infinite reverse;
+  transform-origin: center;
+}
 
 /* ── Testimonials marquee ──────────────────────────── */
 @keyframes marquee-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 @keyframes marquee-right {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
-.marquee-left  { animation: marquee-left  32s linear infinite; }
-.marquee-right { animation: marquee-right 28s linear infinite; }
+.marquee-left {
+  animation: marquee-left 32s linear infinite;
+}
+.marquee-right {
+  animation: marquee-right 28s linear infinite;
+}
 .marquee-track:hover .marquee-left,
-.marquee-track:hover .marquee-right { animation-play-state: paused; }
+.marquee-track:hover .marquee-right {
+  animation-play-state: paused;
+}
 
 /* ── Tech strip marquee ────────────────────────────── */
-.tech-strip { animation: marquee-left 40s linear infinite; }
-.tech-strip-wrap:hover .tech-strip { animation-play-state: paused; }
+.tech-strip {
+  animation: marquee-left 40s linear infinite;
+}
+.tech-strip-wrap:hover .tech-strip {
+  animation-play-state: paused;
+}
 
 /* ── Badge shimmer ─────────────────────────────────── */
 @keyframes badge-shimmer {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
-.badge-shimmer { position: relative; overflow: hidden; }
+.badge-shimmer {
+  position: relative;
+  overflow: hidden;
+}
 .badge-shimmer::after {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
   transform: translateX(-100%);
   pointer-events: none;
 }
 .badge-shimmer:hover::after,
-.badge-shimmer:focus-visible::after { animation: badge-shimmer 0.5s ease forwards; }
+.badge-shimmer:focus-visible::after {
+  animation: badge-shimmer 0.5s ease forwards;
+}
 
 /* ── Nav underline ─────────────────────────────────── */
 .nav-underline {
   position: relative;
 }
 .nav-underline::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 2px;
   left: 12px; /* matches px-3 padding */
   right: 12px;
   height: 2px;
   border-radius: 1px;
-  background: linear-gradient(90deg, var(--accent-vivid), var(--accent-vivid-2));
+  background: linear-gradient(
+    90deg,
+    var(--accent-vivid),
+    var(--accent-vivid-2)
+  );
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.nav-underline:hover::after { transform: scaleX(1); }
+.nav-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* ── Entrance animations ───────────────────────────── */
+/*
+ * Progressive enhancement: content is visible by default and only starts
+ * hidden when scripting is enabled (known at first paint, no script needed),
+ * so no-JS visitors, crawlers and link unfurlers always get the content.
+ * Browsers without `scripting` support simply skip the effect.
+ */
+.scroll-reveal {
+  transition:
+    opacity 600ms var(--ease-out-expo),
+    transform 600ms var(--ease-out-expo);
+}
+@media (scripting: enabled) {
+  .scroll-reveal:not([data-revealed]) {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  /* Stat count-up (StatsBanner): hide the real value until counting starts. */
+  [data-count-up]:not([data-counting]) {
+    visibility: hidden;
+  }
+}
+
+/* Timeline items (TimelineItem): dot pops in, card slides in from its side. */
+@media (scripting: enabled) {
+  .timeline-item:not([data-in-view]) .timeline-dot {
+    scale: 0;
+  }
+  .timeline-item:not([data-in-view]) .timeline-card {
+    opacity: 0;
+  }
+}
+@media (scripting: enabled) and (width >= 48rem) {
+  .timeline-item:not([data-in-view]) .timeline-card[data-side="left"] {
+    translate: -2rem 0;
+  }
+  .timeline-item:not([data-in-view]) .timeline-card[data-side="right"] {
+    translate: 2rem 0;
+  }
+}
+
+/*
+ * Hero entrance: CSS keyframes rather than JS so it plays on first paint,
+ * before hydration, and still ends visible without JavaScript. Stagger with
+ * an inline animation-delay.
+ */
+@keyframes hero-enter-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+@keyframes hero-enter-word {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+  }
+}
+@keyframes hero-enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes hero-enter-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+.hero-enter-photo {
+  animation: hero-enter-scale 0.7s var(--ease-out-expo) both;
+}
+.hero-enter-word {
+  display: inline-block;
+  animation: hero-enter-word 0.5s var(--ease-out-expo) both;
+}
+.hero-enter-rise {
+  animation: hero-enter-rise 0.5s var(--ease-out-expo) both;
+}
+.hero-enter-pop {
+  animation: hero-enter-pop 0.6s var(--ease-out-back) both;
+}
 
 /* ── Reduced motion ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
     animation-iteration-count: 1 !important;
   }
 }

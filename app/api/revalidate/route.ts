@@ -2,11 +2,13 @@ import { SIGNATURE_HEADER_NAME, isValidSignature } from "@sanity/webhook";
 import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
-  const body = await req.text();
-  const signature = req.headers.get(SIGNATURE_HEADER_NAME);
-  const secret = process.env.REVALIDATE_SECRET;
+import { tagsToRevalidate } from "@/lib/cacheTags";
+import { isWebhookPayload } from "@/lib/webhook";
 
+// Called by a Sanity webhook on publish. `{ expire: 0 }` expires the
+// "use cache" entries immediately rather than serving stale-while-revalidate.
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const secret = process.env.REVALIDATE_SECRET;
   if (!secret) {
     return NextResponse.json(
       { message: "Missing REVALIDATE_SECRET" },
@@ -14,43 +16,34 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
+  const body = await req.text();
+  const signature = req.headers.get(SIGNATURE_HEADER_NAME);
   if (!signature || !(await isValidSignature(body, signature, secret))) {
     return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
   }
 
-  let payload: { _type?: string; url?: string };
+  let payload: unknown;
   try {
-    payload = JSON.parse(body) as { _type?: string; url?: string };
+    payload = JSON.parse(body);
   } catch {
     return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
-
-  const { _type, url } = payload;
-
-  // Handle page-specific revalidation
-  if (_type === "page" && typeof url === "string" && url) {
-    // eslint-disable-next-line no-console
-    console.log(`[webhook] Revalidating page: ${url}`);
-    // { expire: 0 } immediately expires the 'use cache' entry (required for webhook-triggered invalidation)
-    revalidateTag(`page:${url}`, { expire: 0 });
-    // eslint-disable-next-line no-console
-    console.log(`[webhook] Revalidated page: ${url}`);
-    return NextResponse.json({ revalidated: true, path: url });
+  if (!isWebhookPayload(payload)) {
+    return NextResponse.json(
+      { message: "Unexpected payload" },
+      { status: 400 },
+    );
   }
 
-  // Handle global content (navigation, footer) that touches all pages
-  if (_type === "navigation" || _type === "footer") {
-    // eslint-disable-next-line no-console
-    console.log(`[webhook] Revalidating tag: sanity:global`);
-    revalidateTag("sanity:global", { expire: 0 });
-    // eslint-disable-next-line no-console
-    console.log(`[webhook] Revalidated tag: sanity:global`);
-    return NextResponse.json({ revalidated: true, tag: "sanity:global" });
+  const tags = tagsToRevalidate(payload._type);
+  if (!tags.length) {
+    return NextResponse.json({ message: "Nothing to revalidate" });
   }
 
-  // Unknown type
-  return NextResponse.json(
-    { message: "Nothing to revalidate" },
-    { status: 200 },
-  );
+  for (const tag of tags) {
+    revalidateTag(tag, { expire: 0 });
+  }
+  // eslint-disable-next-line no-console
+  console.log(`[webhook] Revalidated ${tags.join(", ")}`);
+  return NextResponse.json({ revalidated: true, tags });
 }

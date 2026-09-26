@@ -2,13 +2,11 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
-import { Suspense } from "react";
 
 import "./globals.css";
 
 import { Footer } from "@/components/Footer";
-import Navbar from "@/components/nav/Navbar";
+import { Navbar } from "@/components/nav/Navbar";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 
 const geistSans = Geist({
@@ -36,6 +34,8 @@ export const metadata: Metadata = {
   },
 };
 
+const THEME_INIT_SCRIPT = `(function(){var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})()`;
+
 const RootLayout = ({
   children,
 }: Readonly<{
@@ -43,18 +43,21 @@ const RootLayout = ({
 }>): React.ReactElement => (
   <html lang="en" suppressHydrationWarning>
     <head>
-      <Script
+      {/*
+        A plain inline script (not next/script, which queues beforeInteractive
+        code for its async runtime) so the theme class is set while the HTML
+        is parsed, before first paint — no flash of the wrong theme.
+      */}
+      <script
         id="theme-init"
-        strategy="beforeInteractive"
-      >{`(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})()`}</Script>
+        dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
+      />
     </head>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <ScrollProgressBar />
-      <Suspense>
-        <Navbar />
-        {children}
-        <Footer />
-      </Suspense>
+      <Navbar />
+      {children}
+      <Footer />
       <Analytics />
       <SpeedInsights />
     </body>

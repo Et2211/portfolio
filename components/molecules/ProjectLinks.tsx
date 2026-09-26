@@ -1,3 +1,6 @@
+import { AppLink } from "@/components/AppLink";
+import { cn } from "@/lib/utils";
+
 interface ProjectLinksProps {
   liveUrl?: string;
   githubUrl?: string;
@@ -11,31 +14,30 @@ export const ProjectLinks = ({
   githubUrl,
   moreInfoUrl,
   size = "sm",
-  className = "",
+  className,
 }: ProjectLinksProps) => {
-  if (!liveUrl && !githubUrl && !moreInfoUrl) return null;
+  const links = [
+    { href: liveUrl, label: "Live ↗" },
+    { href: githubUrl, label: "GitHub ↗" },
+    { href: moreInfoUrl, label: "More info ↗" },
+  ].filter((link): link is { href: string; label: string } => !!link.href);
 
-  const linkClass = `font-medium text-black dark:text-white underline underline-offset-2 hover:opacity-70 transition-opacity ${
-    size === "xs" ? "text-xs" : "text-sm"
-  }`;
+  if (!links.length) {
+    return null;
+  }
 
   return (
-    <div className={`flex gap-3 ${className}`}>
-      {liveUrl && (
-        <a href={liveUrl} target="_blank" rel="noopener noreferrer" className={linkClass}>
-          Live ↗
-        </a>
-      )}
-      {githubUrl && (
-        <a href={githubUrl} target="_blank" rel="noopener noreferrer" className={linkClass}>
-          GitHub ↗
-        </a>
-      )}
-      {moreInfoUrl && (
-        <a href={moreInfoUrl} className={linkClass}>
-          More info ↗
-        </a>
-      )}
+    <div className={cn("flex gap-3", className)}>
+      {links.map((link) => (
+        <AppLink
+          key={link.label}
+          href={link.href}
+          variant="text"
+          className={size === "xs" ? "text-xs" : "text-sm"}
+        >
+          {link.label}
+        </AppLink>
+      ))}
     </div>
   );
 };

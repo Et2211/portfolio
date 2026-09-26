@@ -1,90 +1,47 @@
-import { cacheLife, cacheTag } from "next/cache";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DynamicComponentRenderer } from "@/components/DynamicComponentRenderer";
-import { buildImageUrlsForComponents, fetchSanity } from "@/lib/sanity";
-import type { Page } from "@/types/generated/sanity";
+import { getPageByUrl, getPageUrls } from "@/lib/content";
+import { slugToUrl, urlToSlug } from "@/lib/routes";
 
 interface PageProps {
-  params: Promise<{
-    slug?: string[];
-  }>;
+  params: Promise<{ slug?: string[] }>;
 }
 
-async function getPageByUrl(url: string): Promise<Page | null> {
-  "use cache";
-  cacheLife("days");
-  cacheTag(`page:${url}`);
-  // GROQ query to fetch page by url and its components with full expansion
-  const query = `*[_type == "page" && url == $url][0]{
-    _id,
-    heading,
-    url,
-    pageComponents[]{
-      ...,
-      component[]{
-        ...,
-        items[]{
-          ...,
-          items[]{
-            ...
-          }
-        }
-      }
-    }
-  }`;
-  // Fetch fresh data on regeneration
-  return await fetchSanity<Page | null>(query, { url });
-}
-
-export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params;
-  const url = slug ? `/${slug.join("/")}` : "/";
-  const page = await getPageByUrl(url);
-  if (!page?.heading) return {};
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const page = await getPageByUrl(slugToUrl((await params).slug));
+  if (!page?.heading) {
+    return {};
+  }
   return {
     title: page.heading,
     openGraph: { title: page.heading },
   };
 }
 
-export default async function Page({ params }: PageProps) {
-  const { slug } = await params;
-
-  // Build the URL path - default to "/" for homepage
-  const url = slug ? `/${slug.join("/")}` : "/";
-
-  // Fetch the page from Sanity
-  const page: Page | null = await getPageByUrl(url);
+export default async function CmsPage({ params }: PageProps) {
+  const page = await getPageByUrl(slugToUrl((await params).slug));
 
   if (!page) {
     notFound();
   }
 
-  // Build image URLs server-side to prevent hydration mismatch
-  const pageWithBuiltUrls = page.pageComponents
-    ? {
-        ...page,
-
-        pageComponents: buildImageUrlsForComponents(page.pageComponents),
-      }
-    : page;
-
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <main className="container mx-auto py-4">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-black dark:text-white">
-          {pageWithBuiltUrls.heading}
-        </h1>
+        {page.heading && (
+          <h1 className="mb-8 text-3xl font-bold text-black sm:text-4xl dark:text-white">
+            {page.heading}
+          </h1>
+        )}
 
-        {/* Render dynamic components from Sanity */}
-        {pageWithBuiltUrls.pageComponents &&
-        pageWithBuiltUrls.pageComponents.length > 0 ? (
-          <DynamicComponentRenderer
-            components={pageWithBuiltUrls.pageComponents}
-          />
+        {page.pageComponents?.length ? (
+          <DynamicComponentRenderer components={page.pageComponents} />
         ) : (
-          <div className="prose dark:prose-invert max-w-none">
+          <div className="prose max-w-none dark:prose-invert">
             <p className="text-zinc-600 dark:text-zinc-400">
               No content available for this page.
             </p>
@@ -95,26 +52,19 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
-// Generate static params for all pages by calling Sanity
+// Prerender every CMS page at build time.
 export async function generateStaticParams() {
   try {
-    const query = `*[_type == "page"]{url}`;
-    const pages: Page[] = await fetchSanity(query);
-    return pages.map((page) => {
-      const url = page.url || "/";
-      // Remove leading slash and split into segments
-      const slug = url === "/" ? undefined : url.replace(/^\//, "").split("/");
-      return { slug };
-    });
+    const urls = await getPageUrls();
+    return urls.map((url) => ({ slug: urlToSlug(url) }));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
     console.error(
       "\n❌ Failed to generate static params for pages:\n",
       message,
-      "\n",
     );
-    // Return empty array to allow build to continue
+    // Pages will still render on demand; don't fail the build.
     return [];
   }
 }

@@ -1,0 +1,5 @@
+# Mechanical formatting commits, skipped by `git blame`.
+# Enable locally with: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Format codebase with Prettier and eslint --fix
+d692aa6e459785626f53a555a3fece1990a4b57e

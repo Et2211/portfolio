@@ -1,20 +1,7 @@
 "use client";
-import { useSyncExternalStore } from "react";
+import { useMediaQuery } from "./useMediaQuery";
 
-const QUERY = "(hover: hover) and (pointer: fine)";
-
-const subscribe = (onChange: () => void) => {
-  const mql = window.matchMedia(QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-};
-
-const getSnapshot = () => window.matchMedia(QUERY).matches;
-
-// Server snapshot is false so the hydration render matches the server HTML;
-// React re-renders with the real value straight after hydrating.
-const getServerSnapshot = () => false;
-
+/** True on devices with a precise pointer that can hover (i.e. a mouse). */
 export function useIsPointerDevice() {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return useMediaQuery("(hover: hover) and (pointer: fine)");
 }

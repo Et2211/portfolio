@@ -1,64 +1,65 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue } from "motion/react";
+import { useEffect, useRef } from "react";
 
-import type { TimelineItem as TimelineItemType } from "@/types/generated/sanity";
+import type { TimelineBlock } from "@/types/blocks";
 
 import { TimelineItem } from "./TimelineItem";
 
-type TimelineItemWithBuiltUrl = Omit<TimelineItemType, "image"> & {
-  image?: string | null;
-};
+type TimelineProps = Pick<TimelineBlock, "items">;
 
-interface TimelineProps {
-  items: TimelineItemWithBuiltUrl[];
-}
-
-export const Timeline = ({ items }: TimelineProps) => {
+export const Timeline = ({ items = [] }: TimelineProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [fillPercent, setFillPercent] = useState(0);
+  // 0–1 scroll progress through the timeline. A MotionValue rather than
+  // state, so scrolling doesn't re-render the timeline or its items.
+  const fill = useMotionValue(0);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const update = () => {
       const el = containerRef.current;
-      if (!el) return;
-
+      if (!el) {
+        return;
+      }
       const { top, height } = el.getBoundingClientRect();
       const windowH = window.innerHeight;
       // Start filling when the top of the timeline enters the viewport,
       // finish when the bottom reaches the middle of the screen.
       const progress = (windowH * 0.6 - top) / (height - windowH * 0.4);
-      setFillPercent(Math.min(1, Math.max(0, progress)));
+      fill.set(Math.min(1, Math.max(0, progress)));
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [fill]);
 
-  if (!items || items.length === 0) return null;
+  if (!items.length) {
+    return null;
+  }
 
   return (
     <div ref={containerRef} className="relative">
       {/* Track line — left on mobile, centre on desktop */}
-      <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-zinc-200 dark:bg-zinc-800" />
-      {/* Fill line — gradient accent matches the rest of the visual system */}
-      <div
-        className="absolute left-4 md:left-1/2 top-0 w-[2px] md:-translate-x-1/2 transition-none origin-top"
-        style={{
-          height: `${fillPercent * 100}%`,
-          background: "linear-gradient(to bottom, var(--accent-vivid), var(--accent-vivid-2))",
-        }}
+      <div className="absolute top-0 bottom-0 left-4 w-px bg-zinc-200 md:left-1/2 md:-translate-x-1/2 dark:bg-zinc-800" />
+      {/* Fill line, scaled from the top (no layout work while scrolling) */}
+      <motion.div
+        className="absolute top-0 bottom-0 left-4 w-[2px] origin-top bg-linear-to-b from-accent-vivid to-accent-vivid-2 md:left-1/2 md:-translate-x-1/2"
+        style={{ scaleY: fill }}
       />
 
-      <div className="space-y-0">
+      <div>
         {items.map((item, idx) => (
           <TimelineItem
-            key={(item as { _key?: string })._key ?? idx}
+            key={item._key ?? idx}
             item={item}
             index={idx}
             containerRef={containerRef}
-            fillPercent={fillPercent}
+            fill={fill}
           />
         ))}
       </div>

@@ -1,103 +1,58 @@
-import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 import React from "react";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { fetchSanity } from "@/lib/sanity";
-import type { NavGroup, NavItem, Navigation } from "@/types/generated/sanity";
+import { getNavigation } from "@/lib/content";
+import type { NavSection } from "@/lib/content";
 
 import { DropdownMenu } from "./DropdownMenu";
 import { MobileMenu } from "./MobileMenu";
 
-async function getNavigation() {
-  "use cache";
-  cacheLife("days");
-  cacheTag("sanity:global");
+// Outside the cached fetcher, so a failed fetch renders an empty menu for
+// this request only instead of being cached.
+const loadNavigation = async (): Promise<NavSection[]> => {
   try {
-    const query = `*[_type == 'navigation'][0]{navGroups[]{navHeader,navList[]{navTitle,externalUrl,page->{url}}}}`;
-    const data: Navigation = await fetchSanity(query);
-    return data?.navGroups || [];
+    return await getNavigation();
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching navigation:", error);
     return [];
   }
-}
+};
 
-// Helper to get URL from either page reference or externalUrl
-function getNavItemUrl(
-  item: NavItem & { page?: { url?: string }; externalUrl?: string },
-): string {
-  if (item.externalUrl) {
-    return item.externalUrl;
-  }
-  if (item.page && item.page.url) {
-    return item.page.url;
-  }
-  return "#";
-}
-
-const Navbar = async (): Promise<React.ReactElement> => {
-  const navGroups: NavGroup[] = await getNavigation();
+export const Navbar = async (): Promise<React.ReactElement> => {
+  const sections = await loadNavigation();
   return (
-    <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
+    <nav className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
           <Link
             href="/"
-            className="text-xl font-bold text-black dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+            className="text-xl font-bold text-black transition-colors hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
           >
             Etienne Sharkey
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-2">
-            {navGroups.map((group, groupIdx) => (
+          <div className="hidden items-center gap-2 md:flex">
+            {sections.map((section) => (
               <DropdownMenu
-                key={groupIdx}
-                trigger={group.navHeader ?? ""}
-                items={
-                  (group.navList?.map(
-                    (
-                      item: NavItem & {
-                        page?: { url?: string };
-                        externalUrl?: string;
-                      },
-                    ) => ({
-                      label: item.navTitle ?? "",
-                      href: getNavItemUrl(item),
-                    }),
-                  ) || []) as { label: string; href: string }[]
-                }
+                key={section.heading}
+                trigger={section.heading}
+                items={section.links}
               />
             ))}
             <ThemeToggle />
           </div>
 
           {/* Mobile nav */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
-            <MobileMenu
-              navGroups={navGroups.map((group) => ({
-                heading: group.navHeader ?? "",
-                items: (group.navList?.map(
-                  (
-                    item: NavItem & {
-                      page?: { url?: string };
-                      externalUrl?: string;
-                    },
-                  ) => ({
-                    label: item.navTitle ?? "",
-                    href: getNavItemUrl(item),
-                  }),
-                ) || []) as { label: string; href: string }[],
-              }))}
-            />
+            <MobileMenu sections={sections} />
           </div>
         </div>
       </div>
     </nav>
   );
 };
-export default Navbar;

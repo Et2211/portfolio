@@ -8,11 +8,11 @@ export const ScrollProgressBar = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-[3px] z-50 origin-left"
+      className="fixed top-0 right-0 left-0 z-50 h-[3px] origin-left"
       style={{
         scaleX: scrollYProgress,
         background:
-          "linear-gradient(90deg, oklch(0.56 0.28 280) 0%, oklch(0.72 0.18 196) 60%, oklch(0.75 0.18 150) 100%)",
+          "linear-gradient(90deg, var(--accent-vivid) 0%, var(--accent-vivid-2) 60%, oklch(0.75 0.18 150) 100%)",
       }}
     />
   );

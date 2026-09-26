@@ -1,56 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Environment Setup
+My personal portfolio site. Every page is built from content in Sanity: pages are
+lists of page-builder blocks (hero, timeline, architecture diagram, project
+cards, …) rendered by one catch-all Next.js route.
 
-This project requires a Strapi CMS instance. Before running the development server, set up your environment variables:
+**Stack:** Next.js 16 (App Router, Cache Components, Turbopack) · React 19 ·
+TypeScript · Tailwind CSS v4 · Motion · Sanity · Vercel.
 
-1. Copy `.env.example` to `.env.local`:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-2. Update `.env.local` with your Strapi CMS settings:
-   ```
-   STRAPI_URL=http://localhost:1337
-   STRAPI_API_TOKEN=your_api_token_here
-   ```
-
-3. For **Vercel deployment**, add these environment variables in your Vercel project settings:
-   - Go to your Vercel project → Settings → Environment Variables
-   - Add `STRAPI_URL` (e.g., `https://your-strapi-domain.com`)
-   - Add `STRAPI_API_TOKEN` (generate in Strapi admin panel under Settings > API Tokens)
-
-## Getting Started
-
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # then fill in the values
+npm install
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Variable            | Purpose                                                     |
+| ------------------- | ----------------------------------------------------------- |
+| `SANITY_PROJECT_ID` | Sanity project                                              |
+| `SANITY_DATASET`    | Sanity dataset, e.g. `production`                           |
+| `SANITY_API_TOKEN`  | Optional; only needed for private datasets                  |
+| `REVALIDATE_SECRET` | Shared with the Sanity webhook that calls `/api/revalidate` |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The Sanity Studio lives in a sibling repo, `../studio-portfolio`.
+`npm run dev:all` runs the site and the Studio together.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How it works
 
-## Learn More
+```
+app/[[...slug]]/page.tsx       catch-all route: URL → Sanity page → blocks
+components/DynamicComponentRenderer.tsx   block _type → component registry
+lib/queries.ts                 GROQ queries
+lib/content.ts                 cached fetchers ("use cache" + cache tags)
+lib/cacheTags.ts               tag names shared with the revalidate webhook
+lib/sanity.ts                  Sanity client, image URL resolution
+types/blocks.ts                block prop types, derived from the Sanity schema
+types/generated/sanity.d.ts    generated from the Studio schemas (don't edit)
+```
 
-To learn more about Next.js, take a look at the following resources:
+- **Rendering.** Each page is a list of sections, each holding one block. The
+  renderer maps each block's `_type` to a component; the map is typed so a
+  schema block without a component (or with the wrong one) fails to compile.
+- **Types.** Block types are derived from the generated schema types via
+  `Resolved<T>`, which reflects that image fields arrive as URL strings.
+- **Images** are resolved to CDN URLs on the server, inside the cached
+  fetchers, so client components only ever receive strings.
+- **Caching.** Pages, navigation and the footer are cached with `"use cache"`
+  and invalidated on publish by a Sanity webhook hitting `/api/revalidate`,
+  which expires `sanity:pages` (every page, so renamed or deleted URLs don't
+  linger) and/or `sanity:global` (navigation and footer). Unknown URLs return a
+  real 404.
+- **Progressive enhancement.** Content is visible without JavaScript: reveal
+  and count-up animations only hide things under `@media (scripting: enabled)`,
+  and the hero entrance is CSS.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Adding a block
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Add the schema in the Studio and run `npm run codegen:full`.
+2. Add `Resolved<Sanity.NewBlock>` to `types/blocks.ts` (the compiler points
+   you at the union and registry that need it).
+3. Create the component, taking the block's fields as props, and register it
+   in `BLOCK_COMPONENTS`.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Script                   | What it does                                                     |
+| ------------------------ | ---------------------------------------------------------------- |
+| `npm run dev`            | Dev server                                                       |
+| `npm run build`          | Production build                                                 |
+| `npm run lint`           | ESLint (including jsx-a11y)                                      |
+| `npm run format`         | Prettier (with Tailwind class sorting); `format:check` to verify |
+| `npm run typecheck`      | `tsc --noEmit`                                                   |
+| `npm test`               | Vitest unit tests (`test:watch` for watch mode)                  |
+| `npm run codegen:full`   | Rebuild Studio schemas, then regenerate Sanity types             |
+| `npm run codegen:sanity` | Regenerate types from the existing Studio build                  |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+A pre-commit hook runs lint-staged (ESLint + Prettier), the type check and the
+tests; GitHub Actions runs the same checks on pull requests.
+
+### Troubleshooting
+
+If CSS changes (especially to `app/globals.css`) don't show up in dev, stop the
+server and clear Turbopack's cache: `rm -rf .next && npm run dev`.

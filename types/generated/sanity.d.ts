@@ -209,9 +209,16 @@ export type ImageWithDescription = {
   heading?: string;
 
   /**
+   * Icon (simple-icons key) — `string`
+   *
+   * Use a simple-icons key instead of an image, e.g. "react", "typescript", "nodedotjs". See https://simpleicons.org/. Leave blank to use an image.
+   */
+  icon?: string;
+
+  /**
    * Image — `image`
    *
-   *
+   * Upload an image. Ignored if an Icon key is set.
    */
   image?: {
     _type: "image";
@@ -265,6 +272,10 @@ export type DynamicComponent = {
     | SanityKeyed<FeatureAccordion>
     | SanityKeyed<GridLayout>
     | SanityKeyed<SkillsGlobe>
+    | SanityKeyed<CtaButton>
+    | SanityKeyed<ProjectSpotlight>
+    | SanityKeyed<ProjectBento>
+    | SanityKeyed<CvDownload>
   >;
 };
 
@@ -550,6 +561,13 @@ export type SkillGlobeItem = {
    * Link to open when this skill is clicked.
    */
   url?: string;
+
+  /**
+   * Description — `text`
+   *
+   * Short description shown in the detail panel when this skill is clicked.
+   */
+  description?: string;
 };
 
 export type FeaturedProjects = {
@@ -617,6 +635,47 @@ export type FeaturedProject = {
    *
    */
   githubUrl?: string;
+
+  /**
+   * More Info URL — `string`
+   *
+   * Link to a detailed project page (e.g. /projects/portfolio)
+   */
+  moreInfoUrl?: string;
+};
+
+export type ProjectSpotlight = {
+  _type: "projectSpotlight";
+  /**
+   * Heading — `string`
+   *
+   * For identifying this block in the CMS.
+   */
+  heading?: string;
+
+  /**
+   * Projects — `array`
+   *
+   * Projects to cycle through. Use prev/next arrows on the frontend.
+   */
+  projects?: Array<SanityKeyed<FeaturedProject>>;
+};
+
+export type ProjectBento = {
+  _type: "projectBento";
+  /**
+   * Heading — `string`
+   *
+   * For identifying this block in the CMS.
+   */
+  heading?: string;
+
+  /**
+   * Projects — `array`
+   *
+   * First project is featured large. Remaining projects appear as smaller tiles.
+   */
+  projects?: Array<SanityKeyed<FeaturedProject>>;
 };
 
 export type StatsBanner = {
@@ -887,6 +946,54 @@ export type GridLayout = {
    * Components to fill the grid cells, left-to-right then top-to-bottom.
    */
   items?: Array<SanityKeyed<DynamicComponent>>;
+};
+
+export type CtaButton = {
+  _type: "ctaButton";
+  /**
+   * Label — `string`
+   *
+   *
+   */
+  label?: string;
+
+  /**
+   * URL — `url`
+   *
+   *
+   */
+  url?: string;
+
+  /**
+   * Variant — `string`
+   *
+   *
+   */
+  variant?: "primary" | "secondary";
+};
+
+export type CvDownload = {
+  _type: "cvDownload";
+  /**
+   * Heading — `string`
+   *
+   * For identifying this block in the CMS.
+   */
+  heading?: string;
+
+  /**
+   * Button Label — `string`
+   *
+   *
+   */
+  label?: string;
+
+  /**
+   * CV File — `file`
+   *
+   * Upload a PDF of your CV.
+   */
+  file?: { _type: "file"; asset: SanityReference<any> };
 };
 
 export type Documents = Navigation | Page | Footer;

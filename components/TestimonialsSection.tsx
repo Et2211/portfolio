@@ -2,9 +2,9 @@ import { SectionHeading } from "@/components/atoms/SectionHeading";
 import type { TestimonialItem, TestimonialsSectionBlock } from "@/types/blocks";
 
 const TestimonialCard = ({ testimonial }: { testimonial: TestimonialItem }) => (
-  <div className="flex flex-col gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-6 w-80 flex-shrink-0">
+  <div className="flex w-80 flex-shrink-0 flex-col gap-4 rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
     {testimonial.quote && (
-      <blockquote className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed before:content-['“'] after:content-['”'] before:text-zinc-400 after:text-zinc-400">
+      <blockquote className="text-sm leading-relaxed text-zinc-700 before:text-zinc-400 before:content-['“'] after:text-zinc-400 after:content-['”'] dark:text-zinc-300">
         {testimonial.quote}
       </blockquote>
     )}
@@ -30,14 +30,19 @@ const MarqueeRow = ({
   testimonials: TestimonialItem[];
   direction: "left" | "right";
 }) => {
-  // Duplicate cards so the loop is seamless
-  const doubled = [...testimonials, ...testimonials];
+  const cards = testimonials.map((testimonial, idx) => (
+    <TestimonialCard key={testimonial._key ?? idx} testimonial={testimonial} />
+  ));
+  // The second copy only makes the loop seamless, so hide it from assistive tech.
   return (
     <div className="overflow-hidden">
-      <div className={`flex gap-4 w-max ${direction === "left" ? "marquee-left" : "marquee-right"}`}>
-        {doubled.map((testimonial, idx) => (
-          <TestimonialCard key={idx} testimonial={testimonial} />
-        ))}
+      <div
+        className={`flex w-max gap-4 ${direction === "left" ? "marquee-left" : "marquee-right"}`}
+      >
+        <div className="flex gap-4">{cards}</div>
+        <div className="flex gap-4" aria-hidden="true">
+          {cards}
+        </div>
       </div>
     </div>
   );
@@ -47,17 +52,20 @@ export const TestimonialsSection = ({
   heading,
   testimonials,
 }: TestimonialsSectionBlock) => {
-  if (!testimonials || testimonials.length === 0) return null;
+  if (!testimonials || testimonials.length === 0) {
+    return null;
+  }
 
   // Split into two rows for the dual-direction marquee
   const mid = Math.ceil(testimonials.length / 2);
   const row1 = testimonials.slice(0, mid);
-  const row2 = testimonials.slice(mid).length > 0 ? testimonials.slice(mid) : testimonials;
+  const row2 =
+    testimonials.slice(mid).length > 0 ? testimonials.slice(mid) : testimonials;
 
   return (
     <section className="py-4">
       {heading && <SectionHeading>{heading}</SectionHeading>}
-      <div className="marquee-track flex flex-col gap-4 overflow-hidden -mx-4 px-0">
+      <div className="marquee-track -mx-4 flex flex-col gap-4 overflow-hidden px-0">
         <MarqueeRow testimonials={row1} direction="left" />
         <MarqueeRow testimonials={row2} direction="right" />
       </div>

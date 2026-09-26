@@ -1,9 +1,7 @@
 import type {
   DynamicComponentWithBuiltUrls,
   GridLayoutBlock,
-} from "@/types/dynamicComponent";
-
-export type { GridLayoutBlock };
+} from "@/types/blocks";
 
 type GridProps = GridLayoutBlock & {
   renderItem: (
@@ -22,12 +20,14 @@ const COL_CLASSES: Record<number, string> = {
 };
 
 export const Grid = ({ cols = 2, items = [], renderItem }: GridProps) => {
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return null;
+  }
 
   const colClass = COL_CLASSES[cols] ?? "sm:grid-cols-2";
 
   return (
-    <div className={`grid grid-cols-1 ${colClass} gap-6 items-start`}>
+    <div className={`grid grid-cols-1 ${colClass} items-start gap-6`}>
       {items.map((item, idx) => renderItem(item, idx))}
     </div>
   );
