@@ -20,14 +20,15 @@ const SCHEMA_PATH = path.resolve(
 );
 const OUTPUT_PATH = path.join(ROOT, "types/generated/sanity.d.ts");
 
+// Exact versions, so re-running codegen resolves the same toolchain.
 const TOOLCHAIN = [
   "sanity-codegen@0.9.8",
   "babel-plugin-module-resolver@4.1.0",
-  "@babel/core@7",
-  "@babel/preset-env@7",
-  "@babel/preset-react@7",
-  "@babel/preset-typescript@7",
-  "prettier@2",
+  "@babel/core@7.29.7",
+  "@babel/preset-env@7.29.7",
+  "@babel/preset-react@7.29.7",
+  "@babel/preset-typescript@7.29.7",
+  "prettier@2.8.8",
 ];
 
 if (!existsSync(SCHEMA_PATH)) {
