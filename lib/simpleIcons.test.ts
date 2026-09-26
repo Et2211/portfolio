@@ -9,6 +9,9 @@ describe("getSimpleIcon", () => {
     ["TYPESCRIPT", "TypeScript"],
     ["nextdotjs", "Next.js"],
     ["Next.js", "Next.js"],
+    // Slugs/titles that genuinely start with "si" must not lose it.
+    ["siemens", "Siemens"],
+    ["Signal", "Signal"],
   ])("finds %s", (key, title) => {
     expect(getSimpleIcon(key)?.title).toBe(title);
   });

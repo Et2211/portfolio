@@ -38,5 +38,14 @@ export function getSimpleIcon(key: string | null | undefined): IconData | null {
     return null;
   }
   index ??= buildIndex();
-  return index.get(key.replace(/^si/i, "").toLowerCase()) ?? null;
+  const normalized = key.toLowerCase();
+  // Try the key as given first ("siemens", "Signal"), then as an export name
+  // without its "si" prefix ("siReact" → "react").
+  return (
+    index.get(normalized) ??
+    (normalized.startsWith("si")
+      ? index.get(normalized.slice(2))
+      : undefined) ??
+    null
+  );
 }
