@@ -5,6 +5,8 @@ import { defineConfig } from "vitest/config";
 const root = import.meta.dirname;
 
 export default defineConfig({
+  // tsconfig uses `jsx: preserve` for Next; tests need the JSX compiled.
+  esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
       "@": root,
@@ -13,7 +15,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["**/*.test.ts"],
+    include: ["**/*.test.ts", "**/*.test.tsx"],
     exclude: ["node_modules/**", ".next/**"],
     // lib/sanity.ts requires these at import time.
     env: { SANITY_PROJECT_ID: "test-project", SANITY_DATASET: "test" },

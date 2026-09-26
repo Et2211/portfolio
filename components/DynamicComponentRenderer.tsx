@@ -102,8 +102,14 @@ export const DynamicComponentRenderer = ({
           return null;
         }
 
-        const key = block._key || index;
         const content = renderBlock(block);
+        // Unknown block type: skip the whole section, so it doesn't leave an
+        // empty (but spaced) reveal wrapper behind.
+        if (!content) {
+          return null;
+        }
+
+        const key = block._key || index;
 
         // The first block is usually above the fold (and often the LCP
         // element), so render it straight away instead of revealing it.
