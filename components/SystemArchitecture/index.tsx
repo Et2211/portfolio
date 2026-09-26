@@ -12,7 +12,12 @@ import { useCallback, useMemo, useState } from "react";
 
 import type { SystemArchitectureBlock } from "@/types/blocks";
 
-import { TIER_COLORS, TIER_LABELS, tierOrder } from "./constants";
+import {
+  TIER_COLORS,
+  TIER_LABELS,
+  normalizeTier,
+  tierOrder,
+} from "./constants";
 import { buildFlowEdges, buildFlowNodes } from "./layout";
 import { NodeDetailPanel } from "./NodeDetailPanel";
 import { SourceLabelEdge } from "./SourceLabelEdge";
@@ -44,7 +49,7 @@ export const SystemArchitecture = ({
       nodesById: new Map(sanityNodes.map((node) => [node.nodeId, node])),
       // Tiers present, in row order, for the legend
       tiersPresent: [
-        ...new Set(sanityNodes.map((node) => node.tier ?? "infra")),
+        ...new Set(sanityNodes.map((node) => normalizeTier(node.tier))),
       ].sort((ta, tb) => tierOrder(ta) - tierOrder(tb)),
     };
   }, [nodes, edges]);

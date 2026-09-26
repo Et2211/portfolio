@@ -39,8 +39,11 @@ describe("buildFlowNodes", () => {
     }
   });
 
-  it("treats unknown tiers like infra", () => {
-    expect(positionOf(nodes, "mystery")?.y).toBe(positionOf(nodes, "host")?.y);
+  it("treats unknown tiers like infra, sharing the row without overlapping", () => {
+    const mystery = positionOf(nodes, "mystery");
+    const host = positionOf(nodes, "host");
+    expect(mystery?.y).toBe(host?.y);
+    expect(mystery?.x).not.toBe(host?.x);
   });
 });
 

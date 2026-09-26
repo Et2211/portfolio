@@ -9,7 +9,17 @@ export const TIER_ORDER: Record<string, number> = {
 };
 
 /** Row index for a tier; unknown tiers sort (and are coloured) like infra. */
-export const tierOrder = (tier: string) => TIER_ORDER[tier] ?? TIER_ORDER.infra;
+/**
+ * The tier a node is laid out, coloured and listed under. Missing or
+ * unknown tiers (from the CMS) are treated as infra, so they share the infra
+ * row and its layout rather than overlapping it.
+ */
+export const normalizeTier = (tier: string | undefined): string =>
+  tier && Object.hasOwn(TIER_ORDER, tier) ? tier : "infra";
+
+/** Row index for a tier (unknown tiers use the infra row). */
+export const tierOrder = (tier: string | undefined) =>
+  TIER_ORDER[normalizeTier(tier)];
 
 export const TIER_COLORS: Record<
   string,

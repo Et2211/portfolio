@@ -9,6 +9,7 @@ import {
   TIER_COLORS,
   TIER_Y_GAP,
   TOP_PADDING,
+  normalizeTier,
   tierOrder,
 } from "./constants";
 
@@ -19,7 +20,7 @@ export function buildFlowNodes(
   // Group nodes by tier
   const byTier: Record<string, ArchNodeData[]> = {};
   for (const node of sanityNodes) {
-    const tier = node.tier ?? "infra";
+    const tier = normalizeTier(node.tier);
     if (!byTier[tier]) {
       byTier[tier] = [];
     }
