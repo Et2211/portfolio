@@ -155,9 +155,9 @@ export const SkillsGlobeCanvas = ({
     }, CLOSE_DURATION);
   };
 
-  // Pause rotation while a skill has keyboard focus, so the focused icon
-  // can't rotate to the back (where it's dimmed and leaves the tab order).
-  const [hasSkillFocus, setHasSkillFocus] = useState(false);
+  // Every skill stays in the tab order; the one with keyboard focus is
+  // turned to the front of the globe, and auto-rotation pauses meanwhile.
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
   const handleSelect = (skill: GlobeSkill) => {
     if (closeTimerRef.current) {
@@ -219,7 +219,12 @@ export const SkillsGlobeCanvas = ({
               />
               <Globe
                 rotationSpeed={rotationSpeed}
-                paused={!!displayedSkill || hasSkillFocus}
+                paused={!!displayedSkill || focusedIndex !== null}
+                focusTarget={
+                  focusedIndex !== null
+                    ? (positions[focusedIndex] ?? null)
+                    : null
+                }
                 radius={GLOBE_RADIUS}
               >
                 {skills.map((skill, index) => {
@@ -234,7 +239,11 @@ export const SkillsGlobeCanvas = ({
                       position={position}
                       radius={GLOBE_RADIUS}
                       onSelect={handleSelect}
-                      onFocusChange={setHasSkillFocus}
+                      onFocusChange={(focused) =>
+                        setFocusedIndex((current) =>
+                          focused ? index : current === index ? null : current,
+                        )
+                      }
                     />
                   );
                 })}

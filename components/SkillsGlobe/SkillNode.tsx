@@ -61,9 +61,6 @@ export const SkillNode = ({
     buttonRef.current.style.opacity = String(opacity);
     buttonRef.current.style.transform = `scale(${finalScale})`;
     buttonRef.current.style.pointerEvents = isFront ? "auto" : "none";
-    // Icons on the far side of the globe can't be clicked, so keep them out
-    // of the tab order too.
-    buttonRef.current.tabIndex = isFront ? 0 : -1;
   });
 
   const handlePointerOver = useCallback(() => {
