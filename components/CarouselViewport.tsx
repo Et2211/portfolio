@@ -95,21 +95,23 @@ export const CarouselViewport = ({
     : Math.max(1, Math.floor(containerWidth / SLIDE_WIDTH_WITH_PADDING));
   const slideWidth = `${100 / slidesToShow}%`;
 
+  // Without JavaScript nothing can scroll the track, so slides wrap into a
+  // centred grid; the one-row carousel layout only applies under `scripting:`.
+  const justifyStart = slides.length >= slidesToShow;
+
   return (
     <div className="relative" ref={containerRef}>
-      <div className="overflow-hidden" ref={emblaRef}>
+      <div className="scripting:overflow-hidden" ref={emblaRef}>
         <div
-          className="flex items-start"
-          style={{
-            justifyContent:
-              slides.length < slidesToShow ? "center" : "flex-start",
-          }}
+          className={`flex flex-wrap items-start justify-center gap-y-4 scripting:flex-nowrap scripting:gap-y-0 ${
+            justifyStart ? "scripting:justify-start" : ""
+          }`}
         >
           {slides.map((slide) => (
             <div
               key={slide.key}
-              className="min-w-0 flex-shrink-0 px-2"
-              style={{ flexBasis: slideWidth }}
+              className="min-w-0 flex-shrink-0 px-2 scripting:basis-(--slide-width)"
+              style={{ "--slide-width": slideWidth } as React.CSSProperties}
             >
               <div className="mx-auto flex h-[300px] w-[300px] flex-col overflow-auto">
                 {slide.content}
@@ -120,7 +122,8 @@ export const CarouselViewport = ({
       </div>
 
       {(canAutoplay || showDots) && (
-        <div className="mt-4 flex items-center justify-center gap-2">
+        // The controls need JavaScript, so hide them without it.
+        <div className="mt-4 flex items-center justify-center gap-2 noscript:hidden">
           {canAutoplay && (
             <button
               type="button"
