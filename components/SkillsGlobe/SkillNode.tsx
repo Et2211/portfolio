@@ -12,6 +12,8 @@ interface SkillNodeProps {
   position: [number, number, number];
   radius: number;
   onSelect: (skill: GlobeSkill) => void;
+  /** Called when the icon's button gains or loses keyboard focus. */
+  onFocusChange: (focused: boolean) => void;
 }
 
 export const SkillNode = ({
@@ -19,6 +21,7 @@ export const SkillNode = ({
   position,
   radius = 1.7,
   onSelect,
+  onFocusChange,
 }: SkillNodeProps) => {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
@@ -87,8 +90,14 @@ export const SkillNode = ({
           onClick={handleClick}
           onMouseEnter={handlePointerOver}
           onMouseLeave={handlePointerOut}
-          onFocus={handlePointerOver}
-          onBlur={handlePointerOut}
+          onFocus={() => {
+            handlePointerOver();
+            onFocusChange(true);
+          }}
+          onBlur={() => {
+            handlePointerOut();
+            onFocusChange(false);
+          }}
           style={{
             cursor: "pointer",
             display: "flex",

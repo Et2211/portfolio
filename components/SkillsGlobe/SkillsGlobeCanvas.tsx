@@ -155,6 +155,10 @@ export const SkillsGlobeCanvas = ({
     }, CLOSE_DURATION);
   };
 
+  // Pause rotation while a skill has keyboard focus, so the focused icon
+  // can't rotate to the back (where it's dimmed and leaves the tab order).
+  const [hasSkillFocus, setHasSkillFocus] = useState(false);
+
   const handleSelect = (skill: GlobeSkill) => {
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
@@ -215,7 +219,7 @@ export const SkillsGlobeCanvas = ({
               />
               <Globe
                 rotationSpeed={rotationSpeed}
-                paused={!!displayedSkill}
+                paused={!!displayedSkill || hasSkillFocus}
                 radius={GLOBE_RADIUS}
               >
                 {skills.map((skill, index) => {
@@ -230,6 +234,7 @@ export const SkillsGlobeCanvas = ({
                       position={position}
                       radius={GLOBE_RADIUS}
                       onSelect={handleSelect}
+                      onFocusChange={setHasSkillFocus}
                     />
                   );
                 })}
